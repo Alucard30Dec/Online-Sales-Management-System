@@ -1,0 +1,229 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Online Sales Management System</title>
+
+    <!-- Favicon ShopGrids -->
+    <link rel="shortcut icon" type="image/x-icon"
+          href="~/shopgrids/assets/images/favicon.svg" />
+
+    <!-- ========================= CSS ShopGrids ========================= -->
+    <link rel="stylesheet" href="~/shopgrids/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/shopgrids/assets/css/LineIcons.3.0.css" />
+    <link rel="stylesheet" href="~/shopgrids/assets/css/tiny-slider.css" />
+    <link rel="stylesheet" href="~/shopgrids/assets/css/glightbox.min.css" />
+    <link rel="stylesheet" href="~/shopgrids/assets/css/main.css" />
+
+    <!-- CSS riêng của project -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+
+    <!-- ================= Preloader từ assets ================= -->
+    <div class="preloader">
+        <div class="preloader-inner">
+            <div class="preloader-icon">
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+    <!-- /End Preloader -->
+    <!-- ================= HEADER ShopGrids ================= -->
+    <header class="header navbar-area">
+
+        <!-- Top bar -->
+        <div class="header-top">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <div class="header-top-left">
+                            <p>Online Sales Management System - Customer Site</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <div class="header-top-right d-flex justify-content-end align-items-center gap-3">
+                            <div class="top-contact d-none d-md-block">
+                                <i class="lni lni-phone"></i>
+                                <span>Hotline: (+100) 123 456 7890</span>
+                            </div>
+                            <div class="top-account">
+                                @await Html.PartialAsync("_LoginPartial")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header giữa: logo + search + hotline / cart -->
+        <div class="header-middle">
+            <div class="container">
+                <div class="row align-items-center">
+
+                    <!-- Logo -->
+                    <div class="col-lg-3 col-md-3 col-7">
+                        <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                            <img src="~/shopgrids/assets/images/logo/logo.svg" alt="Logo" />
+                        </a>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="col-lg-5 col-md-7 d-none d-md-block">
+                        <div class="main-menu-search">
+                            <div class="navbar-search search-style-5">
+                                <div class="search-select">
+                                    <div class="select-position">
+                                        <select>
+                                            <option value="0" selected>All</option>
+                                            <option value="1">Category 1</option>
+                                            <option value="2">Category 2</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="search-input">
+                                    <input type="text" placeholder="Search products..." />
+                                </div>
+                                <div class="search-btn">
+                                    <button type="button">
+                                        <i class="lni lni-search-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hotline + Wishlist + Cart -->
+                    <div class="col-lg-4 col-md-2 col-5">
+                        <div class="middle-right-area d-flex align-items-center justify-content-end gap-3">
+                            <div class="nav-hotline d-none d-md-flex align-items-center">
+                                <i class="lni lni-headphone-alt"></i>
+                                <h3 class="ms-2 mb-0">
+                                    Hotline:
+                                    <span>(+100) 123 456 7890</span>
+                                </h3>
+                            </div>
+                            <div class="nav-wishlist">
+                                <a href="javascript:void(0)">
+                                    <i class="lni lni-heart"></i>
+                                    <span class="total-items">0</span>
+                                </a>
+                            </div>
+                            <div class="nav-cart">
+                                <a href="javascript:void(0)">
+                                    <i class="lni lni-cart"></i>
+                                    <span class="total-items">0</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Header dưới: categories + menu -->
+        <div class="header-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+
+                    <!-- Categories -->
+                    <div class="col-lg-3 d-none d-lg-block">
+                        <div class="mega-category-menu">
+                            <span class="cat-button">
+                                <i class="lni lni-menu"></i> All Categories
+                            </span>
+                            <ul class="sub-category">
+                                <li><a href="#">Electronics</a></li>
+                                <li><a href="#">Accessories</a></li>
+                                <li><a href="#">Televisions</a></li>
+                                <li><a href="#">Top Offers</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Main menu -->
+                    <div class="col-lg-9 col-12">
+                        <div class="nav-inner">
+                            <nav class="navbar navbar-expand-lg">
+                                <button class="navbar-toggler mobile-menu-btn" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#main-menu"
+                                        aria-controls="main-menu" aria-expanded="false"
+                                        aria-label="Toggle navigation">
+                                    <span class="toggler-icon"></span>
+                                    <span class="toggler-icon"></span>
+                                    <span class="toggler-icon"></span>
+                                </button>
+
+                                <div class="collapse navbar-collapse sub-menu-bar" id="main-menu">
+                                    <ul class="navbar-nav ms-auto">
+                                        <li class="nav-item">
+                                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+                                               asp-controller="Home" asp-action="Index">Home</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" asp-controller="Products" asp-action="Index">Products</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" asp-controller="Orders" asp-action="Index">My Orders</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link"
+                                               asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </header>
+    <!-- ================= /HEADER ================= -->
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER đơn giản, vẫn dùng style của ShopGrids -->
+    <footer class="footer">
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="inner-content d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <p class="mb-1 mb-md-0">
+                        &copy; @DateTime.Now.Year - Online Sales Management System
+                    </p>
+                    <p class="mb-0">
+                        Customer Site - using ShopGrids Template
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================= JS ShopGrids ========================= -->
+    <script src="~/shopgrids/assets/js/bootstrap.min.js"></script>
+    <script src="~/shopgrids/assets/js/tiny-slider.js"></script>
+    <script src="~/shopgrids/assets/js/glightbox.min.js"></script>
+    <script src="~/shopgrids/assets/js/main.js"></script>
+
+    <!-- JS riêng -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
