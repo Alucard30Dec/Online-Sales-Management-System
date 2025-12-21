@@ -2,64 +2,34 @@
     ViewData["Title"] = "Home";
 }
 
-<!-- HERO AREA -->
-<section class="hero-area">
-    <div class="container">
-        <div class="row">
-            <!-- Slider trái -->
-            <div class="col-lg-8 col-md-12 col-12">
-                <div class="hero-slider">
-                    <div class="single-slider"
-                         style="background-image:url('/shopgrids/assets/images/hero/slider-bg-1.jpg');">
-                        <div class="content">
-                            <h4>No restocking fee (35$ saving)</h4>
-                            <h1>M75 Sport Watch</h1>
-                            <p>Demo sản phẩm cho hệ thống quản lý bán hàng.</p>
-                            <div class="price">
-                                <span>Now only</span>
-                                <span class="amount">$320.99</span>
-                            </div>
-                            <a href="#" class="btn">Shop Now</a>
-                        </div>
-                    </div>
+<div class="hero p-4 p-lg-5 rounded-4 border bg-white shadow-sm">
+    <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-7">
+            <h1 class="display-6 fw-semibold mb-2">Online Sales Management System</h1>
+            <p class="text-muted mb-4">
+                Inventory, purchases, invoices, and admin permissions in one dashboard.
+            </p>
 
-                    <div class="single-slider"
-                         style="background-image:url('/shopgrids/assets/images/hero/slider-bg-2.jpg');">
-                        <div class="content">
-                            <h4>Big combo offer</h4>
-                            <h1>CCTV Camera Set</h1>
-                            <p>Gói camera an ninh demo.</p>
-                            <a href="#" class="btn">Shop Now</a>
-                        </div>
-                    </div>
-                </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" href="/Admin/Auth/Login">Login to Admin</a>
+                <a class="btn btn-outline-secondary" href="/Admin/Dashboard">Open Dashboard</a>
             </div>
 
-            <!-- Banner phải -->
-            <div class="col-lg-4 col-md-12 col-12">
-                <div class="hero-small-banner">
-                    <div class="content">
-                        <h4>New line required</h4>
-                        <h2>iPhone 12 Pro Max</h2>
-                        <div class="price">$259.99</div>
-                        <a href="#" class="btn btn-sm">Shop Now</a>
-                    </div>
-                    <div class="image">
-                        <img src="~/shopgrids/assets/images/hero/iphone.png" alt="iPhone" />
-                    </div>
-                </div>
+            <div class="mt-4 small text-muted">
+                Default admin: <span class="fw-semibold">admin@osms.local</span> / <span class="fw-semibold">Admin@12345</span>
+            </div>
+        </div>
 
-                <div class="hero-small-banner style2 mt-3">
-                    <div class="content">
-                        <h4>Weekly Sale!</h4>
-                        <p>Saving up to 50% off all online store items this week.</p>
-                        <a href="#" class="btn btn-outline-light btn-sm">Shop Now</a>
-                    </div>
-                </div>
+        <div class="col-12 col-lg-5">
+            <div class="p-4 rounded-4 bg-light border">
+                <div class="fw-semibold mb-2">Included modules</div>
+                <ul class="mb-0 text-muted">
+                    <li>Dashboard KPIs + charts</li>
+                    <li>Suppliers CRUD (permission-enforced)</li>
+                    <li>Products, Purchases, Invoices (stock movements)</li>
+                    <li>Reports, Attendance, Settings</li>
+                </ul>
             </div>
         </div>
     </div>
-</section>
-
-<!-- (phần Featured Categories & Featured Products bạn đang dùng vẫn giữ nguyên,
-chỉ cần chắc chắn ảnh là ~/shopgrids/assets/images/products/product-1.jpg, v.v.) -->
+</div>

@@ -1,0 +1,56 @@
+﻿@model OnlineSalesManagementSystem.Domain.Entities.Expense
+@{
+    ViewData["Title"] = "Edit Expense";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-0">Edit Expense</h1>
+            <div class="text-muted">Update expense information.</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="/Admin/Expenses">Back</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(excludePropertyErrors: false)
+                </div>
+            }
+
+            <form method="post" action="/Admin/Expenses/Edit" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="col-12">
+                    <label class="form-label">Title <span class="text-danger">*</span></label>
+                    <input class="form-control" name="Title" value="@Model.Title" maxlength="200" required />
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Amount</label>
+                    <input class="form-control" name="Amount" value="@Model.Amount" type="number" step="0.01" min="0" />
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Expense date</label>
+                    <input class="form-control" name="ExpenseDate" value="@(Model.ExpenseDate.ToString("yyyy-MM-dd"))" type="date" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Note</label>
+                    <textarea class="form-control" name="Note" rows="3">@Model.Note</textarea>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/Expenses">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

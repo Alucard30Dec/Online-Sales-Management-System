@@ -1,0 +1,74 @@
+﻿@model OnlineSalesManagementSystem.Areas.Admin.Controllers.AdminsController.AdminCreateVm
+@using OnlineSalesManagementSystem.Domain.Entities
+@{
+    ViewData["Title"] = "Create Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var groups = ViewBag.Groups as List<AdminGroup> ?? new();
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-0">Create Admin</h1>
+            <div class="text-muted">Create an admin account and assign a group.</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="/Admin/Admins">Back</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(excludePropertyErrors: false)
+                </div>
+            }
+
+            <form method="post" action="/Admin/Admins/Create" class="row g-3">
+                @Html.AntiForgeryToken()
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input class="form-control" name="Email" value="@Model.Email" type="email" required />
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Full name</label>
+                    <input class="form-control" name="FullName" value="@Model.FullName" maxlength="150" />
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Password <span class="text-danger">*</span></label>
+                    <input class="form-control" name="Password" value="@Model.Password" type="password" required />
+                    <div class="text-muted small mt-1">Default seed admin: <code>admin@osms.local</code> / <code>Admin@12345</code></div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Group</label>
+                    <select class="form-select" name="AdminGroupId">
+                        <option value="">-- None --</option>
+                        @foreach (var g in groups)
+                        {
+                            var selected = (Model.AdminGroupId.HasValue && Model.AdminGroupId.Value == g.Id) ? "selected" : null;
+                            <option value="@g.Id" selected="@selected">@g.Name</option>
+                        }
+                    </select>
+                    <div class="text-muted small mt-1">Permissions are taken from group permissions.</div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="isActive" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") />
+                        <label class="form-check-label" for="isActive">Active</label>
+                    </div>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/Admins">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+﻿<div class="modal fade" id="permissionDeniedModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title">🚫 Permission denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                You don't have permission to show this page!
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-outline-secondary" href="/Admin/Dashboard">Go to Dashboard</a>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.OSMS = window.OSMS || {};
+    window.OSMS.showPermissionDenied = function () {
+        if (!window.bootstrap) return;
+        const el = document.getElementById('permissionDeniedModal');
+        if (!el) return;
+        const modal = bootstrap.Modal.getOrCreateInstance(el);
+        modal.show();
+    };
+</script>

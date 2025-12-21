@@ -1,0 +1,115 @@
+﻿@model OnlineSalesManagementSystem.Domain.Entities.Purchase
+@{
+    ViewData["Title"] = "Purchase Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    string badge = Model.Status switch
+    {
+        OnlineSalesManagementSystem.Domain.Entities.PurchaseStatus.Received => "text-bg-success",
+        OnlineSalesManagementSystem.Domain.Entities.PurchaseStatus.Cancelled => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-0">Purchase @Model.PurchaseNo</h1>
+            <div class="text-muted">
+                Supplier: <span class="fw-semibold">@Model.Supplier?.Name</span> ·
+                Date: <span class="fw-semibold">@Model.PurchaseDate.ToString("yyyy-MM-dd")</span> ·
+                <span class="badge @badge">@Model.Status</span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="/Admin/Purchases">Back</a>
+
+            @if (Model.Status == OnlineSalesManagementSystem.Domain.Entities.PurchaseStatus.Draft)
+            {
+                <form method="post" action="/Admin/Purchases/Receive/@Model.Id" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success" onclick="return confirm('Receive this purchase and update stock?');">
+                        Receive
+                    </button>
+                </form>
+
+                <form method="post" action="/Admin/Purchases/Cancel/@Model.Id" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Cancel this purchase?');">
+                        Cancel
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-xl-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <div class="fw-semibold">Items</div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="table-light">
+                                    <th style="width:90px;">#</th>
+                                    <th>Product</th>
+                                    <th style="width:120px;">Qty</th>
+                                    <th style="width:160px;">Unit Cost</th>
+                                    <th style="width:170px;">Line Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Items == null || Model.Items.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">No items.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var it in Model.Items)
+                                    {
+                                        <tr>
+                                            <td>@it.Id</td>
+                                            <td class="fw-semibold">@it.Product?.Name</td>
+                                            <td>@it.Qty</td>
+                                            <td>@it.UnitCost.ToString("N0")</td>
+                                            <td>@it.LineTotal.ToString("N0")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <div class="fw-semibold">Totals</div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div class="text-muted">SubTotal</div>
+                        <div class="fw-semibold">@Model.SubTotal.ToString("N0")</div>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <div class="text-muted">GrandTotal</div>
+                        <div class="fw-semibold">@Model.GrandTotal.ToString("N0")</div>
+                    </div>
+
+                    <div class="alert alert-info mt-3 mb-0 small">
+                        Receiving will increase product stock and write StockMovement (In).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

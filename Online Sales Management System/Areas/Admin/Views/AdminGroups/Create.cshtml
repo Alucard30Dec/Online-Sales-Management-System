@@ -1,0 +1,53 @@
+﻿@model OnlineSalesManagementSystem.Domain.Entities.AdminGroup
+@{
+    ViewData["Title"] = "Create Group";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-0">Create Group</h1>
+            <div class="text-muted">Create an admin group, then configure its permissions.</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="/Admin/AdminGroups">Back</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(excludePropertyErrors: true)
+                </div>
+            }
+
+            <form method="post" action="/Admin/AdminGroups/Create" class="row g-3">
+                @Html.AntiForgeryToken()
+
+                <div class="col-12">
+                    <label class="form-label" asp-for="Name">Name <span class="text-danger">*</span></label>
+                    <input class="form-control" asp-for="Name" maxlength="120" required />
+                    <span class="text-danger small" asp-validation-for="Name"></span>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label" asp-for="Description">Description</label>
+                    <textarea class="form-control" asp-for="Description" rows="3"></textarea>
+                    <span class="text-danger small" asp-validation-for="Description"></span>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/AdminGroups">Cancel</a>
+                </div>
+
+                <div class="col-12">
+                    <div class="alert alert-info mb-0 small">
+                        After creating the group, open “Permissions” to configure module access.
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

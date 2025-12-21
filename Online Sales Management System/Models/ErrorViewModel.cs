@@ -1,9 +1,7 @@
-namespace Online_Sales_Management_System.Models
-{
-    public class ErrorViewModel
-    {
-        public string? RequestId { get; set; }
+namespace OnlineSalesManagementSystem.Models;
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-    }
+public class ErrorViewModel
+{
+    public string? RequestId { get; set; }
+    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 }

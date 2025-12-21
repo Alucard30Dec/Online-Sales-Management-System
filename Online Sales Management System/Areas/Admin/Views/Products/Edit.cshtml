@@ -1,0 +1,100 @@
+﻿@model OnlineSalesManagementSystem.Domain.Entities.Product
+@using OnlineSalesManagementSystem.Domain.Entities
+@{
+    ViewData["Title"] = "Edit Product";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var categories = ViewBag.Categories as List<Category> ?? new();
+    var units = ViewBag.Units as List<Unit> ?? new();
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-0">Edit Product</h1>
+            <div class="text-muted">Update product fields (stock is read-only here).</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="/Admin/Products">Back</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(excludePropertyErrors: false)
+                </div>
+            }
+
+            <form method="post" action="/Admin/Products/Edit" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">SKU <span class="text-danger">*</span></label>
+                    <input class="form-control" name="SKU" value="@Model.SKU" maxlength="50" required />
+                </div>
+
+                <div class="col-12 col-lg-8">
+                    <label class="form-label">Name <span class="text-danger">*</span></label>
+                    <input class="form-control" name="Name" value="@Model.Name" maxlength="200" required />
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="CategoryId" required>
+                        <option value="">-- Select category --</option>
+                        @foreach (var c in categories)
+                        {
+                            var selected = (Model.CategoryId == c.Id) ? "selected" : null;
+                            <option value="@c.Id" selected="@selected">@c.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Unit</label>
+                    <select class="form-select" name="UnitId" required>
+                        <option value="">-- Select unit --</option>
+                        @foreach (var u in units)
+                        {
+                            var selected = (Model.UnitId == u.Id) ? "selected" : null;
+                            <option value="@u.Id" selected="@selected">@u.Name (@u.ShortName)</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Cost price</label>
+                    <input class="form-control" name="CostPrice" value="@Model.CostPrice" type="number" step="0.01" min="0" />
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Sale price</label>
+                    <input class="form-control" name="SalePrice" value="@Model.SalePrice" type="number" step="0.01" min="0" />
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Reorder level</label>
+                    <input class="form-control" name="ReorderLevel" value="@Model.ReorderLevel" type="number" step="1" min="0" />
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <label class="form-label">Stock on hand</label>
+                    <input class="form-control" value="@Model.StockOnHand" disabled />
+                    <div class="text-muted small mt-1">Updated by Purchases/Invoices.</div>
+                </div>
+
+                <div class="col-12 col-lg-8">
+                    <label class="form-label">Image path (optional)</label>
+                    <input class="form-control" name="ImagePath" value="@Model.ImagePath" placeholder="/uploads/products/..." />
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/Products">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

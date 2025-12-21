@@ -1,0 +1,46 @@
+﻿@model OnlineSalesManagementSystem.Domain.Entities.Category
+@{
+    ViewData["Title"] = "Edit Category";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-0">Edit Category</h1>
+            <div class="text-muted">Update category information.</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="/Admin/Categories">Back</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(excludePropertyErrors: false)
+                </div>
+            }
+
+            <form method="post" action="/Admin/Categories/Edit" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Name <span class="text-danger">*</span></label>
+                    <input class="form-control" name="Name" value="@Model.Name" maxlength="120" required />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="Description" rows="3">@Model.Description</textarea>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/Categories">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

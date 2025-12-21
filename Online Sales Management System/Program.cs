@@ -1,63 +1,89 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Online_Sales_Management_System.Data;
+using OnlineSalesManagementSystem.Data;
+using OnlineSalesManagementSystem.Domain.Entities;
+using AppUser = OnlineSalesManagementSystem.Domain.Entities.ApplicationUser;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// KẾT NỐI DB
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-// IDENTITY
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-        options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-// MVC
 builder.Services.AddControllersWithViews();
+
+// EF Core
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+// Identity (cookie auth)
+builder.Services
+    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequiredLength = 8;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Admin/Auth/Login";
+    options.LogoutPath = "/Admin/Auth/Logout";
+    options.AccessDeniedPath = "/Admin/Auth/AccessDenied";
+
+    options.Cookie.Name = "OSMS.Auth";
+    options.SlidingExpiration = true;
+});
+
+// Authorization: permission-based policies (dynamic policy provider + handler will be added in Services layer)
+builder.Services.AddAuthorization();
+
+// These registrations are implemented in later files (Services/Security/*).
+// Keep them here so the final solution compiles once those files exist.
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, OnlineSalesManagementSystem.Services.Security.PermissionPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, OnlineSalesManagementSystem.Services.Security.PermissionAuthorizationHandler>();
+builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Security.IPermissionService, OnlineSalesManagementSystem.Services.Security.PermissionService>();
+
+// Stock + invoice totals services (implemented later)
+builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Inventory.IStockService, OnlineSalesManagementSystem.Services.Inventory.StockService>();
+builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Sales.IInvoiceTotalsService, OnlineSalesManagementSystem.Services.Sales.InvoiceTotalsService>();
 
 var app = builder.Build();
 
-// PIPELINE
-if (app.Environment.IsDevelopment())
+// Auto-migrate + seed
+using (var scope = app.Services.CreateScope())
 {
-    app.UseMigrationsEndPoint();
+    var services = scope.ServiceProvider;
+    await DbInitializer.InitializeAsync(services);
 }
-else
+
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 
-// ĐANG DÙNG IDENTITY NÊN PHẢI CÓ:
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Static assets (.NET 9 style)
-app.MapStaticAssets();
-
-// Route cho Area Admin (AdminLTE)
+// Areas first (Admin)
 app.MapControllerRoute(
-        name: "areas",
-        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
-   .WithStaticAssets();
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
-// Route mặc định cho customer site (Home/Index)
+// Default (public site)
 app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-   .WithStaticAssets();
-
-// Razor Pages (Identity UI)
-app.MapRazorPages()
-   .WithStaticAssets();
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

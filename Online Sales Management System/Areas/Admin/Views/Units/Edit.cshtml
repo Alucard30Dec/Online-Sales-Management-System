@@ -1,0 +1,46 @@
+﻿@model OnlineSalesManagementSystem.Domain.Entities.Unit
+@{
+    ViewData["Title"] = "Edit Unit";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-0">Edit Unit</h1>
+            <div class="text-muted">Update unit information.</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="/Admin/Units">Back</a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(excludePropertyErrors: false)
+                </div>
+            }
+
+            <form method="post" action="/Admin/Units/Edit" class="row g-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="Id" value="@Model.Id" />
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Name <span class="text-danger">*</span></label>
+                    <input class="form-control" name="Name" value="@Model.Name" maxlength="80" required />
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Short name</label>
+                    <input class="form-control" name="ShortName" value="@Model.ShortName" maxlength="20" placeholder="pcs, kg, box..." />
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/Units">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

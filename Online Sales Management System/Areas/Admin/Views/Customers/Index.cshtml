@@ -1,0 +1,165 @@
+﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Customer>
+@using Microsoft.AspNetCore.Authorization
+@using OnlineSalesManagementSystem.Services.Security
+@using OnlineSalesManagementSystem.Services.Security
+@inject IAuthorizationService AuthorizationService
+@{
+    ViewData["Title"] = "Customers";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    string q = ViewBag.Query as string ?? "";
+    int page = (int)(ViewBag.Page ?? 1);
+    int pageSize = (int)(ViewBag.PageSize ?? 10);
+    int total = (int)(ViewBag.Total ?? 0);
+
+    int totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
+    bool hasPrev = page > 1;
+    bool hasNext = page < totalPages;
+
+    int start = (page - 1) * pageSize + (total == 0 ? 0 : 1);
+    int end = Math.Min(page * pageSize, total);
+
+    string pCreate = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Customers + "." + PermissionConstants.Actions.Create;
+    string pEdit = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Customers + "." + PermissionConstants.Actions.Edit;
+    string pDelete = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Customers + "." + PermissionConstants.Actions.Delete;
+
+    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, pCreate)).Succeeded;
+    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, pEdit)).Succeeded;
+    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-0">Customers</h1>
+            <div class="text-muted">Customer directory with search + paging.</div>
+        </div>
+        @if (canCreate)
+        {
+            <a class="btn btn-primary" href="/Admin/Customers/Create">+ New Customer</a>
+        }
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end mb-3">
+                <div class="col-12 col-md-6 col-xl-4">
+                    <label class="form-label small text-muted">Search</label>
+                    <input class="form-control" name="q" value="@q" placeholder="Name, phone, email..." />
+                </div>
+
+                <div class="col-12 col-md-3 col-xl-2">
+                    <label class="form-label small text-muted">Show entries</label>
+                    <select class="form-select" name="pageSize">
+                        @{
+                            var sizes = new[] { 10, 25, 50, 100 };
+                            foreach (var s in sizes)
+                            {
+                                var selected = (s == pageSize) ? "selected" : null;
+                                <option value="@s" selected="@selected">@s</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-3 col-xl-2 d-flex gap-2">
+                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
+                    <a class="btn btn-outline-secondary w-100" href="/Admin/Customers">Reset</a>
+                </div>
+
+                <input type="hidden" name="page" value="1" />
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="table-light">
+                            <th style="width:90px;">#</th>
+                            <th>Name</th>
+                            <th style="width:160px;">Phone</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th style="width:160px;">Created</th>
+                            <th style="width:240px;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (total == 0)
+                        {
+                            <tr><td colspan="7" class="text-center text-muted py-4">No customers found.</td></tr>
+                        }
+                        else
+                        {
+                            foreach (var c in Model)
+                            {
+                                <tr>
+                                    <td>@c.Id</td>
+                                    <td class="fw-semibold">@c.Name</td>
+                                    <td class="text-muted">@c.Phone</td>
+                                    <td class="text-muted">@c.Email</td>
+                                    <td class="text-muted">@c.Address</td>
+                                    <td class="text-muted">@c.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            @if (canEdit)
+                                            {
+                                                <a class="btn btn-sm btn-outline-primary" href="/Admin/Customers/Edit/@c.Id">Edit</a>
+                                            }
+                                            @if (canDelete)
+                                            {
+                                                <form method="post" action="/Admin/Customers/Delete/@c.Id" class="m-0"
+                                                      onsubmit="return confirm('Delete this customer (disable)?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                <div class="text-muted small">
+                    Showing @start to @end of @total entries
+                </div>
+
+                <nav aria-label="Customers pagination">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(hasPrev ? "" : "disabled")">
+                            <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
+                        </li>
+
+                        @{
+                            int s = Math.Max(1, page - 2);
+                            int e = Math.Min(totalPages, page + 2);
+                            for (int i = s; i <= e; i++)
+                            {
+                                <li class="page-item @(i == page ? "active" : "")">
+                                    <a class="page-link" href="@BuildUrl(i)">@i</a>
+                                </li>
+                            }
+                        }
+
+                        <li class="page-item @(hasNext ? "" : "disabled")">
+                            <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string BuildUrl(int page)
+    {
+        if (page < 1) page = 1;
+        string q = ViewBag.Query as string ?? "";
+        int pageSize = (int)(ViewBag.PageSize ?? 10);
+        return $"/Admin/Customers?q={Uri.EscapeDataString(q)}&page={page}&pageSize={pageSize}";
+    }
+}

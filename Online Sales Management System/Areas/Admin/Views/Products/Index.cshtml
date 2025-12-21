@@ -1,0 +1,176 @@
+﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Product>
+@using Microsoft.AspNetCore.Authorization
+@using OnlineSalesManagementSystem.Services.Security
+@using OnlineSalesManagementSystem.Services.Security
+@inject IAuthorizationService AuthorizationService
+@{
+    ViewData["Title"] = "Products";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    string q = ViewBag.Query as string ?? "";
+    int page = (int)(ViewBag.Page ?? 1);
+    int pageSize = (int)(ViewBag.PageSize ?? 10);
+    int total = (int)(ViewBag.Total ?? 0);
+
+    int totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
+    bool hasPrev = page > 1;
+    bool hasNext = page < totalPages;
+
+    int start = (page - 1) * pageSize + (total == 0 ? 0 : 1);
+    int end = Math.Min(page * pageSize, total);
+
+    string pCreate = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Create;
+    string pEdit = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit;
+    string pDelete = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Delete;
+
+    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, pCreate)).Succeeded;
+    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, pEdit)).Succeeded;
+    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-0">Products</h1>
+            <div class="text-muted">Products list with stock and pricing.</div>
+        </div>
+        @if (canCreate)
+        {
+            <a class="btn btn-primary" href="/Admin/Products/Create">+ New Product</a>
+        }
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end mb-3">
+                <div class="col-12 col-md-6 col-xl-4">
+                    <label class="form-label small text-muted">Search</label>
+                    <input class="form-control" name="q" value="@q" placeholder="SKU or product name..." />
+                </div>
+
+                <div class="col-12 col-md-3 col-xl-2">
+                    <label class="form-label small text-muted">Show entries</label>
+                    <select class="form-select" name="pageSize">
+                        @{
+                            var sizes = new[] { 10, 25, 50, 100 };
+                            foreach (var s in sizes)
+                            {
+                                var selected = (s == pageSize) ? "selected" : null;
+                                <option value="@s" selected="@selected">@s</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-3 col-xl-2 d-flex gap-2">
+                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
+                    <a class="btn btn-outline-secondary w-100" href="/Admin/Products">Reset</a>
+                </div>
+
+                <input type="hidden" name="page" value="1" />
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr class="table-light">
+                            <th style="width:90px;">#</th>
+                            <th style="width:160px;">SKU</th>
+                            <th>Name</th>
+                            <th style="width:160px;">Category</th>
+                            <th style="width:120px;">Unit</th>
+                            <th style="width:140px;">Cost</th>
+                            <th style="width:140px;">Price</th>
+                            <th style="width:120px;">Stock</th>
+                            <th style="width:120px;">Reorder</th>
+                            <th style="width:220px;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (total == 0)
+                        {
+                            <tr><td colspan="10" class="text-center text-muted py-4">No products found.</td></tr>
+                        }
+                        else
+                        {
+                            foreach (var p in Model)
+                            {
+                                bool low = p.StockOnHand <= p.ReorderLevel;
+                                <tr class="@(low ? "table-warning" : "")">
+                                    <td>@p.Id</td>
+                                    <td class="fw-semibold">@p.SKU</td>
+                                    <td>@p.Name</td>
+                                    <td class="text-muted">@p.Category?.Name</td>
+                                    <td class="text-muted">@p.Unit?.ShortName ?? p.Unit?.Name</td>
+                                    <td>@p.CostPrice.ToString("N0")</td>
+                                    <td class="fw-semibold">@p.SalePrice.ToString("N0")</td>
+                                    <td>
+                                        <span class="badge @(low ? "text-bg-warning" : "text-bg-success")">@p.StockOnHand</span>
+                                    </td>
+                                    <td class="text-muted">@p.ReorderLevel</td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            @if (canEdit)
+                                            {
+                                                <a class="btn btn-sm btn-outline-primary" href="/Admin/Products/Edit/@p.Id">Edit</a>
+                                            }
+                                            @if (canDelete)
+                                            {
+                                                <form method="post" action="/Admin/Products/Delete/@p.Id" class="m-0"
+                                                      onsubmit="return confirm('Delete this product (disable)?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                <div class="text-muted small">
+                    Showing @start to @end of @total entries
+                </div>
+
+                <nav aria-label="Products pagination">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(hasPrev ? "" : "disabled")">
+                            <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
+                        </li>
+                        @{
+                            int s = Math.Max(1, page - 2);
+                            int e = Math.Min(totalPages, page + 2);
+                            for (int i = s; i <= e; i++)
+                            {
+                                <li class="page-item @(i == page ? "active" : "")">
+                                    <a class="page-link" href="@BuildUrl(i)">@i</a>
+                                </li>
+                            }
+                        }
+                        <li class="page-item @(hasNext ? "" : "disabled")">
+                            <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="small text-muted mt-2">
+                Yellow rows indicate low stock (StockOnHand ≤ ReorderLevel).
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string BuildUrl(int page)
+    {
+        if (page < 1) page = 1;
+        string q = ViewBag.Query as string ?? "";
+        int pageSize = (int)(ViewBag.PageSize ?? 10);
+        return $"/Admin/Products?q={Uri.EscapeDataString(q)}&page={page}&pageSize={pageSize}";
+    }
+}

@@ -1,0 +1,144 @@
+﻿@model OnlineSalesManagementSystem.Domain.Entities.Invoice
+@{
+    ViewData["Title"] = "Invoice Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    string badge = Model.Status switch
+    {
+        OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Paid => "text-bg-success",
+        OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Cancelled => "text-bg-danger",
+        _ => "text-bg-secondary"
+    };
+
+    var due = Math.Max(0m, Model.GrandTotal - Model.PaidAmount);
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-0">Invoice @Model.InvoiceNo</h1>
+            <div class="text-muted">
+                Customer: <span class="fw-semibold">@(Model.Customer?.Name ?? "Walk-in")</span> ·
+                Date: <span class="fw-semibold">@Model.InvoiceDate.ToString("yyyy-MM-dd")</span> ·
+                <span class="badge @badge">@Model.Status</span>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-secondary" href="/Admin/Invoices">Back</a>
+            <a class="btn btn-outline-primary" href="/Admin/Invoices/Print/@Model.Id" target="_blank">Print</a>
+
+            @if (Model.Status != OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Cancelled)
+            {
+                <form method="post" action="/Admin/Invoices/Cancel/@Model.Id" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Cancel invoice and return stock?');">
+                        Cancel
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-xl-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <div class="fw-semibold">Items</div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="table-light">
+                                    <th style="width:90px;">#</th>
+                                    <th>Product</th>
+                                    <th style="width:120px;">Qty</th>
+                                    <th style="width:160px;">Unit Price</th>
+                                    <th style="width:170px;">Line Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Items == null || Model.Items.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">No items.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var it in Model.Items)
+                                    {
+                                        <tr>
+                                            <td>@it.Id</td>
+                                            <td class="fw-semibold">@it.Product?.Name</td>
+                                            <td>@it.Qty</td>
+                                            <td>@it.UnitPrice.ToString("N0")</td>
+                                            <td>@it.LineTotal.ToString("N0")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Status != OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Cancelled)
+            {
+                <div class="card border-0 shadow-sm mt-3">
+                    <div class="card-header bg-white border-0">
+                        <div class="fw-semibold">Record Payment</div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="/Admin/Invoices/RecordPayment/@Model.Id" class="row g-2 align-items-end">
+                            @Html.AntiForgeryToken()
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <label class="form-label small text-muted">Amount</label>
+                                <input class="form-control" type="number" name="amount" step="0.01" min="0" required />
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <button class="btn btn-primary w-100" type="submit">Add payment</button>
+                            </div>
+                            <div class="col-12 col-xl-4 text-muted small">
+                                Due now: <span class="fw-semibold">@due.ToString("N0")</span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-12 col-xl-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <div class="fw-semibold">Totals</div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div class="text-muted">SubTotal</div>
+                        <div class="fw-semibold">@Model.SubTotal.ToString("N0")</div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="text-muted">GrandTotal</div>
+                        <div class="fw-semibold">@Model.GrandTotal.ToString("N0")</div>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <div class="text-muted">Paid</div>
+                        <div class="fw-semibold">@Model.PaidAmount.ToString("N0")</div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="text-muted">Due</div>
+                        <div class="fw-semibold">@due.ToString("N0")</div>
+                    </div>
+
+                    <div class="alert alert-info mt-3 mb-0 small">
+                        Creating an invoice decreases stock and writes StockMovement (Out).
+                        Cancelling returns stock with StockMovement (Adjust).
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

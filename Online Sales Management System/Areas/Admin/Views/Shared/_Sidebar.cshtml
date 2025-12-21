@@ -1,0 +1,47 @@
+﻿@{
+    var path = Context.Request.Path.Value?.ToLowerInvariant() ?? "";
+
+    var menu = new[]
+    {
+        (Title: "Dashboard", Route: "/Admin/Dashboard"),
+        (Title: "Admin", Route: "/Admin/Admins"),
+        (Title: "Suppliers", Route: "/Admin/Suppliers"),
+        (Title: "Customers", Route: "/Admin/Customers"),
+        (Title: "Employees", Route: "/Admin/Employees"),
+        (Title: "Categories", Route: "/Admin/Categories"),
+        (Title: "Units", Route: "/Admin/Units"),
+        (Title: "Products", Route: "/Admin/Products"),
+        (Title: "Purchases", Route: "/Admin/Purchases"),
+        (Title: "Invoices", Route: "/Admin/Invoices"),
+        (Title: "Expenses", Route: "/Admin/Expenses"),
+        (Title: "Attendance", Route: "/Admin/Attendance"),
+        (Title: "Roles / Groups", Route: "/Admin/AdminGroups"),
+        (Title: "Reports", Route: "/Admin/Reports"),
+        (Title: "Stock", Route: "/Admin/Stock"),
+        (Title: "Settings", Route: "/Admin/Settings"),
+    };
+}
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <div class="rounded-circle" style="width:10px;height:10px;background:#0d6efd;"></div>
+    <div>
+        <div class="fw-semibold">OSMS</div>
+        <div class="text-white-50 small">Admin Panel</div>
+    </div>
+</div>
+
+<nav class="nav flex-column gap-1">
+    @foreach (var item in menu)
+    {
+        var isActive = path.StartsWith(item.Route.ToLowerInvariant());
+        <a class="nav-link px-3 py-2 @(isActive ? "active" : "")" href="@item.Route">
+            @item.Title
+        </a>
+    }
+</nav>
+
+<hr class="border-light opacity-25 my-3" />
+
+<div class="text-white-50 small">
+    Tip: permissions hide buttons, but policies block URLs.
+</div>

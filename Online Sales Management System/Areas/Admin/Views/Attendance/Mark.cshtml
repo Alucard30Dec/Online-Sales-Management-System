@@ -1,0 +1,93 @@
+﻿@model OnlineSalesManagementSystem.Areas.Admin.Controllers.AttendanceController.AttendanceMarkVm
+@using OnlineSalesManagementSystem.Domain.Entities
+@{
+    ViewData["Title"] = "Mark Attendance";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-0">Mark Attendance</h1>
+            <div class="text-muted">Set status per employee for a selected date.</div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="/Admin/Attendance">Back</a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <form method="post" action="/Admin/Attendance/Mark">
+                @Html.AntiForgeryToken()
+
+                <div class="row g-2 align-items-end mb-3">
+                    <div class="col-12 col-md-4 col-xl-3">
+                        <label class="form-label small text-muted">Date</label>
+                        <input class="form-control" type="date" name="Date" value="@Model.Date.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-12 col-md-8 col-xl-9">
+                        <div class="text-muted small">
+                            Tip: change date and click Save to overwrite records for that date.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr class="table-light">
+                                <th style="width:90px;">#</th>
+                                <th>Employee</th>
+                                <th style="width:220px;">Status</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Rows == null || Model.Rows.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">No employees found.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < Model.Rows.Count; i++)
+                                {
+                                    <tr>
+                                        <td class="text-muted">@Model.Rows[i].EmployeeId</td>
+                                        <td class="fw-semibold">@Model.Rows[i].EmployeeName</td>
+
+                                        <td>
+                                            <input type="hidden" name="Rows[@i].EmployeeId" value="@Model.Rows[i].EmployeeId" />
+                                            <input type="hidden" name="Rows[@i].EmployeeName" value="@Model.Rows[i].EmployeeName" />
+
+                                            <select class="form-select" name="Rows[@i].Status">
+                                                @foreach (var s in Enum.GetValues(typeof(AttendanceStatus)).Cast<AttendanceStatus>())
+                                                {
+                                                    var selected = (Model.Rows[i].Status == s) ? "selected" : null;
+                                                    <option value="@s" selected="@selected">@s</option>
+                                                }
+                                            </select>
+                                        </td>
+
+                                        <td>
+                                            <input class="form-control" name="Rows[@i].Note" value="@Model.Rows[i].Note" placeholder="Optional note..." />
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">Save Attendance</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/Attendance/Mark?date=@Model.Date.ToString("yyyy-MM-dd")">Reload</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

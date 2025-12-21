@@ -3,8 +3,48 @@
   "WorkspaceRootPath": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E26289D9-9777-4BC0-9D43-E27FE8C105C7}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\areas\\admin\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{E26289D9-9777-4BC0-9D43-E27FE8C105C7}|Online Sales Management System.csproj|solutionrelative:areas\\admin\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\data\\migrations\\20251221195609_adddomaintables.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:data\\migrations\\20251221195609_adddomaintables.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\domain\\entities\\invoiceitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:domain\\entities\\invoiceitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\services\\sales\\invoicetotalsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:services\\sales\\invoicetotalsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\services\\sales\\iinvoicetotalsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:services\\sales\\iinvoicetotalsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\areas\\admin\\controllers\\invoicescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:areas\\admin\\controllers\\invoicescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\services\\security\\permissionconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:services\\security\\permissionconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\domain\\entities\\invoice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:domain\\entities\\invoice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\areas\\admin\\views\\suppliers\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:areas\\admin\\views\\suppliers\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\areas\\admin\\views\\expenses\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:areas\\admin\\views\\expenses\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,24 +58,144 @@
           "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
             },
             {
               "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Views\\Home\\Index.cshtml",
-              "RelativeDocumentMoniker": "Areas\\Admin\\Views\\Home\\Index.cshtml",
-              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Views\\Home\\Index.cshtml",
-              "RelativeToolTip": "Areas\\Admin\\Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-12-08T04:08:17.746Z",
+              "Title": "20251221195609_AddDomainTables.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Data\\Migrations\\20251221195609_AddDomainTables.cs",
+              "RelativeDocumentMoniker": "Data\\Migrations\\20251221195609_AddDomainTables.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Data\\Migrations\\20251221195609_AddDomainTables.cs",
+              "RelativeToolTip": "Data\\Migrations\\20251221195609_AddDomainTables.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T19:56:10.993Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IInvoiceTotalsService.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Services\\Sales\\IInvoiceTotalsService.cs",
+              "RelativeDocumentMoniker": "Services\\Sales\\IInvoiceTotalsService.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Services\\Sales\\IInvoiceTotalsService.cs",
+              "RelativeToolTip": "Services\\Sales\\IInvoiceTotalsService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T19:34:07.555Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAAAMAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T19:27:47.103Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Invoice.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Domain\\Entities\\Invoice.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\Invoice.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Domain\\Entities\\Invoice.cs",
+              "RelativeToolTip": "Domain\\Entities\\Invoice.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T18:50:20.63Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InvoiceItem.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Domain\\Entities\\InvoiceItem.cs",
+              "RelativeDocumentMoniker": "Domain\\Entities\\InvoiceItem.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Domain\\Entities\\InvoiceItem.cs",
+              "RelativeToolTip": "Domain\\Entities\\InvoiceItem.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAuwB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T18:48:32.47Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "InvoicesController.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Controllers\\InvoicesController.cs",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Controllers\\InvoicesController.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Controllers\\InvoicesController.cs",
+              "RelativeToolTip": "Areas\\Admin\\Controllers\\InvoicesController.cs",
+              "ViewState": "AgIAAKkAAAAAAAAAAAAgwLoAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T18:39:22.386Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "InvoiceTotalsService.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Services\\Sales\\InvoiceTotalsService.cs",
+              "RelativeDocumentMoniker": "Services\\Sales\\InvoiceTotalsService.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Services\\Sales\\InvoiceTotalsService.cs",
+              "RelativeToolTip": "Services\\Sales\\InvoiceTotalsService.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAQwCIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T18:38:05.441Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Views\\Suppliers\\Index.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Views\\Suppliers\\Index.cshtml",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Views\\Suppliers\\Index.cshtml",
+              "RelativeToolTip": "Areas\\Admin\\Views\\Suppliers\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-21T18:37:52.092Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PermissionConstants.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Services\\Security\\PermissionConstants.cs",
+              "RelativeDocumentMoniker": "Services\\Security\\PermissionConstants.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Services\\Security\\PermissionConstants.cs",
+              "RelativeToolTip": "Services\\Security\\PermissionConstants.cs",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAiwG0AAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T18:35:01.987Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Data\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\ApplicationDbContext.cs",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Data\\ApplicationDbContext.cs",
+              "RelativeToolTip": "Data\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAOQAAAAAAAAAAAAgwPcAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-21T19:08:05.895Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Views\\Expenses\\Index.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Views\\Expenses\\Index.cshtml",
+              "ToolTip": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Views\\Expenses\\Index.cshtml",
+              "RelativeToolTip": "Areas\\Admin\\Views\\Expenses\\Index.cshtml",
+              "ViewState": "AgIAAF4AAAAAAAAAAAAQwG0AAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-12-21T18:35:57.385Z"
             }
           ]
         }

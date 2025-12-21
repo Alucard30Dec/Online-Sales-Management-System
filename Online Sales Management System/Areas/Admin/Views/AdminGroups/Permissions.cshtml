@@ -1,0 +1,97 @@
+﻿@model OnlineSalesManagementSystem.Areas.Admin.Controllers.AdminGroupsController.GroupPermissionsVm
+@{
+    ViewData["Title"] = "Permission Matrix";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-0">Permission Matrix</h1>
+            <div class="text-muted">Group: <span class="fw-semibold">@Model.GroupName</span></div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="/Admin/AdminGroups">Back</a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <form method="post" action="/Admin/AdminGroups/Permissions">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="AdminGroupId" value="@Model.AdminGroupId" />
+                <input type="hidden" name="GroupName" value="@Model.GroupName" />
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="grantAll" name="GrantAll" value="true" @(Model.GrantAll ? "checked" : "") onchange="toggleAll()" />
+                    <label class="form-check-label" for="grantAll">
+                        Grant all permissions ( <code>*</code> )
+                    </label>
+                    <div class="text-muted small">
+                        If enabled, all module actions will be allowed and individual checkboxes are ignored.
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0" id="permTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="min-width:220px;">Module</th>
+                                <th class="text-center" style="width:120px;">Show</th>
+                                <th class="text-center" style="width:120px;">Create</th>
+                                <th class="text-center" style="width:120px;">Edit</th>
+                                <th class="text-center" style="width:120px;">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Rows.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="hidden" name="Rows[@i].Module" value="@Model.Rows[i].Module" />
+                                        <span class="fw-semibold">@Model.Rows[i].Module</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="form-check-input permBox" type="checkbox" name="Rows[@i].Show" value="true" @(Model.Rows[i].Show ? "checked" : "") />
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="form-check-input permBox" type="checkbox" name="Rows[@i].Create" value="true" @(Model.Rows[i].Create ? "checked" : "") />
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="form-check-input permBox" type="checkbox" name="Rows[@i].Edit" value="true" @(Model.Rows[i].Edit ? "checked" : "") />
+                                    </td>
+                                    <td class="text-center">
+                                        <input class="form-check-input permBox" type="checkbox" name="Rows[@i].Delete" value="true" @(Model.Rows[i].Delete ? "checked" : "") />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">Save permissions</button>
+                    <a class="btn btn-outline-secondary" href="/Admin/AdminGroups">Cancel</a>
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0 small">
+                    Example permission format: <code>Suppliers.Show</code>, <code>Products.Create</code>.
+                    Turning off <strong>Suppliers.Show</strong> should block visiting <code>/Admin/Suppliers</code>.
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleAll() {
+            const all = document.getElementById('grantAll').checked;
+            document.querySelectorAll('.permBox').forEach(cb => {
+                cb.disabled = all;
+            });
+        }
+        toggleAll();
+    </script>
+}

@@ -1,0 +1,155 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    int products = (int)(ViewBag.ProductsCount ?? 0);
+    int customers = (int)(ViewBag.CustomersCount ?? 0);
+    int suppliers = (int)(ViewBag.SuppliersCount ?? 0);
+
+    decimal todaySales = (decimal)(ViewBag.TodaySales ?? 0m);
+    decimal monthSales = (decimal)(ViewBag.MonthSales ?? 0m);
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-0">Dashboard</h1>
+            <div class="text-muted">Quick snapshot of today and this month.</div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card kpi-card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Products</div>
+                    <div class="display-6 fw-semibold">@products</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card kpi-card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Customers</div>
+                    <div class="display-6 fw-semibold">@customers</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card kpi-card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Suppliers</div>
+                    <div class="display-6 fw-semibold">@suppliers</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card kpi-card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="text-muted small">Today Sales</div>
+                    <div class="display-6 fw-semibold">@todaySales.ToString("N0")</div>
+                    <div class="text-muted small">This Month: @monthSales.ToString("N0")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-xl-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <div class="fw-semibold">Sales Trend</div>
+                    <div class="text-muted small">Demo chart (replace with real aggregation later)</div>
+                </div>
+                <div class="card-body">
+                    <div style="height: 320px;">
+                        <canvas id="salesTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white border-0">
+                    <div class="fw-semibold">Top Products</div>
+                    <div class="text-muted small">Demo chart</div>
+                </div>
+                <div class="card-body">
+                    <div style="height: 220px;">
+                        <canvas id="topProductsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0">
+                    <div class="fw-semibold">Stock Status</div>
+                    <div class="text-muted small">Demo chart</div>
+                </div>
+                <div class="card-body">
+                    <div style="height: 220px;">
+                        <canvas id="stockStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Chart.js via CDN is loaded in the admin layout.
+        (function () {
+            const trend = document.getElementById('salesTrendChart');
+            const top = document.getElementById('topProductsChart');
+            const stock = document.getElementById('stockStatusChart');
+
+            if (trend && window.Chart) {
+                new Chart(trend, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+                        datasets: [{
+                            label: 'Sales',
+                            data: [12, 19, 8, 15, 22, 17, 25],
+                            tension: 0.35
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true } }
+                    }
+                });
+            }
+
+            if (top && window.Chart) {
+                new Chart(top, {
+                    type: 'bar',
+                    data: {
+                        labels: ['P01','P02','P03','P04','P05'],
+                        datasets: [{
+                            label: 'Qty',
+                            data: [45, 31, 28, 20, 15]
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            if (stock && window.Chart) {
+                new Chart(stock, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['OK', 'Low', 'Out'],
+                        datasets: [{
+                            data: [70, 20, 10]
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        })();
+    </script>
+}
