@@ -7,9 +7,11 @@ public class InvoiceItem
 {
     public int Id { get; set; }
 
+    [Required]
     public int InvoiceId { get; set; }
     public Invoice? Invoice { get; set; }
 
+    [Required]
     public int ProductId { get; set; }
     public Product? Product { get; set; }
 
@@ -19,13 +21,8 @@ public class InvoiceItem
     [Range(1, int.MaxValue)]
     public int Quantity { get; set; } = 1;
 
-    // Alias cho các nơi đang dùng Qty (DbContext đã Ignore Qty):contentReference[oaicite:2]{index=2}
-    [NotMapped]
-    public int Qty
-    {
-        get => Quantity;
-        set => Quantity = value;
-    }
+    [Range(1, int.MaxValue)]
+    public int Qty { get; set; } = 1;
     public decimal LineTotal { get; set; }
 
 }
