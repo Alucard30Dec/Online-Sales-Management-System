@@ -1,27 +1,26 @@
-﻿@{
+@{
     ViewData["Title"] = "Access Denied";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-12 col-lg-7">
-            <div class="card border-0 shadow-sm mt-4">
-                <div class="card-body p-4">
-                    <h1 class="h4 mb-2">🚫 Permission denied</h1>
-                    <p class="text-muted mb-3">You don’t have permission to show this page!</p>
+<div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+        <div class="card card-danger card-outline">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-ban mr-1"></i> Permission denied</h3>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">You don’t have permission to show this page!</p>
 
-                    <div class="d-flex gap-2">
-                        <a class="btn btn-primary" href="/Admin/Dashboard">Go to Dashboard</a>
-                        <a class="btn btn-outline-secondary" href="javascript:history.back()">Go back</a>
-                    </div>
-
-                    <hr class="my-4" />
-                    <div class="small text-muted">
-                        If you believe this is a mistake, contact an administrator to update your group permissions.
-                    </div>
-                </div>
+                <a class="btn btn-primary" href="/Admin/Dashboard"><i class="fas fa-tachometer-alt mr-1"></i> Go to Dashboard</a>
+                <a class="btn btn-default" href="javascript:history.back()"><i class="fas fa-arrow-left mr-1"></i> Go back</a>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () { if (window.OSMS && OSMS.showPermissionDenied) OSMS.showPermissionDenied(); });
+    </script>
+}

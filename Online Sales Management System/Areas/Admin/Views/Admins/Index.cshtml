@@ -1,11 +1,9 @@
-﻿@model List<OnlineSalesManagementSystem.Domain.Entities.ApplicationUser>
+@model List<OnlineSalesManagementSystem.Domain.Entities.ApplicationUser>
 @using Microsoft.AspNetCore.Authorization
-@using OnlineSalesManagementSystem.Services.Security
 @using OnlineSalesManagementSystem.Services.Security
 @inject IAuthorizationService AuthorizationService
 @{
-    ViewData["Title"] = "Admin";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Admins";
 
     string q = ViewBag.Query as string ?? "";
     int page = (int)(ViewBag.Page ?? 1);
@@ -28,132 +26,117 @@
     bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-        <div>
-            <h1 class="h3 mb-0">Admins</h1>
-            <div class="text-muted">Manage admin accounts and assign groups.</div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-user-shield mr-1"></i> Admins</h3>
+
+        <div class="card-tools">
+            @if (canCreate)
+            {
+                <a class="btn btn-sm btn-primary" href="/Admin/Admins/Create"><i class="fas fa-plus mr-1"></i> New Admin</a>
+            }
         </div>
-        @if (canCreate)
-        {
-            <a class="btn btn-primary" href="/Admin/Admins/Create">+ New Admin</a>
-        }
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end mb-3">
-                <div class="col-12 col-md-6 col-xl-4">
-                    <label class="form-label small text-muted">Search</label>
-                    <input class="form-control" name="q" value="@q" placeholder="Email or full name..." />
+    <div class="card-body">
+        <form method="get" class="mb-3">
+            <div class="input-group" style="max-width: 520px;">
+                <input type="text" class="form-control" name="q" value="@q" placeholder="Search by email / full name..." />
+                <input type="hidden" name="pageSize" value="@pageSize" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
                 </div>
+            </div>
+        </form>
 
-                <div class="col-12 col-md-3 col-xl-2">
-                    <label class="form-label small text-muted">Show entries</label>
-                    <select class="form-select" name="pageSize">
-                        @{
-                            var sizes = new[] { 10, 25, 50, 100 };
-                            foreach (var s in sizes)
-                            {
-                                var selected = (s == pageSize) ? "selected" : null;
-                                <option value="@s" selected="@selected">@s</option>
-                            }
-                        }
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-3 col-xl-2 d-flex gap-2">
-                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
-                    <a class="btn btn-outline-secondary w-100" href="/Admin/Admins">Reset</a>
-                </div>
-
-                <input type="hidden" name="page" value="1" />
-            </form>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr class="table-light">
-                            <th style="width:90px;">#</th>
-                            <th>Email</th>
-                            <th>Full name</th>
-                            <th style="width:220px;">Group</th>
-                            <th style="width:140px;">Status</th>
-                            <th style="width:220px;" class="text-end">Actions</th>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th style="width:90px;">#</th>
+                        <th>Email</th>
+                        <th>Full name</th>
+                        <th style="width:220px;">Group</th>
+                        <th style="width:140px;">Status</th>
+                        <th style="width:220px;" class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (total == 0)
+                {
+                    <tr><td colspan="6" class="text-center text-muted py-4">No admins found.</td></tr>
+                }
+                else
+                {
+                    var idx = start;
+                    foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@idx</td>
+                            <td>@u.Email</td>
+                            <td>@u.FullName</td>
+                            <td>@(u.AdminGroup?.Name ?? "-")</td>
+                            <td>
+                                @if (u.IsActive)
+                                {
+                                    <span class="badge badge-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td class="text-right">
+                                @if (canEdit)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" href="/Admin/Admins/Edit/@u.Id"><i class="fas fa-edit"></i></a>
+                                }
+                                @if (canDelete)
+                                {
+                                    <form method="post" action="/Admin/Admins/Delete/@u.Id" class="d-inline" onsubmit="return confirm('Delete this admin?');">
+                                        @Html.AntiForgeryToken()
+                                        <button class="btn btn-sm btn-outline-danger" type="submit"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                }
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @if (total == 0)
-                        {
-                            <tr><td colspan="6" class="text-center text-muted py-4">No admins found.</td></tr>
-                        }
-                        else
-                        {
-                            foreach (var u in Model)
-                            {
-                                <tr>
-                                    <td class="text-muted">@u.Id</td>
-                                    <td class="fw-semibold">@u.Email</td>
-                                    <td>@u.FullName</td>
-                                    <td class="text-muted">@u.AdminGroup?.Name</td>
-                                    <td>
-                                        <span class="badge @(u.IsActive ? "text-bg-success" : "text-bg-secondary")">
-                                            @(u.IsActive ? "Active" : "Disabled")
-                                        </span>
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="d-inline-flex gap-2">
-                                            @if (canEdit)
-                                            {
-                                                <a class="btn btn-sm btn-outline-primary" href="/Admin/Admins/Edit/@u.Id">Edit</a>
-                                            }
-                                            @if (canDelete)
-                                            {
-                                                <form method="post" action="/Admin/Admins/Disable/@u.Id" class="m-0"
-                                                      onsubmit="return confirm('Disable this admin account?');">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" @(u.IsActive ? "" : "disabled")>
-                                                        Disable
-                                                    </button>
-                                                </form>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
+                        idx++;
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="text-muted small">
+                @if (total > 0)
+                {
+                    <text>Showing @start-@end of @total</text>
+                }
             </div>
 
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
-                <div class="text-muted small">
-                    Showing @start to @end of @total entries
-                </div>
+            <nav aria-label="Admins pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item @(hasPrev ? "" : "disabled")">
+                        <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
+                    </li>
 
-                <nav aria-label="Admins pagination">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(hasPrev ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
-                        </li>
-
-                        @{
-                            int s = Math.Max(1, page - 2);
-                            int e = Math.Min(totalPages, page + 2);
-                            for (int i = s; i <= e; i++)
-                            {
-                                <li class="page-item @(i == page ? "active" : "")">
-                                    <a class="page-link" href="@BuildUrl(i)">@i</a>
-                                </li>
-                            }
+                    @{
+                        int s = Math.Max(1, page - 2);
+                        int e = Math.Min(totalPages, page + 2);
+                        for (int i = s; i <= e; i++)
+                        {
+                            <li class="page-item @(i == page ? "active" : "")">
+                                <a class="page-link" href="@BuildUrl(i)">@i</a>
+                            </li>
                         }
+                    }
 
-                        <li class="page-item @(hasNext ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+                    <li class="page-item @(hasNext ? "" : "disabled")">
+                        <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

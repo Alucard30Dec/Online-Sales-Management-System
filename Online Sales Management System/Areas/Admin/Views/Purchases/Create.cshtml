@@ -1,38 +1,36 @@
-﻿@model OnlineSalesManagementSystem.Areas.Admin.Controllers.PurchasesController.PurchaseCreateVm
+@model OnlineSalesManagementSystem.Areas.Admin.Controllers.PurchasesController.PurchaseCreateVm
 @using OnlineSalesManagementSystem.Domain.Entities
 @{
     ViewData["Title"] = "Create Purchase";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
     var suppliers = ViewBag.Suppliers as List<Supplier> ?? new();
     var products = ViewBag.Products as List<Product> ?? new();
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <div>
-            <h1 class="h3 mb-0">Create Purchase</h1>
-            <div class="text-muted">Draft purchase, then Receive to increase stock.</div>
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title"><i class="fas fa-cart-plus mr-1"></i> Create Purchase</h3>
+        <div class="card-tools">
+            <a class="btn btn-tool" href="/Admin/Purchases" data-toggle="tooltip" title="Back"><i class="fas fa-arrow-left"></i></a>
         </div>
-        <a class="btn btn-outline-secondary" href="/Admin/Purchases">Back</a>
     </div>
 
-    <div class="card border-0 shadow-sm">
+    <form asp-area="Admin" asp-controller="Purchases" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
         <div class="card-body">
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert alert-danger">
-                    @Html.ValidationSummary(excludePropertyErrors: false)
+                    @Html.ValidationSummary(excludePropertyErrors: true)
                 </div>
             }
 
-            <form method="post" action="/Admin/Purchases/Create" id="purchaseForm">
-                @Html.AntiForgeryToken()
-
-                <div class="row g-3">
-                    <div class="col-12 col-lg-6">
-                        <label class="form-label">Supplier <span class="text-danger">*</span></label>
-                        <select class="form-select" name="SupplierId" required>
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label>Supplier <span class="text-danger">*</span></label>
+                        <select class="form-control" name="SupplierId" required>
                             <option value="">-- Select supplier --</option>
                             @foreach (var s in suppliers)
                             {
@@ -41,73 +39,82 @@
                             }
                         </select>
                     </div>
+                </div>
 
-                    <div class="col-12 col-lg-6">
-                        <label class="form-label">Purchase date</label>
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label>Purchase date</label>
                         <input class="form-control" type="date" name="PurchaseDate" value="@Model.PurchaseDate.ToString("yyyy-MM-dd")" />
                     </div>
+                </div>
 
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="fw-semibold">Items</div>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addRow()">+ Add item</button>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered align-middle" id="itemsTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="min-width: 280px;">Product</th>
-                                        <th style="width: 140px;">Qty</th>
-                                        <th style="width: 200px;">Unit Cost</th>
-                                        <th style="width: 90px;" class="text-center">Remove</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{
-                                        var rows = (Model.Items?.Count ?? 0) > 0 ? Model.Items : new List<OnlineSalesManagementSystem.Areas.Admin.Controllers.PurchasesController.PurchaseItemVm> { new() };
-                                        for (int i = 0; i < rows.Count; i++)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    <select class="form-select" name="Items[@i].ProductId" required>
-                                                        <option value="">-- Select product --</option>
-                                                        @foreach (var p in products)
-                                                        {
-                                                            var selected = (rows[i].ProductId == p.Id) ? "selected" : null;
-                                                            <option value="@p.Id" selected="@selected">@p.Name (@p.SKU)</option>
-                                                        }
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <input class="form-control" type="number" min="1" step="1" name="Items[@i].Qty" value="@rows[i].Qty" required />
-                                                </td>
-                                                <td>
-                                                    <input class="form-control" type="number" min="0" step="0.01" name="Items[@i].UnitCost" value="@rows[i].UnitCost" required />
-                                                </td>
-                                                <td class="text-center">
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">×</button>
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="text-muted small">
-                            Only valid rows (product + qty &gt; 0) will be saved.
-                        </div>
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="font-weight-bold">Items</div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addRow()">
+                            <i class="fas fa-plus mr-1"></i> Add item
+                        </button>
                     </div>
 
-                    <div class="col-12 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">Create Purchase</button>
-                        <a class="btn btn-outline-secondary" href="/Admin/Purchases">Cancel</a>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="itemsTable">
+                            <thead>
+                                <tr>
+                                    <th style="min-width: 280px;">Product</th>
+                                    <th style="width: 140px;">Qty</th>
+                                    <th style="width: 200px;">Unit Cost</th>
+                                    <th style="width: 90px;" class="text-center">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var rows = (Model.Items?.Any() == true)
+                                        ? Model.Items
+                                        : new List<OnlineSalesManagementSystem.Areas.Admin.Controllers.PurchasesController.PurchaseItemVm> { new() };
+
+                                    for (var i = 0; i < rows.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <select class="form-control" name="Items[@i].ProductId" required>
+                                                    <option value="">-- Select product --</option>
+                                                    @foreach (var p in products)
+                                                    {
+                                                        var selected = (rows[i].ProductId == p.Id) ? "selected" : null;
+                                                        <option value="@p.Id" selected="@selected">@p.Name (@p.SKU)</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input class="form-control" type="number" min="1" step="1" name="Items[@i].Qty" value="@rows[i].Qty" required />
+                                            </td>
+                                            <td>
+                                                <input class="form-control" type="number" min="0" step="0.01" name="Items[@i].UnitCost" value="@rows[i].UnitCost" required />
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-muted small">
+                        Create as Draft first. Use <b>Receive</b> on the Purchases page to increase stock and create StockMovement (In).
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <div class="card-footer d-flex justify-content-between">
+            <a class="btn btn-default" href="/Admin/Purchases"><i class="fas fa-times mr-1"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i> Save Draft</button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
@@ -130,7 +137,7 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>
-                    <select class="form-select" name="Items[${idx}].ProductId" required>
+                    <select class="form-control" name="Items[${idx}].ProductId" required>
                         <option value="">-- Select product --</option>
                         ${getProductOptionsHtml()}
                     </select>
@@ -142,7 +149,9 @@
                     <input class="form-control" type="number" min="0" step="0.01" name="Items[${idx}].UnitCost" value="0" required />
                 </td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">×</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -158,7 +167,6 @@
         }
 
         function getProductOptionsHtml() {
-            // Rendered server-side for safety; we store as a hidden template string.
             return document.getElementById('productOptionsTemplate').innerHTML;
         }
     </script>
@@ -169,4 +177,6 @@
             <text><option value="@p.Id">@p.Name (@p.SKU)</option></text>
         }
     </script>
+
+    <partial name="_ValidationScriptsPartial" />
 }

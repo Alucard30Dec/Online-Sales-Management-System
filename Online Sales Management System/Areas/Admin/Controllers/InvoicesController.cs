@@ -1,10 +1,9 @@
-﻿// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/InvoicesController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OnlineSalesManagementSystem.Services.Security;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
+using OnlineSalesManagementSystem.Services.Security;
 using System.ComponentModel.DataAnnotations;
 
 namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
@@ -20,41 +19,31 @@ public class InvoicesController : Controller
         _db = db;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Index(string? q, string? status, int page = 1, int pageSize = 10)
+    // ========= INDEX =========
+    public async Task<IActionResult> Index(string? q, int page = 1, int pageSize = 10)
     {
-        if (page <= 0) page = 1;
-        if (pageSize <= 0) pageSize = 10;
-        if (pageSize > 100) pageSize = 100;
+        q ??= "";
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 10;
 
-        var query = _db.Invoices.AsNoTracking()
+        var query = _db.Invoices
+            .AsNoTracking()
             .Include(i => i.Customer)
+            .OrderByDescending(i => i.Id)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
         {
-            q = q.Trim();
+            var qq = q.Trim().ToLower();
             query = query.Where(i =>
-                i.InvoiceNo.Contains(q) ||
-                (i.Customer != null && i.Customer.Name.Contains(q)));
-        }
-
-        if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<InvoiceStatus>(status, true, out var st))
-        {
-            query = query.Where(i => i.Status == st);
+                i.InvoiceNo.ToLower().Contains(qq) ||
+                (i.Customer != null && i.Customer.Name.ToLower().Contains(qq)));
         }
 
         var total = await query.CountAsync();
-
-        var items = await query
-            .OrderByDescending(i => i.InvoiceDate)
-            .ThenByDescending(i => i.Id)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
         ViewBag.Query = q;
-        ViewBag.Status = status;
         ViewBag.Page = page;
         ViewBag.PageSize = pageSize;
         ViewBag.Total = total;
@@ -62,6 +51,31 @@ public class InvoicesController : Controller
         return View(items);
     }
 
+    // ========= DETAILS / PRINT =========
+    public async Task<IActionResult> Details(int id)
+    {
+        var invoice = await _db.Invoices
+            .Include(i => i.Customer)
+            .Include(i => i.Items).ThenInclude(it => it.Product)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (invoice == null) return NotFound();
+        return View(invoice);
+    }
+
+    public async Task<IActionResult> Print(int id)
+    {
+        var invoice = await _db.Invoices
+            .AsNoTracking()
+            .Include(i => i.Customer)
+            .Include(i => i.Items).ThenInclude(it => it.Product)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (invoice == null) return NotFound();
+        return View(invoice);
+    }
+
+    // ========= CREATE =========
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Invoices + "." + PermissionConstants.Actions.Create)]
     [HttpGet]
     public async Task<IActionResult> Create()
@@ -80,61 +94,26 @@ public class InvoicesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(InvoiceCreateVm vm)
     {
-        await LoadLookupsAsync();
-
-        vm.Items ??= new();
-        vm.Items = vm.Items
-            .Where(x => x.ProductId.HasValue && x.Qty > 0 && x.UnitPrice >= 0)
-            .ToList();
-
-        if (vm.InvoiceDate == default)
-            ModelState.AddModelError(nameof(vm.InvoiceDate), "Invoice date is required.");
-
-        if (vm.Items.Count == 0)
-            ModelState.AddModelError(nameof(vm.Items), "Add at least one item.");
-
-        if (vm.PaidAmount < 0)
-            ModelState.AddModelError(nameof(vm.PaidAmount), "Paid amount cannot be negative.");
+        if (vm.Items == null || vm.Items.Count == 0)
+        {
+            ModelState.AddModelError("", "Please add at least 1 item.");
+        }
+        else if (vm.Items.Any(x => x.ProductId == null))
+        {
+            ModelState.AddModelError("", "Please select product for all items.");
+        }
 
         if (!ModelState.IsValid)
-            return View(vm);
-
-        // Customer optional (walk-in)
-        Customer? customer = null;
-        if (vm.CustomerId.HasValue)
         {
-            customer = await _db.Customers.FirstOrDefaultAsync(c => c.Id == vm.CustomerId.Value && c.IsActive);
-            if (customer == null)
-            {
-                ModelState.AddModelError(nameof(vm.CustomerId), "Customer not found or inactive.");
-                return View(vm);
-            }
-        }
-
-        // Load products (tracked because we will update stock)
-        var productIds = vm.Items.Select(x => x.ProductId!.Value).Distinct().ToList();
-        var products = await _db.Products
-            .Where(p => productIds.Contains(p.Id) && p.IsActive)
-            .ToListAsync();
-
-        if (products.Count != productIds.Count)
-        {
-            ModelState.AddModelError(string.Empty, "One or more selected products are invalid.");
+            await LoadLookupsAsync();
             return View(vm);
         }
 
-        // Stock check
-        foreach (var row in vm.Items)
-        {
-            var prod = products.First(p => p.Id == row.ProductId!.Value);
-            if (prod.StockOnHand < row.Qty)
-            {
-                ModelState.AddModelError(string.Empty,
-                    $"Not enough stock for {prod.Name} (On hand: {prod.StockOnHand}, required: {row.Qty}).");
-            }
-        }
-        if (!ModelState.IsValid)
-            return View(vm);
+        using var tx = await _db.Database.BeginTransactionAsync();
+
+        var customer = vm.CustomerId.HasValue
+            ? await _db.Customers.FirstOrDefaultAsync(c => c.Id == vm.CustomerId.Value)
+            : null;
 
         var invoice = new Invoice
         {
@@ -145,6 +124,7 @@ public class InvoicesController : Controller
         };
 
         decimal subTotal = 0m;
+
         foreach (var row in vm.Items)
         {
             var qty = row.Qty;
@@ -155,80 +135,72 @@ public class InvoicesController : Controller
             invoice.Items.Add(new InvoiceItem
             {
                 ProductId = row.ProductId!.Value,
-                Quantity = qty,      // hoặc Qty = qty
-                UnitPrice = price
-                // KHÔNG gán LineTotal
+                Quantity = qty,
+                UnitPrice = price,
+                LineTotal = lineTotal
             });
         }
-
 
         invoice.SubTotal = subTotal;
         invoice.GrandTotal = subTotal;
 
+        // normalize payment + status
         if (invoice.GrandTotal <= 0)
+        {
+            invoice.PaidAmount = 0;
             invoice.Status = InvoiceStatus.Paid;
+        }
         else if (invoice.PaidAmount >= invoice.GrandTotal)
+        {
+            invoice.PaidAmount = invoice.GrandTotal;
             invoice.Status = InvoiceStatus.Paid;
+        }
         else if (invoice.PaidAmount > 0)
+        {
             invoice.Status = InvoiceStatus.PartiallyPaid;
+        }
         else
+        {
             invoice.Status = InvoiceStatus.Unpaid;
-
-        await using var tx = await _db.Database.BeginTransactionAsync(); // transaction chuẩn EF 
+        }
 
         _db.Invoices.Add(invoice);
-        await _db.SaveChangesAsync(); // sau SaveChanges thì invoice.Id đã có 
+        await _db.SaveChangesAsync();
 
-        // Decrease stock + write stock movement (Out)
-        var now = DateTime.UtcNow;
-        foreach (var item in invoice.Items)
+        // reduce stock + StockMovement (Out)
+        foreach (var it in invoice.Items)
         {
-            var prod = products.First(p => p.Id == item.ProductId);
-            prod.StockOnHand -= item.Quantity;
+            var product = await _db.Products.FirstAsync(p => p.Id == it.ProductId);
+            if (product.StockOnHand < it.Quantity)
+            {
+                await tx.RollbackAsync();
+                TempData["ToastError"] = $"Not enough stock for '{product.Name}'. Current stock: {product.StockOnHand}.";
+                await LoadLookupsAsync();
+                return View(vm);
+            }
+
+            product.StockOnHand -= it.Quantity;
 
             _db.StockMovements.Add(new StockMovement
             {
-                ProductId = prod.Id,
-                MovementDate = now,
+                ProductId = it.ProductId,
+                MovementDate = DateTime.UtcNow,
                 Type = StockMovementType.Out,
-                Qty = item.Quantity,
+                Qty = it.Quantity,
                 RefType = "Invoice",
                 RefId = invoice.Id,
-                Note = $"Sell {invoice.InvoiceNo}"
+                Note = invoice.InvoiceNo
             });
         }
 
         await _db.SaveChangesAsync();
         await tx.CommitAsync();
 
-        TempData["ToastSuccess"] = $"Invoice created: {invoice.InvoiceNo}";
+        TempData["ToastSuccess"] = "Invoice created successfully.";
         return RedirectToAction(nameof(Details), new { id = invoice.Id });
     }
 
-    [HttpGet]
-    public async Task<IActionResult> Details(int id)
-    {
-        var invoice = await _db.Invoices.AsNoTracking()
-            .Include(i => i.Customer)
-            .Include(i => i.Items).ThenInclude(ii => ii.Product)
-            .FirstOrDefaultAsync(i => i.Id == id);
-
-        if (invoice == null) return NotFound();
-        return View(invoice);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Print(int id)
-    {
-        var invoice = await _db.Invoices.AsNoTracking()
-            .Include(i => i.Customer)
-            .Include(i => i.Items).ThenInclude(ii => ii.Product)
-            .FirstOrDefaultAsync(i => i.Id == id);
-
-        if (invoice == null) return NotFound();
-        return View(invoice);
-    }
-
+    // ========= RECORD PAYMENT =========
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Invoices + "." + PermissionConstants.Actions.Edit)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -236,40 +208,45 @@ public class InvoicesController : Controller
     {
         if (amount <= 0)
         {
-            TempData["ToastError"] = "Payment amount must be greater than 0.";
+            TempData["ToastError"] = "Amount must be greater than 0.";
             return RedirectToAction(nameof(Details), new { id });
         }
 
         var invoice = await _db.Invoices.FirstOrDefaultAsync(i => i.Id == id);
         if (invoice == null) return NotFound();
-
         if (invoice.Status == InvoiceStatus.Cancelled)
         {
-            TempData["ToastError"] = "Cannot record payment for a cancelled invoice.";
+            TempData["ToastError"] = "Cancelled invoice cannot be paid.";
             return RedirectToAction(nameof(Details), new { id });
         }
 
         invoice.PaidAmount += amount;
 
         if (invoice.GrandTotal <= 0)
+        {
             invoice.Status = InvoiceStatus.Paid;
+        }
         else if (invoice.PaidAmount >= invoice.GrandTotal)
         {
             invoice.PaidAmount = invoice.GrandTotal;
             invoice.Status = InvoiceStatus.Paid;
         }
         else if (invoice.PaidAmount > 0)
+        {
             invoice.Status = InvoiceStatus.PartiallyPaid;
+        }
         else
+        {
             invoice.Status = InvoiceStatus.Unpaid;
+        }
 
         await _db.SaveChangesAsync();
-
         TempData["ToastSuccess"] = "Payment recorded.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Invoices + "." + PermissionConstants.Actions.Edit)]
+    // ========= CANCEL =========
+    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Invoices + "." + PermissionConstants.Actions.Delete)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel(int id)
@@ -279,41 +256,42 @@ public class InvoicesController : Controller
             .FirstOrDefaultAsync(i => i.Id == id);
 
         if (invoice == null) return NotFound();
-
         if (invoice.Status == InvoiceStatus.Cancelled)
         {
-            TempData["ToastError"] = "Invoice is already cancelled.";
+            TempData["ToastInfo"] = "Invoice already cancelled.";
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        var productIds = invoice.Items.Select(x => x.ProductId).Distinct().ToList();
-        var products = await _db.Products.Where(p => productIds.Contains(p.Id)).ToListAsync();
+        using var tx = await _db.Database.BeginTransactionAsync();
 
-        var now = DateTime.UtcNow;
-        foreach (var item in invoice.Items)
+        // return stock + StockMovement (In)
+        foreach (var it in invoice.Items)
         {
-            var prod = products.First(p => p.Id == item.ProductId);
-            prod.StockOnHand += item.Qty;
+            var product = await _db.Products.FirstAsync(p => p.Id == it.ProductId);
+            product.StockOnHand += it.Quantity;
 
             _db.StockMovements.Add(new StockMovement
             {
-                ProductId = prod.Id,
-                MovementDate = now,
+                ProductId = it.ProductId,
+                MovementDate = DateTime.UtcNow,
                 Type = StockMovementType.In,
-                Qty = item.Qty,
+                Qty = it.Quantity,
                 RefType = "InvoiceCancel",
                 RefId = invoice.Id,
-                Note = $"Cancel {invoice.InvoiceNo}"
+                Note = invoice.InvoiceNo
             });
         }
 
         invoice.Status = InvoiceStatus.Cancelled;
-        await _db.SaveChangesAsync();
 
-        TempData["ToastSuccess"] = "Invoice cancelled and stock restored.";
+        await _db.SaveChangesAsync();
+        await tx.CommitAsync();
+
+        TempData["ToastSuccess"] = "Invoice cancelled and stock returned.";
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    // ========= HELPERS =========
     private async Task LoadLookupsAsync()
     {
         ViewBag.Customers = await _db.Customers.AsNoTracking()
@@ -327,22 +305,8 @@ public class InvoicesController : Controller
             .ToListAsync();
     }
 
-    private async Task<string> GenerateInvoiceNoAsync()
-    {
-        for (int attempt = 0; attempt < 5; attempt++)
-        {
-            var stamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-            var rand = Random.Shared.Next(1000, 9999);
-            var no = $"INV-{stamp}-{rand}";
-
-            var exists = await _db.Invoices.AnyAsync(p => p.InvoiceNo == no);
-            if (!exists) return no;
-
-            await Task.Delay(20);
-        }
-
-        return $"INV-{Guid.NewGuid().ToString("N")[..12].ToUpperInvariant()}";
-    }
+    private Task<string> GenerateInvoiceNoAsync()
+        => Task.FromResult($"INV-{Guid.NewGuid().ToString("N")[..12].ToUpperInvariant()}");
 
     // ===== ViewModels for Create =====
     public sealed class InvoiceCreateVm
@@ -351,7 +315,7 @@ public class InvoicesController : Controller
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime InvoiceDate { get; set; }
+        public DateTime InvoiceDate { get; set; } = DateTime.UtcNow.Date;
 
         [Range(0, double.MaxValue)]
         public decimal PaidAmount { get; set; } = 0m;

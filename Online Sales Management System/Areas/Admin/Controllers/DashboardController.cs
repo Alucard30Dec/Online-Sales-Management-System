@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OnlineSalesManagementSystem.Services.Security;
 using OnlineSalesManagementSystem.Data;
+using OnlineSalesManagementSystem.Services.Security;
 
 namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
 
@@ -17,24 +17,33 @@ public class DashboardController : Controller
         _db = db;
     }
 
-    [HttpGet]
     public async Task<IActionResult> Index()
     {
-        // Lightweight KPIs (views will be added later)
-        var today = DateTime.UtcNow.Date;
-        var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-
+        ViewBag.AdminsCount = await _db.Users.CountAsync(u => u.IsActive);
         ViewBag.ProductsCount = await _db.Products.CountAsync(p => p.IsActive);
         ViewBag.CustomersCount = await _db.Customers.CountAsync(c => c.IsActive);
         ViewBag.SuppliersCount = await _db.Suppliers.CountAsync(s => s.IsActive);
+        ViewBag.EmployeesCount = await _db.Employees.CountAsync(e => e.IsActive);
 
-        ViewBag.TodaySales = await _db.Invoices
-            .Where(i => i.Status != Domain.Entities.InvoiceStatus.Cancelled && i.InvoiceDate >= today && i.InvoiceDate < today.AddDays(1))
+        ViewBag.PurchasesCount = await _db.Purchases.CountAsync();
+        ViewBag.InvoicesCount = await _db.Invoices.CountAsync();
+        ViewBag.ExpensesCount = await _db.Expenses.CountAsync();
+
+        ViewBag.LowStockCount = await _db.Products.CountAsync(p => p.IsActive && p.StockOnHand <= p.ReorderLevel);
+
+        var today = DateTime.UtcNow.Date;
+        var monthStart = new DateTime(today.Year, today.Month, 1);
+
+        var todaySales = await _db.Invoices
+            .Where(i => i.InvoiceDate >= today && i.InvoiceDate < today.AddDays(1) && i.Status != Domain.Entities.InvoiceStatus.Cancelled)
             .SumAsync(i => (decimal?)i.GrandTotal) ?? 0m;
 
-        ViewBag.MonthSales = await _db.Invoices
-            .Where(i => i.Status != Domain.Entities.InvoiceStatus.Cancelled && i.InvoiceDate >= firstDayOfMonth && i.InvoiceDate < firstDayOfMonth.AddMonths(1))
+        var monthSales = await _db.Invoices
+            .Where(i => i.InvoiceDate >= monthStart && i.InvoiceDate < monthStart.AddMonths(1) && i.Status != Domain.Entities.InvoiceStatus.Cancelled)
             .SumAsync(i => (decimal?)i.GrandTotal) ?? 0m;
+
+        ViewBag.TodaySales = todaySales;
+        ViewBag.MonthSales = monthSales;
 
         return View();
     }

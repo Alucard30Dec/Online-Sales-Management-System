@@ -1,47 +1,170 @@
-﻿@{
-    var path = Context.Request.Path.Value?.ToLowerInvariant() ?? "";
+@{
+    var path = (Context.Request.Path.Value ?? "").ToLowerInvariant();
 
-    var menu = new[]
-    {
-        (Title: "Dashboard", Route: "/Admin/Dashboard"),
-        (Title: "Admin", Route: "/Admin/Admins"),
-        (Title: "Suppliers", Route: "/Admin/Suppliers"),
-        (Title: "Customers", Route: "/Admin/Customers"),
-        (Title: "Employees", Route: "/Admin/Employees"),
-        (Title: "Categories", Route: "/Admin/Categories"),
-        (Title: "Units", Route: "/Admin/Units"),
-        (Title: "Products", Route: "/Admin/Products"),
-        (Title: "Purchases", Route: "/Admin/Purchases"),
-        (Title: "Invoices", Route: "/Admin/Invoices"),
-        (Title: "Expenses", Route: "/Admin/Expenses"),
-        (Title: "Attendance", Route: "/Admin/Attendance"),
-        (Title: "Roles / Groups", Route: "/Admin/AdminGroups"),
-        (Title: "Reports", Route: "/Admin/Reports"),
-        (Title: "Stock", Route: "/Admin/Stock"),
-        (Title: "Settings", Route: "/Admin/Settings"),
-    };
+    bool IsActive(string startsWith) => path.StartsWith(startsWith.ToLowerInvariant());
+    bool IsAny(params string[] startsWithAny) => startsWithAny.Any(s => IsActive(s));
+
+    var adminOpen = IsAny("/admin/admins", "/admin/admingroups");
+    var stockOpen = IsAny("/admin/stock");
 }
+<nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-<div class="d-flex align-items-center gap-2 mb-3">
-    <div class="rounded-circle" style="width:10px;height:10px;background:#0d6efd;"></div>
-    <div>
-        <div class="fw-semibold">OSMS</div>
-        <div class="text-white-50 small">Admin Panel</div>
-    </div>
-</div>
+        <li class="nav-item">
+            <a href="/Admin/Dashboard" class="nav-link @(IsActive("/admin/dashboard") ? "active" : "")">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>Dashboard</p>
+            </a>
+        </li>
 
-<nav class="nav flex-column gap-1">
-    @foreach (var item in menu)
-    {
-        var isActive = path.StartsWith(item.Route.ToLowerInvariant());
-        <a class="nav-link px-3 py-2 @(isActive ? "active" : "")" href="@item.Route">
-            @item.Title
-        </a>
-    }
+        <li class="nav-item @(adminOpen ? "menu-open" : "")">
+            <a href="#" class="nav-link @(adminOpen ? "active" : "")">
+                <i class="nav-icon fas fa-user-shield"></i>
+                <p>
+                    Admin
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/Admin/Admins" class="nav-link @(IsActive("/admin/admins") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Admins List</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/Admins/Create" class="nav-link @(IsActive("/admin/admins/create") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Create Admin</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/AdminGroups" class="nav-link @(IsActive("/admin/admingroups") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Admin Groups</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/AdminGroups/Create" class="nav-link @(IsActive("/admin/admingroups/create") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Create Admin Group</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Suppliers" class="nav-link @(IsActive("/admin/suppliers") ? "active" : "")">
+                <i class="nav-icon fas fa-truck"></i>
+                <p>Suppliers</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Customers" class="nav-link @(IsActive("/admin/customers") ? "active" : "")">
+                <i class="nav-icon fas fa-users"></i>
+                <p>Customers</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Employees" class="nav-link @(IsActive("/admin/employees") ? "active" : "")">
+                <i class="nav-icon fas fa-user-tie"></i>
+                <p>Employees</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Categories" class="nav-link @(IsActive("/admin/categories") ? "active" : "")">
+                <i class="nav-icon fas fa-tags"></i>
+                <p>Categories</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Units" class="nav-link @(IsActive("/admin/units") ? "active" : "")">
+                <i class="nav-icon fas fa-ruler-combined"></i>
+                <p>Units</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Products" class="nav-link @(IsActive("/admin/products") ? "active" : "")">
+                <i class="nav-icon fas fa-box"></i>
+                <p>Products</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Purchases" class="nav-link @(IsActive("/admin/purchases") ? "active" : "")">
+                <i class="nav-icon fas fa-cart-plus"></i>
+                <p>Purchases</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Invoices" class="nav-link @(IsActive("/admin/invoices") ? "active" : "")">
+                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                <p>Invoices</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Expenses" class="nav-link @(IsActive("/admin/expenses") ? "active" : "")">
+                <i class="nav-icon fas fa-receipt"></i>
+                <p>Expenses</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Attendance" class="nav-link @(IsActive("/admin/attendance") ? "active" : "")">
+                <i class="nav-icon fas fa-calendar-check"></i>
+                <p>Attendance</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Reports" class="nav-link @(IsActive("/admin/reports") ? "active" : "")">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Reports</p>
+            </a>
+        </li>
+
+        <li class="nav-item @(stockOpen ? "menu-open" : "")">
+            <a href="#" class="nav-link @(stockOpen ? "active" : "")">
+                <i class="nav-icon fas fa-warehouse"></i>
+                <p>
+                    Stock
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/Admin/Stock" class="nav-link @(IsActive("/admin/stock") && !IsActive("/admin/stock/low") && !IsActive("/admin/stock/movements") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Stock Summary</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/Stock/Low" class="nav-link @(IsActive("/admin/stock/low") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Low Stock</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/Stock/Movements" class="nav-link @(IsActive("/admin/stock/movements") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Movements</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Settings" class="nav-link @(IsActive("/admin/settings") ? "active" : "")">
+                <i class="nav-icon fas fa-cog"></i>
+                <p>Settings</p>
+            </a>
+        </li>
+    </ul>
 </nav>
-
-<hr class="border-light opacity-25 my-3" />
-
-<div class="text-white-50 small">
-    Tip: permissions hide buttons, but policies block URLs.
-</div>

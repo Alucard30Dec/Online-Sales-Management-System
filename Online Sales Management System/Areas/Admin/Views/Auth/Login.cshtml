@@ -1,59 +1,70 @@
-﻿@model OnlineSalesManagementSystem.Areas.Admin.ViewModels.Auth.LoginViewModel
+@model OnlineSalesManagementSystem.Areas.Admin.ViewModels.Auth.LoginViewModel
 @{
     ViewData["Title"] = "Admin Login";
     Layout = "~/Areas/Admin/Views/Shared/_AuthLayout.cshtml";
 }
 
-<div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-5">
-        <div class="card auth-card">
-            <div class="card-body p-4 p-md-5">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <span class="brand-dot"></span>
-                    <div>
-                        <div class="fw-semibold">Online Sales Management System</div>
-                        <div class="text-muted small">Admin Portal</div>
+<div class="login-box">
+    <div class="login-logo">
+        <a href="/Admin/Dashboard"><b>OSMS</b> Admin</a>
+    </div>
+
+    <div class="card card-outline card-primary">
+        <div class="card-header text-center">
+            <span class="h1"><b>Sign</b> In</span>
+        </div>
+        <div class="card-body">
+            <p class="login-box-msg">Sign in to start your session</p>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(excludePropertyErrors: true)
+                </div>
+            }
+
+            <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <div class="input-group mb-3">
+                    <input asp-for="Email" class="form-control" placeholder="Email" autocomplete="username" />
+                    <div class="input-group-append">
+                        <div class="input-group-text"><span class="fas fa-envelope"></span></div>
                     </div>
                 </div>
 
-                <h1 class="h4 mb-1">Sign in</h1>
-                <p class="text-muted mb-4">Use your admin email and password.</p>
-
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div class="alert alert-danger">
-                        @Html.ValidationSummary(excludePropertyErrors: true)
+                <div class="input-group mb-3">
+                    <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password" />
+                    <div class="input-group-append">
+                        <div class="input-group-text"><span class="fas fa-lock"></span></div>
                     </div>
-                }
+                </div>
 
-                <form asp-area="Admin" asp-controller="Auth" asp-action="Login" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" asp-for="ReturnUrl" />
-
-                    <div class="mb-3">
-                        <label class="form-label" asp-for="Email"></label>
-                        <input class="form-control" asp-for="Email" autocomplete="username" />
-                        <span class="text-danger small" asp-validation-for="Email"></span>
+                <div class="row">
+                    <div class="col-8">
+                        <div class="icheck-primary">
+                            <input type="checkbox" id="remember" asp-for="RememberMe" />
+                            <label for="remember">Remember Me</label>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" asp-for="Password"></label>
-                        <input class="form-control" asp-for="Password" autocomplete="current-password" />
-                        <span class="text-danger small" asp-validation-for="Password"></span>
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
                     </div>
+                </div>
+            </form>
 
-                    <div class="mb-3 form-check">
-                        <input class="form-check-input" asp-for="RememberMe" />
-                        <label class="form-check-label" asp-for="RememberMe"></label>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
-
-                    <div class="text-muted small mt-3">
-                        Default admin: <span class="fw-semibold">admin@osms.local</span> / <span class="fw-semibold">Admin@12345</span>
-                    </div>
-                </form>
+            <hr />
+            <div class="text-muted small">
+                Default admin: <code>admin@osms.local</code> / <code>Admin@12345</code>
+            </div>
+            <div class="text-muted small">
+                Sales staff: <code>sales@osms.local</code> / <code>Sales@12345</code>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
