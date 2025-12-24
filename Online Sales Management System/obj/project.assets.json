@@ -4190,23 +4190,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Alucard30Dec\\.nuget\\packages\\": {},
+    "C:\\Users\\Thanh Dat\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Online Sales Management System.csproj",
+      "projectUniqueName": "D:\\Lap Web Nâng Cao\\Online-Sales-Management-System\\Online Sales Management System\\Online Sales Management System.csproj",
       "projectName": "Online Sales Management System",
-      "projectPath": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Online Sales Management System.csproj",
-      "packagesPath": "C:\\Users\\Alucard30Dec\\.nuget\\packages\\",
-      "outputPath": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\obj\\",
+      "projectPath": "D:\\Lap Web Nâng Cao\\Online-Sales-Management-System\\Online Sales Management System\\Online Sales Management System.csproj",
+      "packagesPath": "C:\\Users\\Thanh Dat\\.nuget\\packages\\",
+      "outputPath": "D:\\Lap Web Nâng Cao\\Online-Sales-Management-System\\Online Sales Management System\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Alucard30Dec\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Thanh Dat\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
