@@ -40,6 +40,7 @@ wwwroot\assets\js\tiny-slider.js
 wwwroot\assets\mail\mail.php
 wwwroot\css\adminlte-compat.css
 wwwroot\css\adminlte-custom.css
+wwwroot\css\chat-widget.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\adminlte-init.js
@@ -101,3 +102,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\js\chat-widget.js
