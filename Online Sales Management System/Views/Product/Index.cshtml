@@ -1,0 +1,314 @@
+﻿@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-md-6 col-12">
+                <div class="breadcrumbs-content">
+                    <h1 class="page-title">Cửa hàng</h1>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-12">
+                <ul class="breadcrumb-nav">
+                    <li><a href="/"><i class="lni lni-home"></i> Trang chủ</a></li>
+                    <li>Danh sách sản phẩm</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="product-grids section" style="padding-top: 50px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-12 mb-5">
+                <div class="product-sidebar p-4 bg-white rounded shadow-sm border">
+
+                    <div class="single-widget search mb-4">
+                        <h5 class="fw-bold mb-3">Tìm kiếm</h5>
+                        <form action="#">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Nhập tên sản phẩm...">
+                                <button class="btn btn-primary" type="submit"><i class="lni lni-search-alt"></i></button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="single-widget mb-4">
+                        <h5 class="fw-bold mb-3">Danh mục</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0 pb-1">
+                                <a href="javascript:void(0)" class="text-decoration-none text-secondary hover-link">Máy tính & Phụ kiện</a>
+                                <span class="badge bg-light text-dark border">1138</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0 pb-1">
+                                <a href="javascript:void(0)" class="text-decoration-none text-secondary hover-link">Điện thoại & Tablet</a>
+                                <span class="badge bg-light text-dark border">2380</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0 pb-1">
+                                <a href="javascript:void(0)" class="text-decoration-none text-secondary hover-link">TV, Video & Âm thanh</a>
+                                <span class="badge bg-light text-dark border">12</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0 pb-1">
+                                <a href="javascript:void(0)" class="text-decoration-none text-secondary hover-link">Máy ảnh & Quay phim</a>
+                                <span class="badge bg-light text-dark border">144</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-0 pb-1">
+                                <a href="javascript:void(0)" class="text-decoration-none text-secondary hover-link">Tai nghe</a>
+                                <span class="badge bg-light text-dark border">245</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="single-widget range mb-4">
+                        <h5 class="fw-bold mb-3">Khoảng giá</h5>
+                        <input type="range" class="form-range mb-3" name="range" step="1" min="100" max="10000" value="1000"
+                               oninput="document.getElementById('rangeValue').innerText = '$' + this.value">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">Thấp nhất: $100</span>
+                            <span id="rangeValue" class="fw-bold text-primary">$1000</span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="single-widget condition">
+                        <h5 class="fw-bold mb-3">Thương hiệu</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="" id="brandApple">
+                            <label class="form-check-label text-secondary" for="brandApple">
+                                Apple (254)
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="" id="brandHP">
+                            <label class="form-check-label text-secondary" for="brandHP">
+                                Hewlett Packard (39)
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="" id="brandSony">
+                            <label class="form-check-label text-secondary" for="brandSony">
+                                Sony (128)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-12">
+                <div class="product-grids-head">
+                    <div class="product-grid-topbar">
+                        <div class="row align-items-center">
+                            <div class="col-lg-7 col-md-8 col-12">
+                                <div class="product-sorting">
+                                    <label for="sorting">Sắp xếp:</label>
+                                    <select class="form-control" id="sorting">
+                                        <option>Phổ biến nhất</option>
+                                        <option>Giá thấp - cao</option>
+                                        <option>Giá cao - thấp</option>
+                                        <option>Đánh giá cao</option>
+                                    </select>
+                                    <h3 class="total-show-product">Hiển thị: <span>1 - 6 sản phẩm</span></h3>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-4 col-12">
+                                <nav>
+                                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                        <button class="nav-link active" id="nav-grid-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-grid" type="button" role="tab"
+                                                aria-controls="nav-grid" aria-selected="true">
+                                            <i class="lni lni-grid-alt"></i>
+                                        </button>
+                                        <button class="nav-link" id="nav-list-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-list" type="button" role="tab"
+                                                aria-controls="nav-list" aria-selected="false">
+                                            <i class="lni lni-list"></i>
+                                        </button>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-grid" role="tabpanel" aria-labelledby="nav-grid-tab">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <div class="single-product">
+                                        <div class="product-image">
+                                            <img src="~/assets/images/products/product-1.jpg" alt="#">
+                                            <div class="button">
+                                                <a href="/Product/Details" class="btn"><i class="lni lni-cart"></i> Thêm vào giỏ</a>
+                                            </div>
+                                        </div>
+                                        <div class="product-info">
+                                            <span class="category">Đồng hồ</span>
+                                            <h4 class="title">
+                                                <a href="/Product/Details">Xiaomi Mi Band 5</a>
+                                            </h4>
+                                            <ul class="review">
+                                                <li><i class="lni lni-star-filled"></i></li>
+                                                <li><i class="lni lni-star-filled"></i></li>
+                                                <li><i class="lni lni-star-filled"></i></li>
+                                                <li><i class="lni lni-star-filled"></i></li>
+                                                <li><i class="lni lni-star"></i></li>
+                                                <li><span>4.0 Review(s)</span></li>
+                                            </ul>
+                                            <div class="price">
+                                                <span>$199.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <div class="single-product">
+                                        <div class="product-image">
+                                            <img src="~/assets/images/products/product-2.jpg" alt="#">
+                                            <span class="sale-tag">-25%</span>
+                                            <div class="button">
+                                                <a href="/Product/Details" class="btn"><i class="lni lni-cart"></i> Thêm vào giỏ</a>
+                                            </div>
+                                        </div>
+                                        <div class="product-info">
+                                            <span class="category">Loa</span>
+                                            <h4 class="title">
+                                                <a href="/Product/Details">Big Power Sound Speaker</a>
+                                            </h4>
+                                            <div class="price">
+                                                <span>$275.00</span>
+                                                <span class="discount-price">$300.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <div class="single-product">
+                                        <div class="product-image">
+                                            <img src="~/assets/images/products/product-3.jpg" alt="#">
+                                            <div class="button">
+                                                <a href="/Product/Details" class="btn"><i class="lni lni-cart"></i> Thêm vào giỏ</a>
+                                            </div>
+                                        </div>
+                                        <div class="product-info">
+                                            <span class="category">Camera</span>
+                                            <h4 class="title">
+                                                <a href="/Product/Details">WiFi Security Camera</a>
+                                            </h4>
+                                            <div class="price">
+                                                <span>$399.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <div class="single-product">
+                                        <div class="product-image">
+                                            <img src="~/assets/images/products/product-4.jpg" alt="#">
+                                            <span class="new-tag">Mới</span>
+                                            <div class="button">
+                                                <a href="/Product/Details" class="btn"><i class="lni lni-cart"></i> Thêm vào giỏ</a>
+                                            </div>
+                                        </div>
+                                        <div class="product-info">
+                                            <span class="category">Điện thoại</span>
+                                            <h4 class="title">
+                                                <a href="/Product/Details">iphone 6x plus</a>
+                                            </h4>
+                                            <div class="price">
+                                                <span>$400.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <div class="single-product">
+                                        <div class="product-image">
+                                            <img src="~/assets/images/products/product-5.jpg" alt="#">
+                                            <div class="button">
+                                                <a href="/Product/Details" class="btn"><i class="lni lni-cart"></i> Thêm vào giỏ</a>
+                                            </div>
+                                        </div>
+                                        <div class="product-info">
+                                            <span class="category">Tai nghe</span>
+                                            <h4 class="title">
+                                                <a href="/Product/Details">Wireless Headphones</a>
+                                            </h4>
+                                            <div class="price">
+                                                <span>$350.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <div class="single-product">
+                                        <div class="product-image">
+                                            <img src="~/assets/images/products/product-6.jpg" alt="#">
+                                            <div class="button">
+                                                <a href="/Product/Details" class="btn"><i class="lni lni-cart"></i> Thêm vào giỏ</a>
+                                            </div>
+                                        </div>
+                                        <div class="product-info">
+                                            <span class="category">Loa</span>
+                                            <h4 class="title">
+                                                <a href="/Product/Details">Mini Bluetooth Speaker</a>
+                                            </h4>
+                                            <div class="price">
+                                                <span>$70.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="pagination left">
+                                        <ul class="pagination-list">
+                                            <li><a href="javascript:void(0)">1</a></li>
+                                            <li class="active"><a href="javascript:void(0)">2</a></li>
+                                            <li><a href="javascript:void(0)">3</a></li>
+                                            <li><a href="javascript:void(0)">4</a></li>
+                                            <li><a href="javascript:void(0)"><i class="lni lni-chevron-right"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="nav-list" role="tabpanel" aria-labelledby="nav-list-tab">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-12">
+                                    <div class="alert alert-info">Chế độ xem danh sách (List View) đang được cập nhật.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<style>
+    /* Hiệu ứng hover cho link danh mục */
+    .hover-link:hover {
+        color: #0d6efd !important; /* Màu xanh primary */
+        padding-left: 5px;
+        transition: all 0.3s ease;
+    }
+
+    /* Chỉnh sửa thanh slider giá */
+    .form-range::-webkit-slider-thumb {
+        background: #0d6efd;
+    }
+</style>
