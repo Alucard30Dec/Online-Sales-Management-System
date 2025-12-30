@@ -1,0 +1,100 @@
+﻿/* File: wwwroot/css/suppliers.css */
+
+/* --- Page Header --- */
+.page-header-title {
+    font-weight: 700;
+    color: #344767;
+    margin-bottom: 0.5rem;
+}
+
+/* --- Clean Card & Table Styles --- */
+.card-modern {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    background: #fff;
+}
+
+.table-modern thead th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #8392ab;
+    border-bottom: 1px solid #f0f2f5;
+    padding: 1rem 1.5rem;
+    background-color: #fff;
+}
+
+.table-modern td {
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f2f5;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.table-modern tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* --- Supplier Avatar (Theme: Orange/Gold) --- */
+.avatar-supplier {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px; /* Bo vuông nhẹ */
+    background: linear-gradient(135deg, #fb8c00 0%, #ffa726 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-right: 1rem;
+    box-shadow: 0 4px 6px rgba(251, 140, 0, 0.3);
+}
+
+/* --- Action Buttons --- */
+.btn-action {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s;
+    border: none;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    text-decoration: none;
+}
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Màu cam cho nút Edit */
+    .btn-action.edit:hover {
+        background-color: #fff3e0;
+        color: #fb8c00;
+    }
+    /* Màu xanh cho nút Details */
+    .btn-action.details:hover {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+    /* Màu đỏ cho nút Delete */
+    .btn-action.delete:hover {
+        background-color: #fce8e6;
+        color: #dc3545;
+    }
+
+/* --- Search Bar --- */
+.search-group .form-control {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+}
+
+.search-group .btn {
+    border-radius: 0 8px 8px 0;
+}

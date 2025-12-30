@@ -41,9 +41,14 @@ wwwroot\assets\mail\mail.php
 wwwroot\css\adminlte-compat.css
 wwwroot\css\adminlte-custom.css
 wwwroot\css\chat-widget.css
+wwwroot\css\dashboard.css
+wwwroot\css\report-dashboard.css
 wwwroot\css\site.css
 wwwroot\favicon.ico
 wwwroot\js\adminlte-init.js
+wwwroot\js\chat-widget.js
+wwwroot\js\dashboard.js
+wwwroot\js\report-dashboard.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -102,4 +107,5 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\js\chat-widget.js
+wwwroot\css\suppliers.css
+wwwroot\js\suppliers.js

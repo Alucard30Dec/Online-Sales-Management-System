@@ -1,154 +1,213 @@
-﻿@model OnlineSalesManagementSystem.Areas.Admin.Controllers.ReportsController.ReportsIndexVm
+﻿@using System.Text.Json
+@model OnlineSalesManagementSystem.Areas.Admin.Controllers.ReportsController.ReportsIndexVm
 @{
-    ViewData["Title"] = "Reports";
+    ViewData["Title"] = "Executive Dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    // --- 1. XỬ LÝ DỮ LIỆU TỪ C# ---
+    var allDates = Model.Invoices.Select(i => i.InvoiceDate.Date)
+                    .Union(Model.Purchases.Select(p => p.PurchaseDate.Date))
+                    .Union(new[] { Model.From.Date, Model.To.Date })
+                    .Where(d => d >= Model.From.Date && d <= Model.To.Date)
+                    .Distinct().OrderBy(d => d).ToList();
+
+    var labels = allDates.Select(d => d.ToString("dd/MM")).ToArray();
+    var dataSales = allDates.Select(d => Model.Invoices.Where(i => i.InvoiceDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
+    var dataPurchases = allDates.Select(d => Model.Purchases.Where(p => p.PurchaseDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
+
+    // Serialize data
+    string jsonLabels = JsonSerializer.Serialize(labels);
+    string jsonSales = JsonSerializer.Serialize(dataSales);
+    string jsonPurchases = JsonSerializer.Serialize(dataPurchases);
+
+    double margin = Model.SalesTotal > 0 ? (double)(Model.Profit / Model.SalesTotal) * 100 : 0;
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-        <div>
-            <h1 class="h3 mb-0">Reports</h1>
-            <div class="text-muted">Sales, Purchases, and rough Profit by date range.</div>
-        </div>
-    </div>
+<link rel="stylesheet" href="~/css/report-dashboard.css" asp-append-version="true" />
 
-    <div class="card border-0 shadow-sm mb-3">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end">
-                <div class="col-12 col-md-4 col-xl-3">
-                    <label class="form-label small text-muted">From</label>
+<div class="container-fluid py-4 bg-light bg-opacity-50">
+    <div class="row align-items-end mb-4 g-3">
+        <div class="col-md-5">
+            <h3 class="dashboard-title mb-1">Executive Dashboard</h3>
+            <p class="text-muted mb-0 small">
+                Performance from <span class="fw-bold text-dark">@Model.From.ToString("dd/MM/yyyy")</span> to <span class="fw-bold text-dark">@Model.To.ToString("dd/MM/yyyy")</span>
+            </p>
+        </div>
+        <div class="col-md-7">
+            <form method="get" class="filter-bar d-flex gap-2 align-items-end shadow-sm">
+                <div class="flex-grow-1">
+                    <label class="form-label small fw-bold text-secondary mb-1">From</label>
                     <input class="form-control" type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" />
                 </div>
-                <div class="col-12 col-md-4 col-xl-3">
-                    <label class="form-label small text-muted">To</label>
+                <div class="flex-grow-1">
+                    <label class="form-label small fw-bold text-secondary mb-1">To</label>
                     <input class="form-control" type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" />
                 </div>
-                <div class="col-12 col-md-4 col-xl-3 d-flex gap-2">
-                    <button class="btn btn-outline-primary w-100" type="submit">Apply</button>
-                    <a class="btn btn-outline-secondary w-100" href="/Admin/Reports">Reset</a>
-                </div>
-                <div class="col-12 col-xl-3 text-muted small">
-                    Range: <span class="fw-semibold">@Model.From.ToString("yyyy-MM-dd")</span> → <span class="fw-semibold">@Model.To.ToString("yyyy-MM-dd")</span>
+                <div class="d-flex gap-1">
+                    <button class="btn btn-primary fw-bold px-3" type="submit">Filter</button>
+                    <a class="btn btn-light border px-3" href="/Admin/Reports"><i class="fas fa-undo"></i></a>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="row g-3 mb-3">
-        <div class="col-12 col-md-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="text-muted small">Sales Total</div>
-                    <div class="h4 mb-0">@Model.SalesTotal.ToString("N0")</div>
+    <div class="row mb-4 g-3">
+        <div class="col-md-4">
+            <div class="card card-modern p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <div class="stat-label">Total Revenue</div>
+                        <h3 class="stat-value">@Model.SalesTotal.ToString("N0")</h3>
+                    </div>
+                    <div class="stat-icon sales"><i class="fas fa-hand-holding-usd"></i></div>
                 </div>
+                <small class="text-success fw-bold"><i class="fas fa-arrow-up me-1"></i> Income</small>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="text-muted small">Purchases Total</div>
-                    <div class="h4 mb-0">@Model.PurchaseTotal.ToString("N0")</div>
+        <div class="col-md-4">
+            <div class="card card-modern p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <div class="stat-label">Total Expenses</div>
+                        <h3 class="stat-value">@Model.PurchaseTotal.ToString("N0")</h3>
+                    </div>
+                    <div class="stat-icon cost"><i class="fas fa-shopping-cart"></i></div>
                 </div>
+                <small class="text-danger fw-bold"><i class="fas fa-arrow-down me-1"></i> Outcome</small>
             </div>
         </div>
-        <div class="col-12 col-md-4">
-            <div class="card border-0 shadow-sm">
+        <div class="col-md-4">
+            <div class="card card-modern p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <div class="stat-label">Net Profit</div>
+                        <h3 class="stat-value @(Model.Profit >= 0 ? "text-primary" : "text-danger")">@Model.Profit.ToString("N0")</h3>
+                    </div>
+                    <div class="stat-icon profit"><i class="fas fa-chart-pie"></i></div>
+                </div>
+                <small class="text-primary fw-bold">~@margin.ToString("N1")% Margin</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card card-modern">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold m-0 text-dark"><i class="fas fa-chart-bar me-2 text-primary"></i>Revenue vs Expenses</h6>
+                </div>
                 <div class="card-body">
-                    <div class="text-muted small">Rough Profit</div>
-                    <div class="h4 mb-0 @(Model.Profit >= 0 ? "text-success" : "text-danger")">@Model.Profit.ToString("N0")</div>
-                    <div class="text-muted small mt-1">Profit ≈ Sales − Purchases</div>
+                    <canvas id="comparisonChart" style="max-height: 350px;"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row g-3">
-        <div class="col-12 col-xl-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0">
-                    <div class="fw-semibold">Recent Invoices (max 200)</div>
+        <div class="col-xl-6">
+            <div class="card card-modern h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold m-0"><i class="fas fa-file-invoice text-success me-2"></i>Recent Invoices</h6>
+                    <a href="/Admin/Invoices" class="btn btn-sm btn-light rounded-pill px-3 small">View All</a>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr class="table-light">
-                                    <th style="width:90px;">#</th>
-                                    <th>No</th>
-                                    <th>Customer</th>
-                                    <th style="width:140px;">Date</th>
-                                    <th style="width:140px;">Total</th>
-                                    <th style="width:120px;">Status</th>
+                <div class="table-responsive">
+                    <table class="table table-modern align-middle table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 border-0">Invoice #</th>
+                                <th class="border-0">Customer</th>
+                                <th class="text-end border-0">Amount</th>
+                                <th class="text-center border-0">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-top-0">
+                            @if (Model.Invoices.Count == 0)
+                            {
+                                <tr><td colspan="4" class="text-center py-4 text-muted">No data.</td></tr>
+                            }
+                            @foreach (var inv in Model.Invoices.Take(10))
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark"><a href="/Admin/Invoices/Details/@inv.Id" class="text-decoration-none">@inv.InvoiceNo</a></td>
+                                    <td>@(inv.Customer?.Name ?? "Walk-in")</td>
+                                    <td class="text-end fw-bold text-success">@inv.GrandTotal.ToString("N0")</td>
+                                    <td class="text-center"><span class="badge rounded-pill @GetStatusColor(inv.Status)">@inv.Status</span></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.Invoices.Count == 0)
-                                {
-                                    <tr><td colspan="6" class="text-center text-muted py-4">No invoices in range.</td></tr>
-                                }
-                                else
-                                {
-                                    foreach (var inv in Model.Invoices)
-                                    {
-                                        <tr>
-                                            <td>@inv.Id</td>
-                                            <td class="fw-semibold"><a href="/Admin/Invoices/Details/@inv.Id">@inv.InvoiceNo</a></td>
-                                            <td>@(inv.Customer?.Name ?? "Walk-in")</td>
-                                            <td>@inv.InvoiceDate.ToString("yyyy-MM-dd")</td>
-                                            <td>@inv.GrandTotal.ToString("N0")</td>
-                                            <td><span class="badge text-bg-secondary">@inv.Status</span></td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <div class="col-12 col-xl-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0">
-                    <div class="fw-semibold">Recent Purchases (max 200)</div>
+        <div class="col-xl-6">
+            <div class="card card-modern h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold m-0"><i class="fas fa-truck text-danger me-2"></i>Recent Purchases</h6>
+                    <a href="/Admin/Purchases" class="btn btn-sm btn-light rounded-pill px-3 small">View All</a>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr class="table-light">
-                                    <th style="width:90px;">#</th>
-                                    <th>No</th>
-                                    <th>Supplier</th>
-                                    <th style="width:140px;">Date</th>
-                                    <th style="width:140px;">Total</th>
-                                    <th style="width:120px;">Status</th>
+                <div class="table-responsive">
+                    <table class="table table-modern align-middle table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 border-0">PO #</th>
+                                <th class="border-0">Supplier</th>
+                                <th class="text-end border-0">Amount</th>
+                                <th class="text-center border-0">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-top-0">
+                            @if (Model.Purchases.Count == 0)
+                            {
+                                <tr><td colspan="4" class="text-center py-4 text-muted">No data.</td></tr>
+                            }
+                            @foreach (var po in Model.Purchases.Take(10))
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark"><a href="/Admin/Purchases/Details/@po.Id" class="text-decoration-none">@po.PurchaseNo</a></td>
+                                    <td>@(po.Supplier?.Name ?? "-")</td>
+                                    <td class="text-end fw-bold text-danger">@po.GrandTotal.ToString("N0")</td>
+                                    <td class="text-center"><span class="badge rounded-pill @GetStatusColor(po.Status)">@po.Status</span></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @if (Model.Purchases.Count == 0)
-                                {
-                                    <tr><td colspan="6" class="text-center text-muted py-4">No purchases in range.</td></tr>
-                                }
-                                else
-                                {
-                                    foreach (var po in Model.Purchases)
-                                    {
-                                        <tr>
-                                            <td>@po.Id</td>
-                                            <td class="fw-semibold"><a href="/Admin/Purchases/Details/@po.Id">@po.PurchaseNo</a></td>
-                                            <td>@po.Supplier?.Name</td>
-                                            <td>@po.PurchaseDate.ToString("yyyy-MM-dd")</td>
-                                            <td>@po.GrandTotal.ToString("N0")</td>
-                                            <td><span class="badge text-bg-secondary">@po.Status</span></td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@functions {
+    string GetStatusColor(object status)
+    {
+        if (status == null) return "bg-secondary";
+        var s = status.ToString().ToLower();
+        if (s.Contains("paid") || s.Contains("complete") || s.Contains("received")) return "bg-success bg-opacity-75";
+        if (s.Contains("pending") || s.Contains("wait") || s.Contains("process")) return "bg-warning text-dark";
+        if (s.Contains("cancel") || s.Contains("return") || s.Contains("fail")) return "bg-danger";
+        return "bg-secondary";
+    }
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="~/js/report-dashboard.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Kiểm tra xem hàm đã được load chưa để tránh lỗi
+            if (typeof initComparisonChart === 'function') {
+                initComparisonChart(
+                    'comparisonChart',
+                    @Html.Raw(jsonLabels),
+                    @Html.Raw(jsonSales),
+                    @Html.Raw(jsonPurchases)
+                );
+            } else {
+                console.error("Lỗi: Không tìm thấy hàm initComparisonChart. Kiểm tra lại đường dẫn file JS.");
+            }
+        });
+    </script>
+}
