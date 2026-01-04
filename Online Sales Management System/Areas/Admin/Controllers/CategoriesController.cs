@@ -1,5 +1,4 @@
-﻿// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/CategoriesController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Services.Security;
@@ -28,7 +27,7 @@ public class CategoriesController : Controller
 
         var query = _db.Categories
             .AsNoTracking()
-            .Where(c => c.IsActive)
+            .Where(c => c.IsActive) // Vẫn giữ logic chỉ hiện Active
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
@@ -40,7 +39,8 @@ public class CategoriesController : Controller
         var total = await query.CountAsync();
 
         var items = await query
-            .OrderBy(c => c.Name)
+            .OrderByDescending(c => c.IsTrending) // Ưu tiên hiện Trending lên đầu
+            .ThenBy(c => c.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -57,7 +57,7 @@ public class CategoriesController : Controller
     [HttpGet]
     public IActionResult Create()
     {
-        return View(new Category { IsActive = true });
+        return View(new Category { IsActive = true, IsTrending = false });
     }
 
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Categories + "." + PermissionConstants.Actions.Create)]
@@ -79,6 +79,7 @@ public class CategoriesController : Controller
         }
 
         model.IsActive = true;
+        // model.IsTrending tự động bind từ checkbox
 
         _db.Categories.Add(model);
         await _db.SaveChangesAsync();
@@ -120,11 +121,26 @@ public class CategoriesController : Controller
 
         entity.Name = model.Name;
         entity.Description = model.Description;
+        entity.IsTrending = model.IsTrending; // <--- Update Trending
 
         await _db.SaveChangesAsync();
 
         TempData["ToastSuccess"] = "Category updated.";
         return RedirectToAction(nameof(Index));
+    }
+
+    // --- MỚI THÊM: Action Toggle nhanh ---
+    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Categories + "." + PermissionConstants.Actions.Edit)]
+    [HttpPost]
+    public async Task<IActionResult> ToggleTrending(int id)
+    {
+        var entity = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        if (entity == null) return Json(new { success = false, message = "Not found" });
+
+        entity.IsTrending = !entity.IsTrending;
+        await _db.SaveChangesAsync();
+
+        return Json(new { success = true, isTrending = entity.IsTrending });
     }
 
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Categories + "." + PermissionConstants.Actions.Delete)]

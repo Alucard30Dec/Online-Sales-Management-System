@@ -35,6 +35,15 @@
                     <textarea class="form-control" name="Description" rows="3">@Model.Description</textarea>
                 </div>
 
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="IsTrending" name="IsTrending" value="true" @(Model.IsTrending ? "checked" : "")>
+                        <label class="form-check-label fw-bold" for="IsTrending">
+                            Trending Category <span class="text-muted fw-normal">(Hiển thị mục này lên Trang chủ)</span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Create</button>
                     <a class="btn btn-outline-secondary" href="/Admin/Categories">Cancel</a>

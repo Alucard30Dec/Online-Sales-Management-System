@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Edit Product";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-
     var categories = ViewBag.Categories as List<Category> ?? new();
     var units = ViewBag.Units as List<Unit> ?? new();
 }
@@ -12,7 +11,7 @@
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
             <h1 class="h3 mb-0">Edit Product</h1>
-            <div class="text-muted">Update product fields (stock is read-only here).</div>
+            <div class="text-muted">Update product information.</div>
         </div>
         <a class="btn btn-outline-secondary" href="/Admin/Products">Back</a>
     </div>
@@ -30,64 +29,67 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="Id" value="@Model.Id" />
 
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-lg-6">
                     <label class="form-label">SKU <span class="text-danger">*</span></label>
                     <input class="form-control" name="SKU" value="@Model.SKU" maxlength="50" required />
                 </div>
 
-                <div class="col-12 col-lg-8">
+                <div class="col-12 col-lg-6">
                     <label class="form-label">Name <span class="text-danger">*</span></label>
                     <input class="form-control" name="Name" value="@Model.Name" maxlength="200" required />
                 </div>
 
                 <div class="col-12 col-lg-6">
                     <label class="form-label">Category</label>
-                    <select class="form-select" name="CategoryId" required>
-                        <option value="">-- Select category --</option>
+                    <select class="form-select" name="CategoryId">
+                        <option value="">-- None --</option>
                         @foreach (var c in categories)
                         {
-                            var selected = (Model.CategoryId == c.Id) ? "selected" : null;
-                            <option value="@c.Id" selected="@selected">@c.Name</option>
+                            var sel = (Model.CategoryId == c.Id) ? "selected" : "";
+                            <option value="@c.Id" selected="@sel">@c.Name</option>
                         }
                     </select>
                 </div>
 
                 <div class="col-12 col-lg-6">
                     <label class="form-label">Unit</label>
-                    <select class="form-select" name="UnitId" required>
-                        <option value="">-- Select unit --</option>
+                    <select class="form-select" name="UnitId">
+                        <option value="">-- None --</option>
                         @foreach (var u in units)
                         {
-                            var selected = (Model.UnitId == u.Id) ? "selected" : null;
-                            <option value="@u.Id" selected="@selected">@u.Name (@u.ShortName)</option>
+                            var sel = (Model.UnitId == u.Id) ? "selected" : "";
+                            <option value="@u.Id" selected="@sel">@u.Name</option>
                         }
                     </select>
                 </div>
 
-                <div class="col-12 col-lg-4">
-                    <label class="form-label">Cost price</label>
-                    <input class="form-control" name="CostPrice" value="@Model.CostPrice" type="number" step="0.01" min="0" />
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Cost Price</label>
+                    <input class="form-control" type="number" step="0.01" name="CostPrice" value="@Model.CostPrice" />
                 </div>
 
-                <div class="col-12 col-lg-4">
-                    <label class="form-label">Sale price</label>
-                    <input class="form-control" name="SalePrice" value="@Model.SalePrice" type="number" step="0.01" min="0" />
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Sale Price</label>
+                    <input class="form-control" type="number" step="0.01" name="SalePrice" value="@Model.SalePrice" />
                 </div>
 
-                <div class="col-12 col-lg-4">
-                    <label class="form-label">Reorder level</label>
-                    <input class="form-control" name="ReorderLevel" value="@Model.ReorderLevel" type="number" step="1" min="0" />
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Reorder Level</label>
+                    <input class="form-control" type="number" name="ReorderLevel" value="@Model.ReorderLevel" />
                 </div>
 
-                <div class="col-12 col-lg-4">
-                    <label class="form-label">Stock on hand</label>
-                    <input class="form-control" value="@Model.StockOnHand" disabled />
-                    <div class="text-muted small mt-1">Updated by Purchases/Invoices.</div>
+                <div class="col-12 col-lg-6">
+                    <label class="form-label">Image URL</label>
+                    <input class="form-control" name="ImagePath" value="@Model.ImagePath" />
                 </div>
 
-                <div class="col-12 col-lg-8">
-                    <label class="form-label">Image path (optional)</label>
-                    <input class="form-control" name="ImagePath" value="@Model.ImagePath" placeholder="/uploads/products/..." />
+                <div class="col-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="IsTrending" name="IsTrending" value="true" @(Model.IsTrending ? "checked" : "")>
+                        <label class="form-check-label fw-bold" for="IsTrending">
+                            Set as Trending Product
+                        </label>
+                    </div>
                 </div>
 
                 <div class="col-12 d-flex gap-2">

@@ -1,5 +1,4 @@
-﻿// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/ProductsController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Services.Security;
@@ -42,7 +41,8 @@ public class ProductsController : Controller
         var total = await query.CountAsync();
 
         var items = await query
-            .OrderBy(p => p.Name)
+            .OrderByDescending(p => p.IsTrending) // Ưu tiên Trending lên đầu
+            .ThenBy(p => p.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -64,7 +64,8 @@ public class ProductsController : Controller
         {
             IsActive = true,
             StockOnHand = 0,
-            ReorderLevel = 5
+            ReorderLevel = 5,
+            IsTrending = false // Mặc định
         });
     }
 
@@ -89,10 +90,10 @@ public class ProductsController : Controller
             return View(model);
         }
 
-        // sanity
         model.IsActive = true;
         if (model.StockOnHand < 0) model.StockOnHand = 0;
         if (model.ReorderLevel < 0) model.ReorderLevel = 0;
+        // IsTrending tự bind từ form
 
         _db.Products.Add(model);
         await _db.SaveChangesAsync();
@@ -137,7 +138,6 @@ public class ProductsController : Controller
             return View(model);
         }
 
-        // Do NOT edit StockOnHand here; it is updated via Purchases/Invoices.
         entity.SKU = model.SKU;
         entity.Name = model.Name;
         entity.CategoryId = model.CategoryId;
@@ -146,11 +146,26 @@ public class ProductsController : Controller
         entity.SalePrice = model.SalePrice;
         entity.ReorderLevel = model.ReorderLevel < 0 ? 0 : model.ReorderLevel;
         entity.ImagePath = model.ImagePath;
+        entity.IsTrending = model.IsTrending; // <--- Cập nhật Trending
 
         await _db.SaveChangesAsync();
 
         TempData["ToastSuccess"] = "Product updated.";
         return RedirectToAction(nameof(Index));
+    }
+
+    // --- MỚI THÊM: Toggle Trending API ---
+    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit)]
+    [HttpPost]
+    public async Task<IActionResult> ToggleTrending(int id)
+    {
+        var entity = await _db.Products.FirstOrDefaultAsync(p => p.Id == id);
+        if (entity == null) return Json(new { success = false, message = "Not found" });
+
+        entity.IsTrending = !entity.IsTrending;
+        await _db.SaveChangesAsync();
+
+        return Json(new { success = true, isTrending = entity.IsTrending });
     }
 
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Delete)]

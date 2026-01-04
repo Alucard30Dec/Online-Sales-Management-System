@@ -1,157 +1,106 @@
 ﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Category>
-@using Microsoft.AspNetCore.Authorization
-@using OnlineSalesManagementSystem.Services.Security
-@using OnlineSalesManagementSystem.Services.Security
-@inject IAuthorizationService AuthorizationService
 @{
-    ViewData["Title"] = "Categories";
+    ViewData["Title"] = "Quản lý Danh mục";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-
-    string q = ViewBag.Query as string ?? "";
-    int page = (int)(ViewBag.Page ?? 1);
-    int pageSize = (int)(ViewBag.PageSize ?? 10);
-    int total = (int)(ViewBag.Total ?? 0);
-
-    int totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
-    bool hasPrev = page > 1;
-    bool hasNext = page < totalPages;
-
-    int start = (page - 1) * pageSize + (total == 0 ? 0 : 1);
-    int end = Math.Min(page * pageSize, total);
-
-    string pCreate = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Categories + "." + PermissionConstants.Actions.Create;
-    string pEdit = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Categories + "." + PermissionConstants.Actions.Edit;
-    string pDelete = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Categories + "." + PermissionConstants.Actions.Delete;
-
-    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, pCreate)).Succeeded;
-    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, pEdit)).Succeeded;
-    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-        <div>
-            <h1 class="h3 mb-0">Categories</h1>
-            <div class="text-muted">Product categories (unique names).</div>
-        </div>
-        @if (canCreate)
-        {
-            <a class="btn btn-primary" href="/Admin/Categories/Create">+ New Category</a>
+<style>
+    /* Toggle Switch Styles */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: #0d6efd;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+</style>
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <div><h2 class="mt-4 fw-bold text-dark">Danh mục sản phẩm</h2></div>
+        <a href="/Admin/Categories/Create" class="btn btn-primary shadow-sm"><i class="fas fa-plus me-1"></i> Thêm mới</a>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end mb-3">
-                <div class="col-12 col-md-6 col-xl-4">
-                    <label class="form-label small text-muted">Search</label>
-                    <input class="form-control" name="q" value="@q" placeholder="Category name..." />
-                </div>
-
-                <div class="col-12 col-md-3 col-xl-2">
-                    <label class="form-label small text-muted">Show entries</label>
-                    <select class="form-select" name="pageSize">
-                        @{
-                            var sizes = new[] { 10, 25, 50, 100 };
-                            foreach (var s in sizes)
-                            {
-                                var selected = (s == pageSize) ? "selected" : null;
-                                <option value="@s" selected="@selected">@s</option>
-                            }
-                        }
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-3 col-xl-2 d-flex gap-2">
-                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
-                    <a class="btn btn-outline-secondary w-100" href="/Admin/Categories">Reset</a>
-                </div>
-
-                <input type="hidden" name="page" value="1" />
-            </form>
-
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr class="table-light">
-                            <th style="width:90px;">#</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th style="width:240px;" class="text-end">Actions</th>
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th class="text-center">Trending</th>
+                            <th class="text-end pe-4">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if (total == 0)
+                        @foreach (var item in Model)
                         {
-                            <tr><td colspan="4" class="text-center text-muted py-4">No categories found.</td></tr>
-                        }
-                        else
-                        {
-                            foreach (var c in Model)
-                            {
-                                <tr>
-                                    <td>@c.Id</td>
-                                    <td class="fw-semibold">@c.Name</td>
-                                    <td class="text-muted">@c.Description</td>
-                                    <td class="text-end">
-                                        <div class="d-inline-flex gap-2">
-                                            @if (canEdit)
-                                            {
-                                                <a class="btn btn-sm btn-outline-primary" href="/Admin/Categories/Edit/@c.Id">Edit</a>
-                                            }
-                                            @if (canDelete)
-                                            {
-                                                <form method="post" action="/Admin/Categories/Delete/@c.Id" class="m-0"
-                                                      onsubmit="return confirm('Delete this category (disable)?');">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                                </form>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
+                            <tr>
+                                <td class="ps-4 fw-bold">#@item.Id</td>
+                                <td>@item.Name</td>
+                                <td>@item.Description</td>
+                                <td class="text-center">
+                                    <label class="switch">
+                                        <input type="checkbox" onchange="toggleTrending(@item.Id)" @(item.IsTrending ? "checked" : "")>
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="/Admin/Categories/Edit/@item.Id" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                                    <a href="/Admin/Categories/Delete/@item.Id" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
                         }
                     </tbody>
                 </table>
-            </div>
-
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
-                <div class="text-muted small">
-                    Showing @start to @end of @total entries
-                </div>
-
-                <nav aria-label="Categories pagination">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(hasPrev ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
-                        </li>
-                        @{
-                            int s = Math.Max(1, page - 2);
-                            int e = Math.Min(totalPages, page + 2);
-                            for (int i = s; i <= e; i++)
-                            {
-                                <li class="page-item @(i == page ? "active" : "")">
-                                    <a class="page-link" href="@BuildUrl(i)">@i</a>
-                                </li>
-                            }
-                        }
-                        <li class="page-item @(hasNext ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
         </div>
     </div>
 </div>
 
-@functions {
-    private string BuildUrl(int page)
-    {
-        if (page < 1) page = 1;
-        string q = ViewBag.Query as string ?? "";
-        int pageSize = (int)(ViewBag.PageSize ?? 10);
-        return $"/Admin/Categories?q={Uri.EscapeDataString(q)}&page={page}&pageSize={pageSize}";
-    }
+@section Scripts {
+    <script>
+        function toggleTrending(id) {
+            fetch('/Admin/Categories/ToggleTrending/' + id, { method: 'POST' });
+        }
+    </script>
 }

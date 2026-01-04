@@ -17,6 +17,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Unit> Units => Set<Unit>();
+
+    // --- Đã chuẩn hóa dòng này ---
+    public DbSet<Brand> Brands => Set<Brand>();
+    // -----------------------------
+
     public DbSet<Product> Products => Set<Product>();
 
     public DbSet<Purchase> Purchases => Set<Purchase>();
@@ -118,6 +123,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.HasIndex(x => x.Name).IsUnique();
         });
 
+        // --- CẤU HÌNH CHO BRAND (Mới thêm) ---
+        modelBuilder.Entity<Brand>(e =>
+        {
+            e.Property(x => x.Name).HasMaxLength(100).IsRequired();
+            e.Property(x => x.IsActive).HasDefaultValue(true);
+        });
+        // -------------------------------------
+
         // Product
         modelBuilder.Entity<Product>(e =>
         {
@@ -130,6 +143,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.StockOnHand).HasDefaultValue(0);
             e.Property(x => x.ReorderLevel).HasDefaultValue(5);
             e.Property(x => x.IsActive).HasDefaultValue(true);
+            e.Property(x => x.IsTrending).HasDefaultValue(false); // Thêm dòng này cho rõ ràng
 
             e.HasOne(x => x.Category)
              .WithMany()
@@ -140,6 +154,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
              .WithMany()
              .HasForeignKey(x => x.UnitId)
              .OnDelete(DeleteBehavior.Restrict);
+
+            // --- CẤU HÌNH QUAN HỆ BRAND (Mới thêm) ---
+            e.HasOne(x => x.Brand)
+             .WithMany()
+             .HasForeignKey(x => x.BrandId)
+             .OnDelete(DeleteBehavior.Restrict); // Không cho xóa Brand nếu có SP đang dùng
+            // -----------------------------------------
         });
 
         // Purchase / PurchaseItem
@@ -205,6 +226,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
              .WithMany()
              .HasForeignKey(x => x.ProductId)
              .OnDelete(DeleteBehavior.Restrict);
+
+            // Cấu hình cột tính toán
+            e.Property(x => x.LineTotal)
+             .HasComputedColumnSql("[UnitPrice] * [Quantity]", stored: true)
+             .ValueGeneratedOnAddOrUpdate();
+
+            e.Ignore(x => x.Qty);
         });
 
         // Expense
@@ -239,20 +267,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
              .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // Setting (singleton-ish)
+        // Setting
         modelBuilder.Entity<Setting>(e =>
         {
             e.Property(x => x.CompanyName).HasMaxLength(200).IsRequired();
             e.Property(x => x.Currency).HasMaxLength(10).HasDefaultValue("VND");
         });
-        modelBuilder.Entity<InvoiceItem>()
-    .Property(x => x.LineTotal)
-    .HasComputedColumnSql("[UnitPrice] * [Quantity]", stored: true)
-    .ValueGeneratedOnAddOrUpdate();
-
-        // Vì Qty là alias NotMapped, để chắc kèo bạn có thể ignore luôn:
-        modelBuilder.Entity<InvoiceItem>()
-            .Ignore(x => x.Qty);
-
     }
 }

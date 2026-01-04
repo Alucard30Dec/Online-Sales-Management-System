@@ -1,176 +1,204 @@
 ﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Product>
-@using Microsoft.AspNetCore.Authorization
-@using OnlineSalesManagementSystem.Services.Security
-@using OnlineSalesManagementSystem.Services.Security
-@inject IAuthorizationService AuthorizationService
+@using System.Globalization
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Quản lý Sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-
-    string q = ViewBag.Query as string ?? "";
-    int page = (int)(ViewBag.Page ?? 1);
-    int pageSize = (int)(ViewBag.PageSize ?? 10);
-    int total = (int)(ViewBag.Total ?? 0);
-
-    int totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
-    bool hasPrev = page > 1;
-    bool hasNext = page < totalPages;
-
-    int start = (page - 1) * pageSize + (total == 0 ? 0 : 1);
-    int end = Math.Min(page * pageSize, total);
-
-    string pCreate = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Create;
-    string pEdit = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit;
-    string pDelete = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Delete;
-
-    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, pCreate)).Succeeded;
-    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, pEdit)).Succeeded;
-    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-        <div>
-            <h1 class="h3 mb-0">Products</h1>
-            <div class="text-muted">Products list with stock and pricing.</div>
-        </div>
-        @if (canCreate)
-        {
-            <a class="btn btn-primary" href="/Admin/Products/Create">+ New Product</a>
+<style>
+    /* Toggle Switch Styles */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+    input:checked + .slider {
+        background-color: #0d6efd; /* Màu xanh dương */
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+    /* Table Align */
+    .align-middle td {
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container-fluid px-4">
+
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <div>
+            <h2 class="mt-4 fw-bold text-dark">Quản lý Sản phẩm</h2>
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/Admin/Dashboard" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item active">Products</li>
+            </ol>
+        </div>
+        <a href="/Admin/Products/Create" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus me-1"></i> Thêm mới
+        </a>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end mb-3">
-                <div class="col-12 col-md-6 col-xl-4">
-                    <label class="form-label small text-muted">Search</label>
-                    <input class="form-control" name="q" value="@q" placeholder="SKU or product name..." />
-                </div>
-
-                <div class="col-12 col-md-3 col-xl-2">
-                    <label class="form-label small text-muted">Show entries</label>
-                    <select class="form-select" name="pageSize">
-                        @{
-                            var sizes = new[] { 10, 25, 50, 100 };
-                            foreach (var s in sizes)
-                            {
-                                var selected = (s == pageSize) ? "selected" : null;
-                                <option value="@s" selected="@selected">@s</option>
-                            }
-                        }
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-3 col-xl-2 d-flex gap-2">
-                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
-                    <a class="btn btn-outline-secondary w-100" href="/Admin/Products">Reset</a>
-                </div>
-
-                <input type="hidden" name="page" value="1" />
-            </form>
-
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <i class="fas fa-box me-1"></i>
+            Danh sách sản phẩm
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead>
-                        <tr class="table-light">
-                            <th style="width:90px;">#</th>
-                            <th style="width:160px;">SKU</th>
-                            <th>Name</th>
-                            <th style="width:160px;">Category</th>
-                            <th style="width:120px;">Unit</th>
-                            <th style="width:140px;">Cost</th>
-                            <th style="width:140px;">Price</th>
-                            <th style="width:120px;">Stock</th>
-                            <th style="width:120px;">Reorder</th>
-                            <th style="width:220px;" class="text-end">Actions</th>
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">SKU</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Danh mục / Hãng</th>
+                            <th>Giá bán</th>
+                            <th class="text-center">Kho</th>
+                            <th class="text-center">Trending</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="text-end pe-4">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if (total == 0)
+                        @if (Model != null && Model.Any())
                         {
-                            <tr><td colspan="10" class="text-center text-muted py-4">No products found.</td></tr>
-                        }
-                        else
-                        {
-                            foreach (var p in Model)
+                            foreach (var item in Model)
                             {
-                                bool low = p.StockOnHand <= p.ReorderLevel;
-                                <tr class="@(low ? "table-warning" : "")">
-                                    <td>@p.Id</td>
-                                    <td class="fw-semibold">@p.SKU</td>
-                                    <td>@p.Name</td>
-                                    <td class="text-muted">@p.Category?.Name</td>
-                                    <td class="text-muted">@p.Unit?.ShortName ?? p.Unit?.Name</td>
-                                    <td>@p.CostPrice.ToString("N0")</td>
-                                    <td class="fw-semibold">@p.SalePrice.ToString("N0")</td>
+                                <tr>
+                                    <td class="ps-4 text-muted small">@item.SKU</td>
                                     <td>
-                                        <span class="badge @(low ? "text-bg-warning" : "text-bg-success")">@p.StockOnHand</span>
-                                    </td>
-                                    <td class="text-muted">@p.ReorderLevel</td>
-                                    <td class="text-end">
-                                        <div class="d-inline-flex gap-2">
-                                            @if (canEdit)
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(item.ImagePath))
                                             {
-                                                <a class="btn btn-sm btn-outline-primary" href="/Admin/Products/Edit/@p.Id">Edit</a>
+                                                <img src="@item.ImagePath" alt="" style="width: 40px; height: 40px; object-fit: contain;" class="rounded border me-2">
                                             }
-                                            @if (canDelete)
+                                            else
                                             {
-                                                <form method="post" action="/Admin/Products/Delete/@p.Id" class="m-0"
-                                                      onsubmit="return confirm('Delete this product (disable)?');">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                                </form>
+                                                <div class="rounded border me-2 d-flex align-items-center justify-content-center bg-light" style="width: 40px; height: 40px;">
+                                                    <i class="fas fa-image text-secondary"></i>
+                                                </div>
                                             }
+                                            <span class="fw-semibold">@item.Name</span>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <div class="small text-dark">@item.Category?.Name</div>
+                                        <div class="small text-muted">@item.Brand?.Name</div>
+                                    </td>
+                                    <td class="fw-bold text-primary">
+                                        @item.SalePrice.ToString("C0", CultureInfo.GetCultureInfo("vi-VN"))
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.StockOnHand > 10)
+                                        {
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill">@item.StockOnHand</span>
+                                        }
+                                        else if (item.StockOnHand > 0)
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill">@item.StockOnHand</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill">Hết hàng</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-center">
+                                        <label class="switch" title="Bật/Tắt Trending">
+                                            <input type="checkbox"
+                                                   onchange="toggleTrending(@item.Id)"
+                                                   @(item.IsTrending ? "checked" : "")>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </td>
+
+                                    <td class="text-center">
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill">Inactive</span>
+                                        }
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <a href="/Admin/Products/Edit/@item.Id" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-edit"></i></a>
+                                        <a href="/Admin/Products/Delete/@item.Id" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
                                     </td>
                                 </tr>
                             }
                         }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="fas fa-box-open fa-2x mb-2"></i><br>
+                                    Chưa có sản phẩm nào.
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
-            </div>
-
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
-                <div class="text-muted small">
-                    Showing @start to @end of @total entries
-                </div>
-
-                <nav aria-label="Products pagination">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(hasPrev ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
-                        </li>
-                        @{
-                            int s = Math.Max(1, page - 2);
-                            int e = Math.Min(totalPages, page + 2);
-                            for (int i = s; i <= e; i++)
-                            {
-                                <li class="page-item @(i == page ? "active" : "")">
-                                    <a class="page-link" href="@BuildUrl(i)">@i</a>
-                                </li>
-                            }
-                        }
-                        <li class="page-item @(hasNext ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-
-            <div class="small text-muted mt-2">
-                Yellow rows indicate low stock (StockOnHand ≤ ReorderLevel).
             </div>
         </div>
     </div>
 </div>
 
-@functions {
-    private string BuildUrl(int page)
-    {
-        if (page < 1) page = 1;
-        string q = ViewBag.Query as string ?? "";
-        int pageSize = (int)(ViewBag.PageSize ?? 10);
-        return $"/Admin/Products?q={Uri.EscapeDataString(q)}&page={page}&pageSize={pageSize}";
-    }
+@section Scripts {
+    <script>
+        function toggleTrending(id) {
+            // Gọi Action trong ProductsController
+            fetch('/Admin/Products/ToggleTrending/' + id, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert("Lỗi: " + data.message);
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Đã xảy ra lỗi kết nối!");
+            });
+        }
+    </script>
 }

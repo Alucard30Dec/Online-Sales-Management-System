@@ -4196,11 +4196,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Online Sales Management System.csproj",
+      "projectUniqueName": "E:\\Project\\Test\\Online Sales Management System.csproj",
       "projectName": "Online Sales Management System",
-      "projectPath": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Online Sales Management System.csproj",
+      "projectPath": "E:\\Project\\Test\\Online Sales Management System.csproj",
       "packagesPath": "C:\\Users\\Alucard30Dec\\.nuget\\packages\\",
-      "outputPath": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\obj\\",
+      "outputPath": "E:\\Project\\Test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
