@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "zkIwMdgC7lY=",
+  "dgSpecHash": "YUhL7/ezjiU=",
   "success": true,
-  "projectFilePath": "E:\\Project\\Test\\Online Sales Management System.csproj",
+  "projectFilePath": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Online Sales Management System.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Alucard30Dec\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\Alucard30Dec\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

@@ -419,3 +419,4 @@ E:\Project\Test\obj\Debug\net8.0\refint\Online Sales Management System.dll
 E:\Project\Test\obj\Debug\net8.0\Online Sales Management System.pdb
 E:\Project\Test\obj\Debug\net8.0\Online Sales Management System.genruntimeconfig.cache
 E:\Project\Test\obj\Debug\net8.0\ref\Online Sales Management System.dll
+E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
