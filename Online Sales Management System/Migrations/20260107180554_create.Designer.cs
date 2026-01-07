@@ -9,11 +9,11 @@ using OnlineSalesManagementSystem.Data;
 
 #nullable disable
 
-namespace OnlineSalesManagementSystem.Data.Migrations
+namespace OnlineSalesManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260104180821_AddBrandAndSeed")]
-    partial class AddBrandAndSeed
+    [Migration("20260107180554_create")]
+    partial class create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -192,6 +192,9 @@ namespace OnlineSalesManagementSystem.Data.Migrations
 
                     b.Property<int?>("AdminGroupId")
                         .HasColumnType("int");
+
+                    b.Property<string>("AvatarPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -583,8 +586,14 @@ namespace OnlineSalesManagementSystem.Data.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("CostPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");

@@ -1,8 +1,16 @@
 @model OnlineSalesManagementSystem.Areas.Admin.Controllers.AdminsController.AdminEditVm
+@using System.Security.Claims
 @using OnlineSalesManagementSystem.Domain.Entities
 @{
     ViewData["Title"] = "Edit Admin";
     var groups = ViewBag.Groups as List<AdminGroup> ?? new();
+
+    bool targetIsSuperAdmin = IsSuperAdminEmail(Model.Email);
+    string? meEmail = User?.FindFirstValue(ClaimTypes.Email);
+    bool currentIsSuperAdmin = IsSuperAdminEmail(meEmail);
+
+    // Only Super Admin can edit the Super Admin account.
+    bool lockAll = targetIsSuperAdmin && !currentIsSuperAdmin;
 }
 
 <div class="card card-primary card-outline">
@@ -25,18 +33,37 @@
                 </div>
             }
 
+            @if (targetIsSuperAdmin)
+            {
+                <div class="alert alert-warning">
+                    <i class="fas fa-shield-alt mr-1"></i>
+                    This is the <b>Super Admin</b> account. It cannot be deactivated or deleted.
+                    @if (lockAll)
+                    {
+                        <div class="mt-1"><b>Note:</b> Only Super Admin can edit this account.</div>
+                    }
+                </div>
+            }
+
             <div class="row">
                 <div class="col-12 col-lg-6">
                     <div class="form-group">
+                        <label>Email</label>
+                        <input class="form-control" value="@Model.Email" readonly />
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
                         <label>Full name</label>
-                        <input class="form-control" name="FullName" value="@Model.FullName" maxlength="150" />
+                        <input class="form-control" name="FullName" value="@Model.FullName" maxlength="150" @(lockAll ? "readonly" : "") />
                     </div>
                 </div>
 
                 <div class="col-12 col-lg-6">
                     <div class="form-group">
                         <label>New password</label>
-                        <input class="form-control" name="NewPassword" value="@Model.NewPassword" type="password" />
+                        <input class="form-control" name="NewPassword" value="@Model.NewPassword" type="password" @(lockAll ? "disabled" : "") />
                         <small class="text-muted">Leave empty to keep current password.</small>
                     </div>
                 </div>
@@ -44,24 +71,43 @@
                 <div class="col-12 col-lg-6">
                     <div class="form-group">
                         <label>Group</label>
-                        <select class="form-control" name="AdminGroupId">
-                            <option value="">-- None --</option>
-                            @foreach (var g in groups)
-                            {
-                                var selected = (Model.AdminGroupId == g.Id) ? "selected" : null;
-                                <option value="@g.Id" selected="@selected">@g.Name</option>
-                            }
-                        </select>
+
+                        @if (targetIsSuperAdmin)
+                        {
+                            <input type="hidden" name="AdminGroupId" value="@(Model.AdminGroupId?.ToString() ?? "")" />
+                            <div class="form-control-plaintext">
+                                <span class="badge badge-dark"><i class="fas fa-lock mr-1"></i> Super Admin (locked)</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <select class="form-control" name="AdminGroupId" @(lockAll ? "disabled" : "")>
+                                <option value="">-- None --</option>
+                                @foreach (var g in groups)
+                                {
+                                    var selected = (Model.AdminGroupId == g.Id) ? "selected" : null;
+                                    <option value="@g.Id" selected="@selected">@g.Name</option>
+                                }
+                            </select>
+                        }
                     </div>
                 </div>
 
                 <div class="col-12 col-lg-6">
                     <div class="form-group mb-0 mt-4">
-                        <div class="icheck-primary d-inline">
-                            <input type="hidden" name="IsActive" value="false" />
-                            <input type="checkbox" id="isActive" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") />
-                            <label for="isActive">Active</label>
-                        </div>
+                        @if (targetIsSuperAdmin)
+                        {
+                            <input type="hidden" name="IsActive" value="true" />
+                            <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i> Always Active</span>
+                        }
+                        else
+                        {
+                            <div class="icheck-primary d-inline">
+                                <input type="hidden" name="IsActive" value="false" />
+                                <input type="checkbox" id="isActive" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") />
+                                <label for="isActive">Active</label>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -69,11 +115,20 @@
 
         <div class="card-footer d-flex justify-content-between">
             <a class="btn btn-default" href="/Admin/Admins"><i class="fas fa-times mr-1"></i> Cancel</a>
-            <button class="btn btn-primary" type="submit"><i class="fas fa-save mr-1"></i> Save changes</button>
+
+            @if (!lockAll)
+            {
+                <button class="btn btn-primary" type="submit"><i class="fas fa-save mr-1"></i> Save changes</button>
+            }
         </div>
     </form>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+}
+
+@functions {
+    private static bool IsSuperAdminEmail(string? email)
+        => !string.IsNullOrWhiteSpace(email) && string.Equals(email.Trim(), "admin@osms.local", StringComparison.OrdinalIgnoreCase);
 }

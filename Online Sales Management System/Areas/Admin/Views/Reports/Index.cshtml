@@ -1,26 +1,27 @@
-﻿@using System.Text.Json
+@using System.Text.Json
 @model OnlineSalesManagementSystem.Areas.Admin.Controllers.ReportsController.ReportsIndexVm
 @{
     ViewData["Title"] = "Executive Dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var m = Model!;
 
-    // --- 1. XỬ LÝ DỮ LIỆU TỪ C# ---
-    var allDates = Model.Invoices.Select(i => i.InvoiceDate.Date)
-                    .Union(Model.Purchases.Select(p => p.PurchaseDate.Date))
-                    .Union(new[] { Model.From.Date, Model.To.Date })
-                    .Where(d => d >= Model.From.Date && d <= Model.To.Date)
+    // --- 1. X? L D? LI?U T? C# ---
+    var allDates = m.Invoices.Select(i => i.InvoiceDate.Date)
+                    .Union(m.Purchases.Select(p => p.PurchaseDate.Date))
+                    .Union(new[] { m.From.Date, m.To.Date })
+                    .Where(d => d >= m.From.Date && d <= m.To.Date)
                     .Distinct().OrderBy(d => d).ToList();
 
     var labels = allDates.Select(d => d.ToString("dd/MM")).ToArray();
-    var dataSales = allDates.Select(d => Model.Invoices.Where(i => i.InvoiceDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
-    var dataPurchases = allDates.Select(d => Model.Purchases.Where(p => p.PurchaseDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
+    var dataSales = allDates.Select(d => m.Invoices.Where(i => i.InvoiceDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
+    var dataPurchases = allDates.Select(d => m.Purchases.Where(p => p.PurchaseDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
 
     // Serialize data
     string jsonLabels = JsonSerializer.Serialize(labels);
     string jsonSales = JsonSerializer.Serialize(dataSales);
     string jsonPurchases = JsonSerializer.Serialize(dataPurchases);
 
-    double margin = Model.SalesTotal > 0 ? (double)(Model.Profit / Model.SalesTotal) * 100 : 0;
+    double margin = m.SalesTotal > 0 ? (double)(m.Profit / m.SalesTotal) * 100 : 0;
 }
 
 <link rel="stylesheet" href="~/css/report-dashboard.css" asp-append-version="true" />
@@ -197,7 +198,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Kiểm tra xem hàm đã được load chưa để tránh lỗi
+            // Ki?m tra xem hm d du?c load chua d? trnh l?i
             if (typeof initComparisonChart === 'function') {
                 initComparisonChart(
                     'comparisonChart',
@@ -206,8 +207,9 @@
                     @Html.Raw(jsonPurchases)
                 );
             } else {
-                console.error("Lỗi: Không tìm thấy hàm initComparisonChart. Kiểm tra lại đường dẫn file JS.");
+                console.error("L?i: Khng tm th?y hm initComparisonChart. Ki?m tra l?i du?ng d?n file JS.");
             }
         });
     </script>
 }
+ 

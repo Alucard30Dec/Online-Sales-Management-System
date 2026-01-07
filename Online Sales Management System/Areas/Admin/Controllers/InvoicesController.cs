@@ -94,11 +94,13 @@ public class InvoicesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(InvoiceCreateVm vm)
     {
-        if (vm.Items == null || vm.Items.Count == 0)
+        var items = vm.Items ?? new List<InvoiceItemVm>();
+
+        if (items.Count == 0)
         {
             ModelState.AddModelError("", "Please add at least 1 item.");
         }
-        else if (vm.Items.Any(x => x.ProductId == null))
+        else if (items.Any(x => x.ProductId == null))
         {
             ModelState.AddModelError("", "Please select product for all items.");
         }
@@ -125,7 +127,7 @@ public class InvoicesController : Controller
 
         decimal subTotal = 0m;
 
-        foreach (var row in vm.Items)
+        foreach (var row in items)
         {
             var qty = row.Qty;
             var price = row.UnitPrice;
@@ -335,3 +337,4 @@ public class InvoicesController : Controller
         public decimal UnitPrice { get; set; } = 0m;
     }
 }
+ 

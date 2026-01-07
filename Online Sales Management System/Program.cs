@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
-using AppUser = OnlineSalesManagementSystem.Domain.Entities.ApplicationUser;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +11,13 @@ builder.Services.AddControllersWithViews();
 // EF Core
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sql =>
+        {
+            // An toàn nếu sau này bạn tách DbContext sang project khác
+            sql.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+        });
 });
 
 // Identity (cookie auth)
@@ -40,41 +45,46 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
-// Authorization: permission-based policies (dynamic policy provider + handler will be added in Services layer)
+// Authorization: permission-based policies
 builder.Services.AddAuthorization();
 
-// These registrations are implemented in later files (Services/Security/*).
-// Keep them here so the final solution compiles once those files exist.
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, OnlineSalesManagementSystem.Services.Security.PermissionPolicyProvider>();
 builder.Services.AddScoped<IAuthorizationHandler, OnlineSalesManagementSystem.Services.Security.PermissionAuthorizationHandler>();
 builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Security.IPermissionService, OnlineSalesManagementSystem.Services.Security.PermissionService>();
 
-// Stock + invoice totals services (implemented later)
 builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Inventory.IStockService, OnlineSalesManagementSystem.Services.Inventory.StockService>();
 builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Sales.IInvoiceTotalsService, OnlineSalesManagementSystem.Services.Sales.InvoiceTotalsService>();
 
 var app = builder.Build();
 
-// Auto-migrate + seed
-using (var scope = app.Services.CreateScope())
+// Auto-migrate + seed (FAIL FAST)
+await using (var scope = app.Services.CreateAsyncScope())
 {
-    var services = scope.ServiceProvider;
+    var sp = scope.ServiceProvider;
+    var logger = sp.GetRequiredService<ILogger<Program>>();
+
     try
     {
-        var db = services.GetRequiredService<ApplicationDbContext>();
-        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var db = sp.GetRequiredService<ApplicationDbContext>();
+        var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
 
-        // Tự động migrate database nếu chưa có
-        db.Database.Migrate();
+        logger.LogInformation("Applying EF Core migrations...");
+        await db.Database.MigrateAsync(); // khuyến nghị khi apply migrations programmatically :contentReference[oaicite:2]{index=2}
 
-        // Gọi hàm seed
+        // Sanity check: nếu bảng Identity thiếu, nổ ngay tại đây cho dễ debug
+        _ = await db.Users.AsNoTracking().Select(x => x.Id).Take(1).ToListAsync();
+
+        logger.LogInformation("Seeding database...");
         await DbSeeder.SeedAsync(db, userManager, roleManager);
+
+        logger.LogInformation("Database migration + seeding done.");
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Đã xảy ra lỗi khi seed dữ liệu.");
+        // QUAN TRỌNG: Đừng nuốt lỗi, vì app chạy tiếp sẽ gây lỗi lắt nhắt như AspNetUsers not found
+        logger.LogCritical(ex, "Migration/Seeding FAILED. Application will stop.");
+        throw;
     }
 }
 

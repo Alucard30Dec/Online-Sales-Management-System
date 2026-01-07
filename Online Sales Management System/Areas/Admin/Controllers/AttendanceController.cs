@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Services.Security;
@@ -34,7 +34,7 @@ public class AttendanceController : Controller
 
         var items = await query
             .OrderByDescending(a => a.Date)
-            .ThenBy(a => a.Employee.Name)
+            .ThenBy(a => a.Employee != null ? a.Employee.Name : "")
             .Take(500)
             .ToListAsync();
 
@@ -121,3 +121,4 @@ public class AttendanceController : Controller
         public string? Note { get; set; }
     }
 }
+ 

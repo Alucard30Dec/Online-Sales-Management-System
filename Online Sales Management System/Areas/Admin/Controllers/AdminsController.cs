@@ -1,250 +1,291 @@
-﻿// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/AdminsController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OnlineSalesManagementSystem.Services.Security;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
-using AppUser = OnlineSalesManagementSystem.Domain.Entities.ApplicationUser;
+using OnlineSalesManagementSystem.Services.Security;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
-namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
-
-[Area("Admin")]
-[Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Show)]
-public class AdminsController : Controller
+namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
 {
-    private readonly ApplicationDbContext _db;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
-
-    public AdminsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    [Area("Admin")]
+    public class AdminsController : Controller
     {
-        _db = db;
-        _userManager = userManager;
-        _roleManager = roleManager;
-    }
+        private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-    [HttpGet]
-    public async Task<IActionResult> Index(string? q, int page = 1, int pageSize = 10)
-    {
-        if (page <= 0) page = 1;
-        if (pageSize <= 0) pageSize = 10;
-        if (pageSize > 100) pageSize = 100;
-
-        var query = _db.Users
-            .AsNoTracking()
-            .Include(u => u.AdminGroup)
-            .AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(q))
+        public AdminsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
-            q = q.Trim();
-            query = query.Where(u =>
-                (u.Email != null && u.Email.Contains(q)) ||
-                (u.UserName != null && u.UserName.Contains(q)) ||
-                (u.FullName != null && u.FullName.Contains(q)));
+            _db = db;
+            _userManager = userManager;
         }
 
-        var total = await query.CountAsync();
-
-        var items = await query
-            .OrderByDescending(u => u.IsActive)
-            .ThenBy(u => u.Email)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-        ViewBag.Query = q;
-        ViewBag.Page = page;
-        ViewBag.PageSize = pageSize;
-        ViewBag.Total = total;
-
-        return View(items);
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Create)]
-    [HttpGet]
-    public async Task<IActionResult> Create()
-    {
-        await LoadGroupsAsync();
-        return View(new AdminCreateVm { IsActive = true });
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Create)]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(AdminCreateVm vm)
-    {
-        await LoadGroupsAsync();
-
-        vm.Email = (vm.Email ?? "").Trim().ToLowerInvariant();
-        vm.FullName = (vm.FullName ?? "").Trim();
-
-        if (!ModelState.IsValid)
-            return View(vm);
-
-        if (string.IsNullOrWhiteSpace(vm.Email))
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Show)]
+        public async Task<IActionResult> Index(string? q)
         {
-            ModelState.AddModelError(nameof(vm.Email), "Email is required.");
-            return View(vm);
-        }
+            IQueryable<ApplicationUser> query = _db.Users.AsNoTracking();
 
-        if (string.IsNullOrWhiteSpace(vm.Password))
-        {
-            ModelState.AddModelError(nameof(vm.Password), "Password is required.");
-            return View(vm);
-        }
-
-        var existing = await _userManager.FindByEmailAsync(vm.Email);
-        if (existing != null)
-        {
-            ModelState.AddModelError(nameof(vm.Email), "Email already exists.");
-            return View(vm);
-        }
-
-        // Ensure role exists
-        if (!await _roleManager.RoleExistsAsync("Admin"))
-        {
-            await _roleManager.CreateAsync(new IdentityRole("Admin"));
-        }
-
-        var user = new ApplicationUser
-        {
-            UserName = vm.Email,
-            Email = vm.Email,
-            EmailConfirmed = true,
-            FullName = vm.FullName,
-            IsActive = vm.IsActive,
-            AdminGroupId = vm.AdminGroupId
-        };
-
-        var result = await _userManager.CreateAsync(user, vm.Password);
-        if (!result.Succeeded)
-        {
-            foreach (var e in result.Errors)
-                ModelState.AddModelError(string.Empty, e.Description);
-
-            return View(vm);
-        }
-
-        await _userManager.AddToRoleAsync(user, "Admin");
-
-        TempData["ToastSuccess"] = "Admin created.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Edit)]
-    [HttpGet]
-    public async Task<IActionResult> Edit(string id)
-    {
-        await LoadGroupsAsync();
-
-        var user = await _db.Users.Include(u => u.AdminGroup).FirstOrDefaultAsync(u => u.Id == id);
-        if (user == null) return NotFound();
-
-        return View(new AdminEditVm
-        {
-            Id = user.Id,
-            Email = user.Email ?? "",
-            FullName = user.FullName ?? "",
-            IsActive = user.IsActive,
-            AdminGroupId = user.AdminGroupId
-        });
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Edit)]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(AdminEditVm vm)
-    {
-        await LoadGroupsAsync();
-
-        vm.FullName = (vm.FullName ?? "").Trim();
-
-        if (!ModelState.IsValid)
-            return View(vm);
-
-        var user = await _userManager.FindByIdAsync(vm.Id);
-        if (user == null) return NotFound();
-
-        user.FullName = vm.FullName;
-        user.IsActive = vm.IsActive;
-        user.AdminGroupId = vm.AdminGroupId;
-
-        var upd = await _userManager.UpdateAsync(user);
-        if (!upd.Succeeded)
-        {
-            foreach (var e in upd.Errors)
-                ModelState.AddModelError(string.Empty, e.Description);
-            return View(vm);
-        }
-
-        // Optional password reset
-        if (!string.IsNullOrWhiteSpace(vm.NewPassword))
-        {
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var pr = await _userManager.ResetPasswordAsync(user, token, vm.NewPassword);
-
-            if (!pr.Succeeded)
+            if (!string.IsNullOrWhiteSpace(q))
             {
-                foreach (var e in pr.Errors)
+                var s = q.Trim();
+                query = query.Where(u =>
+                    (u.Email != null && u.Email.Contains(s)) ||
+                    (u.UserName != null && u.UserName.Contains(s)) ||
+                    (u.FullName != null && u.FullName.Contains(s)));
+            }
+
+            var users = await query
+                .OrderBy(u => u.Email)
+                .ToListAsync();
+
+            ViewBag.Query = q;
+            return View(users);
+        }
+
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Create)]
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
+            return View(new AdminCreateVm { IsActive = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Create)]
+        public async Task<IActionResult> Create(AdminCreateVm vm)
+        {
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
+
+            if (!ModelState.IsValid) return View(vm);
+
+            if (SuperAdminProtection.IsSuperAdminEmail(vm.Email))
+            {
+                ModelState.AddModelError(nameof(vm.Email), "This email is reserved for the Super Admin account.");
+                return View(vm);
+            }
+
+            var user = new ApplicationUser
+            {
+                UserName = vm.Email?.Trim(),
+                Email = vm.Email?.Trim(),
+                FullName = vm.FullName?.Trim(),
+                IsActive = vm.IsActive,
+                AdminGroupId = vm.AdminGroupId
+            };
+
+            var result = await _userManager.CreateAsync(user, vm.Password ?? string.Empty);
+            if (!result.Succeeded)
+            {
+                foreach (var e in result.Errors)
                     ModelState.AddModelError(string.Empty, e.Description);
                 return View(vm);
             }
-        }
 
-        TempData["ToastSuccess"] = "Admin updated.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Delete)]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Disable(string id)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound();
-
-        // Don’t let an admin disable themselves accidentally
-        var currentUserId = _userManager.GetUserId(User);
-        if (string.Equals(currentUserId, id, StringComparison.Ordinal))
-        {
-            TempData["ToastError"] = "You cannot disable your own account.";
+            TempData["ToastSuccess"] = "Admin account created.";
             return RedirectToAction(nameof(Index));
         }
 
-        user.IsActive = false;
-        await _userManager.UpdateAsync(user);
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Edit)]
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id)) return NotFound();
 
-        TempData["ToastSuccess"] = "Admin disabled.";
-        return RedirectToAction(nameof(Index));
-    }
+            var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null) return NotFound();
 
-    private async Task LoadGroupsAsync()
-    {
-        ViewBag.Groups = await _db.AdminGroups.AsNoTracking()
-            .OrderBy(g => g.Name)
-            .ToListAsync();
-    }
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
 
-    // ===== ViewModels =====
-    public sealed class AdminCreateVm
-    {
-        public string Email { get; set; } = "";
-        public string FullName { get; set; } = "";
-        public string Password { get; set; } = "";
-        public bool IsActive { get; set; } = true;
-        public int? AdminGroupId { get; set; }
-    }
+            var vm = new AdminEditVm
+            {
+                Id = user.Id,
+                Email = user.Email ?? string.Empty,
+                FullName = user.FullName,
+                AdminGroupId = user.AdminGroupId,
+                IsActive = user.IsActive
+            };
 
-    public sealed class AdminEditVm
-    {
-        public string Id { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string FullName { get; set; } = "";
-        public bool IsActive { get; set; } = true;
-        public int? AdminGroupId { get; set; }
-        public string? NewPassword { get; set; }
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Edit)]
+        public async Task<IActionResult> Edit(AdminEditVm vm)
+        {
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
+
+            if (!ModelState.IsValid) return View(vm);
+
+            var user = await _userManager.FindByIdAsync(vm.Id);
+            if (user == null) return NotFound();
+
+            // Only Super Admin can edit the Super Admin account (UI already locks; server must enforce too)
+            var meEmail = User?.FindFirstValue(ClaimTypes.Email);
+            bool currentIsSuper = SuperAdminProtection.IsSuperAdminEmail(meEmail);
+            bool targetIsSuper = SuperAdminProtection.IsSuperAdminEmail(user.Email);
+
+            if (targetIsSuper && !currentIsSuper)
+            {
+                TempData["ToastError"] = "You cannot modify the Super Admin account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            user.FullName = vm.FullName?.Trim();
+            user.AdminGroupId = vm.AdminGroupId;
+
+            // IsActive can be changed only for non-super admin accounts
+            if (!targetIsSuper)
+                user.IsActive = vm.IsActive;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var e in result.Errors)
+                    ModelState.AddModelError(string.Empty, e.Description);
+                return View(vm);
+            }
+
+                        // Optional password reset (leave blank to keep current password)
+            if (!string.IsNullOrWhiteSpace(vm.NewPassword))
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetResult = await _userManager.ResetPasswordAsync(user, resetToken, vm.NewPassword);
+
+                if (!resetResult.Succeeded)
+                {
+                    foreach (var e in resetResult.Errors)
+                        ModelState.AddModelError(string.Empty, e.Description);
+                    return View(vm);
+                }
+            }
+
+TempData["ToastSuccess"] = "Admin account updated.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Edit)]
+        public async Task<IActionResult> Activate(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            // Block super admin
+            if (SuperAdminProtection.IsSuperAdminEmail(user.Email))
+            {
+                TempData["ToastError"] = "You cannot activate/deactivate the Super Admin account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            user.IsActive = true;
+            await _userManager.UpdateAsync(user);
+
+            TempData["ToastSuccess"] = "Account activated.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Delete)]
+        public async Task<IActionResult> Disable(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            // Block super admin
+            if (SuperAdminProtection.IsSuperAdminEmail(user.Email))
+            {
+                TempData["ToastError"] = "You cannot activate/deactivate the Super Admin account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            user.IsActive = false;
+            await _userManager.UpdateAsync(user);
+
+            TempData["ToastSuccess"] = "Account deactivated.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Delete)]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            // Block super admin
+            if (SuperAdminProtection.IsSuperAdminEmail(user.Email))
+            {
+                TempData["ToastError"] = "You cannot delete the Super Admin account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Prevent deleting yourself
+            var myId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrWhiteSpace(myId) && string.Equals(myId, user.Id, StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["ToastError"] = "You cannot delete your own account.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                TempData["ToastError"] = "Delete failed.";
+            }
+            else
+            {
+                TempData["ToastSuccess"] = "Admin account deleted.";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+public class AdminCreateVm
+        {
+            [Required, EmailAddress, MaxLength(150)]
+            public string Email { get; set; } = string.Empty;
+
+            [MaxLength(150)]
+            public string? FullName { get; set; }
+
+            [DataType(DataType.Password)]
+            [MinLength(6)]
+            public string? NewPassword { get; set; }
+
+
+            [Required]
+            public string? Password { get; set; }
+
+            public int? AdminGroupId { get; set; }
+
+            public bool IsActive { get; set; } = true;
+        }
+
+        public class AdminEditVm
+        {
+            [Required]
+            public string Id { get; set; } = string.Empty;
+
+            [Required, EmailAddress, MaxLength(150)]
+            public string Email { get; set; } = string.Empty;
+
+            [MaxLength(150)]
+            public string? FullName { get; set; }
+
+
+            [DataType(DataType.Password)]
+            [MinLength(6)]
+            public string? NewPassword { get; set; }
+            public int? AdminGroupId { get; set; }
+
+            public bool IsActive { get; set; } = true;
+        }
     }
 }
+ 

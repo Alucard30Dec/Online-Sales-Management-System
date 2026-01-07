@@ -1,6 +1,5 @@
-﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Unit>
+@model List<OnlineSalesManagementSystem.Domain.Entities.Unit>
 @using Microsoft.AspNetCore.Authorization
-@using OnlineSalesManagementSystem.Services.Security
 @using OnlineSalesManagementSystem.Services.Security
 @inject IAuthorizationService AuthorizationService
 @{
@@ -155,3 +154,4 @@
         return $"/Admin/Units?q={Uri.EscapeDataString(q)}&page={page}&pageSize={pageSize}";
     }
 }
+ 

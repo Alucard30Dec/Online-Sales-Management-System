@@ -1,4 +1,4 @@
-﻿// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/PurchasesController.cs
+// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/PurchasesController.cs
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +36,7 @@ public class PurchasesController : Controller
             q = q.Trim();
             query = query.Where(p =>
                 p.PurchaseNo.Contains(q) ||
-                p.Supplier.Name.Contains(q));
+                (p.Supplier != null && p.Supplier.Name.Contains(q)));
         }
 
         if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<PurchaseStatus>(status, true, out var st))
@@ -290,3 +290,4 @@ public class PurchasesController : Controller
         public decimal UnitCost { get; set; } = 0m;
     }
 }
+ 

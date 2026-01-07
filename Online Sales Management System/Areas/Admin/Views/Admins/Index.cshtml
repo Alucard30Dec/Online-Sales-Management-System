@@ -1,152 +1,129 @@
-@model List<OnlineSalesManagementSystem.Domain.Entities.ApplicationUser>
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+@using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using OnlineSalesManagementSystem.Services.Security
 @inject IAuthorizationService AuthorizationService
+
 @{
     ViewData["Title"] = "Admins";
 
-    string q = ViewBag.Query as string ?? "";
-    int page = (int)(ViewBag.Page ?? 1);
-    int pageSize = (int)(ViewBag.PageSize ?? 10);
-    int total = (int)(ViewBag.Total ?? 0);
+    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, PermissionConstants.Policies.Require(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Create))).Succeeded;
+    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, PermissionConstants.Policies.Require(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Edit))).Succeeded;
+    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, PermissionConstants.Policies.Require(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Delete))).Succeeded;
 
-    int totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
-    bool hasPrev = page > 1;
-    bool hasNext = page < totalPages;
+    string myId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+    string? q = ViewBag.Query as string;
 
-    int start = (page - 1) * pageSize + (total == 0 ? 0 : 1);
-    int end = Math.Min(page * pageSize, total);
+    // Helper theo email (đồng bộ với code SuperAdminProtection)
+    bool IsSuperAdminEmail(string? email)
+        => string.Equals(email?.Trim(), SuperAdminProtection.SuperAdminEmail, StringComparison.OrdinalIgnoreCase);
 
-    string pCreate = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Create;
-    string pEdit = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Edit;
-    string pDelete = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Admin + "." + PermissionConstants.Actions.Delete;
-
-    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, pCreate)).Succeeded;
-    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, pEdit)).Succeeded;
-    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
+    bool currentIsSuperAdmin = IsSuperAdminEmail(User.FindFirstValue(ClaimTypes.Email));
 }
 
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-user-shield mr-1"></i> Admins</h3>
-
-        <div class="card-tools">
-            @if (canCreate)
-            {
-                <a class="btn btn-sm btn-primary" href="/Admin/Admins/Create"><i class="fas fa-plus mr-1"></i> New Admin</a>
-            }
-        </div>
-    </div>
-
-    <div class="card-body">
-        <form method="get" class="mb-3">
-            <div class="input-group" style="max-width: 520px;">
-                <input type="text" class="form-control" name="q" value="@q" placeholder="Search by email / full name..." />
-                <input type="hidden" name="pageSize" value="@pageSize" />
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
-                </div>
-            </div>
-        </form>
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        <th style="width:90px;">#</th>
-                        <th>Email</th>
-                        <th>Full name</th>
-                        <th style="width:220px;">Group</th>
-                        <th style="width:140px;">Status</th>
-                        <th style="width:220px;" class="text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @if (total == 0)
-                {
-                    <tr><td colspan="6" class="text-center text-muted py-4">No admins found.</td></tr>
-                }
-                else
-                {
-                    var idx = start;
-                    foreach (var u in Model)
-                    {
-                        <tr>
-                            <td>@idx</td>
-                            <td>@u.Email</td>
-                            <td>@u.FullName</td>
-                            <td>@(u.AdminGroup?.Name ?? "-")</td>
-                            <td>
-                                @if (u.IsActive)
-                                {
-                                    <span class="badge badge-success">Active</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-secondary">Inactive</span>
-                                }
-                            </td>
-                            <td class="text-right">
-                                @if (canEdit)
-                                {
-                                    <a class="btn btn-sm btn-outline-primary" href="/Admin/Admins/Edit/@u.Id"><i class="fas fa-edit"></i></a>
-                                }
-                                @if (canDelete)
-                                {
-                                    <form method="post" action="/Admin/Admins/Delete/@u.Id" class="d-inline" onsubmit="return confirm('Delete this admin?');">
-                                        @Html.AntiForgeryToken()
-                                        <button class="btn btn-sm btn-outline-danger" type="submit"><i class="fas fa-trash"></i></button>
-                                    </form>
-                                }
-                            </td>
-                        </tr>
-                        idx++;
-                    }
-                }
-                </tbody>
-            </table>
-        </div>
-
-        <div class="d-flex align-items-center justify-content-between">
-            <div class="text-muted small">
-                @if (total > 0)
-                {
-                    <text>Showing @start-@end of @total</text>
-                }
-            </div>
-
-            <nav aria-label="Admins pagination">
-                <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item @(hasPrev ? "" : "disabled")">
-                        <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
-                    </li>
-
-                    @{
-                        int s = Math.Max(1, page - 2);
-                        int e = Math.Min(totalPages, page + 2);
-                        for (int i = s; i <= e; i++)
-                        {
-                            <li class="page-item @(i == page ? "active" : "")">
-                                <a class="page-link" href="@BuildUrl(i)">@i</a>
-                            </li>
-                        }
-                    }
-
-                    <li class="page-item @(hasNext ? "" : "disabled")">
-                        <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Admins</h3>
 </div>
 
-@functions {
-    private string BuildUrl(int page)
-    {
-        if (page < 1) page = 1;
-        string q = ViewBag.Query as string ?? "";
-        int pageSize = (int)(ViewBag.PageSize ?? 10);
-        return $"/Admin/Admins?q={Uri.EscapeDataString(q)}&page={page}&pageSize={pageSize}";
-    }
-}
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input class="form-control" name="q" value="@q" placeholder="Search by username/email..." />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+</form>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th>UserName</th>
+                    <th>Email</th>
+                    <th style="width:130px;">Status</th>
+                    <th style="width:260px;" class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    var isSuper = IsSuperAdminEmail(u.Email);
+                    // Nếu dự án bạn dùng custom user có IsActive, razor runtime vẫn render được nếu property tồn tại.
+                    bool isActive = true;
+                    try { isActive = (bool)((dynamic)u).IsActive; } catch { }
+
+                    <tr>
+                        <td>
+                            @u.UserName
+                            @if (isSuper)
+                            {
+                                <span class="badge badge-dark ml-2"><i class="fas fa-crown"></i> Super Admin</span>
+                            }
+                            @if (string.Equals(u.Id, myId, StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge badge-info ml-2">You</span>
+                            }
+                        </td>
+                        <td>@u.Email</td>
+                        <td>
+                            @if (isActive)
+                            {
+                                <span class="badge badge-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td class="text-right">
+
+                            @* Activate / Deactivate (KHÔNG áp dụng cho super admin) *@
+                            @if (!isSuper)
+                            {
+                                if (!isActive && canEdit)
+                                {
+                                    <form class="d-inline" method="post"
+                                          asp-area="Admin" asp-controller="Admins" asp-action="Activate" asp-route-id="@u.Id">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Activate">
+                                            <i class="fas fa-user-check"></i>
+                                        </button>
+                                    </form>
+                                }
+
+                                if (isActive && canDelete && !string.Equals(u.Id, myId, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <form class="d-inline" method="post"
+                                          asp-area="Admin" asp-controller="Admins" asp-action="Disable" asp-route-id="@u.Id"
+                                          onsubmit="return confirm('Deactivate this admin account?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-warning" title="Deactivate">
+                                            <i class="fas fa-user-slash"></i>
+                                        </button>
+                                    </form>
+                                }
+                            }
+
+                            @* Edit (Super admin chỉ cho super admin sửa) *@
+                            @if (canEdit && (!isSuper || currentIsSuperAdmin))
+                            {
+                                <a class="btn btn-sm btn-outline-primary"
+                                   asp-area="Admin" asp-controller="Admins" asp-action="Edit" asp-route-id="@u.Id">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            }
+
+                            @* Delete button cũ: giữ ẩn với super admin, còn lại nếu bạn muốn vẫn giữ thì bật lại.
+                           Hiện tại Disable/Activate đã đủ cho yêu cầu active/inactive. *@
+                            @if (canDelete && !isSuper)
+                            {
+                                <!-- intentionally no hard-delete -->
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

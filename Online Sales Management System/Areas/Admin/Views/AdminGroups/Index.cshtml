@@ -1,67 +1,99 @@
-@model List<OnlineSalesManagementSystem.Domain.Entities.AdminGroup>
+@model IEnumerable<OnlineSalesManagementSystem.Domain.Entities.AdminGroup>
+@using Microsoft.AspNetCore.Authorization
+@using OnlineSalesManagementSystem.Services.Security
+@inject IAuthorizationService AuthorizationService
+
 @{
-    ViewData["Title"] = "Roles / Groups";
-    string q = ViewBag.Query as string ?? "";
+    ViewData["Title"] = "Admin Groups";
+
+    var pCreate = PermissionConstants.PolicyName(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Create);
+    var pEdit = PermissionConstants.PolicyName(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Edit);
+    var pDelete = PermissionConstants.PolicyName(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Delete);
+
+    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, pCreate)).Succeeded;
+    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, pEdit)).Succeeded;
+    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
+
+    bool IsSuperAdminGroupName(string? name)
+        => string.Equals(name?.Trim(), SuperAdminProtection.SuperAdminGroupName, StringComparison.OrdinalIgnoreCase);
 }
 
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title"><i class="fas fa-users-cog mr-1"></i> Roles / Groups</h3>
-        <div class="card-tools">
-            <a class="btn btn-sm btn-primary" href="/Admin/AdminGroups/Create"><i class="fas fa-plus mr-1"></i> New Group</a>
-        </div>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Admin Groups</h3>
 
-    <div class="card-body">
-        <form method="get" class="mb-3">
-            <div class="input-group" style="max-width: 520px;">
-                <input type="text" class="form-control" name="q" value="@q" placeholder="Search group name..." />
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search"></i></button>
-                </div>
-            </div>
-        </form>
+    @if (canCreate)
+    {
+        <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminGroups" asp-action="Create">
+            <i class="fas fa-plus"></i> New group
+        </a>
+    }
+</div>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-light">
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th style="width:70px;">ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th style="width:120px;">Permissions</th>
+                    <th style="width:220px;" class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var g in Model)
+                {
+                    var isSuper = IsSuperAdminGroupName(g.Name);
                     <tr>
-                        <th style="width:90px;">#</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th style="width:260px;" class="text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @if (Model.Count == 0)
-                {
-                    <tr><td colspan="4" class="text-center text-muted py-4">No groups found.</td></tr>
-                }
-                else
-                {
-                    foreach (var g in Model)
-                    {
-                        <tr>
-                            <td>@g.Id</td>
-                            <td class="font-weight-bold">@g.Name</td>
-                            <td class="text-muted">@g.Description</td>
-                            <td class="text-right">
-                                <a class="btn btn-sm btn-outline-secondary" href="/Admin/AdminGroups/Permissions/@g.Id"><i class="fas fa-th-large mr-1"></i> Permissions</a>
-                                <a class="btn btn-sm btn-outline-primary" href="/Admin/AdminGroups/Edit/@g.Id"><i class="fas fa-edit"></i></a>
-                                <form method="post" action="/Admin/AdminGroups/Delete/@g.Id" class="d-inline" onsubmit="return confirm('Delete this group?');">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                }
-                </tbody>
-            </table>
-        </div>
+                        <td>@g.Id</td>
+                        <td>
+                            @g.Name
+                            @if (isSuper)
+                            {
+                                <span class="badge badge-dark ml-2"><i class="fas fa-crown"></i> Super Admin</span>
+                            }
+                        </td>
+                        <td>@g.Description</td>
+                        <td>
+                            @if (canEdit)
+                            {
+                                <a class="btn btn-sm @(isSuper ? "btn-outline-secondary" : "btn-outline-info")"
+                                   asp-area="Admin" asp-controller="AdminGroups" asp-action="Permissions" asp-route-id="@g.Id">
+                                    <i class="fas @(isSuper ? "fa-lock" : "fa-key")"></i> Permissions
+                                </a>
 
-        <div class="alert alert-info mb-0">
-            Tip: open <b>Permissions</b> to configure what each group can <b>Show / Create / Edit / Delete</b>.
-        </div>
+                                @if (isSuper)
+                                {
+                                    <div class="small text-muted mt-1">Read-only</div>
+                                }
+                            }
+                        </td>
+                        <td class="text-right">
+                            @if (canEdit && !isSuper)
+                            {
+                                <a class="btn btn-sm btn-outline-primary"
+                                   asp-area="Admin" asp-controller="AdminGroups" asp-action="Edit" asp-route-id="@g.Id">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            }
+
+                            @if (canDelete && !isSuper)
+                            {
+                                <form class="d-inline" method="post"
+                                      asp-area="Admin" asp-controller="AdminGroups" asp-action="Delete" asp-route-id="@g.Id"
+                                      onsubmit="return confirm('Delete this group?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
+ 

@@ -1,240 +1,242 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OnlineSalesManagementSystem.Services.Security;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
+using OnlineSalesManagementSystem.Services.Security;
 
-namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
-
-[Area("Admin")]
-[Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Show)]
-public class AdminGroupsController : Controller
+namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
 {
-    private readonly ApplicationDbContext _db;
-
-    public AdminGroupsController(ApplicationDbContext db)
+    [Area("Admin")]
+    public class AdminGroupsController : Controller
     {
-        _db = db;
-    }
+        private readonly ApplicationDbContext _db;
 
-    [HttpGet]
-    public async Task<IActionResult> Index(string? q)
-    {
-        var query = _db.AdminGroups.AsNoTracking().AsQueryable();
-
-        if (!string.IsNullOrWhiteSpace(q))
+        public AdminGroupsController(ApplicationDbContext db)
         {
-            q = q.Trim();
-            query = query.Where(g => g.Name.Contains(q));
+            _db = db;
         }
 
-        var items = await query.OrderBy(g => g.Name).ToListAsync();
-        ViewBag.Query = q;
-
-        return View(items);
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Create)]
-    [HttpGet]
-    public IActionResult Create()
-    {
-        return View(new AdminGroup());
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Create)]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(AdminGroup model)
-    {
-        model.Name = (model.Name ?? "").Trim();
-        model.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
-
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var exists = await _db.AdminGroups.AnyAsync(g => g.Name == model.Name);
-        if (exists)
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Show)]
+        public async Task<IActionResult> Index()
         {
-            ModelState.AddModelError(nameof(model.Name), "Group name already exists.");
-            return View(model);
+            var groups = await _db.AdminGroups
+                .AsNoTracking()
+                .OrderBy(g => g.Id)
+                .ToListAsync();
+
+            return View(groups);
         }
 
-        _db.AdminGroups.Add(model);
-        await _db.SaveChangesAsync();
-
-        TempData["ToastSuccess"] = "Admin group created.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Edit)]
-    [HttpGet]
-    public async Task<IActionResult> Edit(int id)
-    {
-        var entity = await _db.AdminGroups.FirstOrDefaultAsync(g => g.Id == id);
-        if (entity == null) return NotFound();
-
-        return View(entity);
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Edit)]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(AdminGroup model)
-    {
-        model.Name = (model.Name ?? "").Trim();
-        model.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
-
-        if (!ModelState.IsValid)
-            return View(model);
-
-        var entity = await _db.AdminGroups.FirstOrDefaultAsync(g => g.Id == model.Id);
-        if (entity == null) return NotFound();
-
-        var exists = await _db.AdminGroups.AnyAsync(g => g.Id != model.Id && g.Name == model.Name);
-        if (exists)
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Create)]
+        public IActionResult Create()
         {
-            ModelState.AddModelError(nameof(model.Name), "Group name already exists.");
-            return View(model);
+            return View(new AdminGroup());
         }
 
-        entity.Name = model.Name;
-        entity.Description = model.Description;
-
-        await _db.SaveChangesAsync();
-
-        TempData["ToastSuccess"] = "Admin group updated.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Delete)]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var entity = await _db.AdminGroups
-            .Include(g => g.Permissions)
-            .FirstOrDefaultAsync(g => g.Id == id);
-
-        if (entity == null) return NotFound();
-
-        var usedByUsers = await _db.Users.AnyAsync(u => u.AdminGroupId == id);
-        if (usedByUsers)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Create)]
+        public async Task<IActionResult> Create(AdminGroup model)
         {
-            TempData["ToastError"] = "Cannot delete: this group is assigned to one or more admins.";
+            if (!ModelState.IsValid) return View(model);
+
+            _db.AdminGroups.Add(model);
+            await _db.SaveChangesAsync();
+
+            TempData["ToastSuccess"] = "Admin group created.";
             return RedirectToAction(nameof(Index));
         }
 
-        _db.GroupPermissions.RemoveRange(entity.Permissions);
-        _db.AdminGroups.Remove(entity);
-        await _db.SaveChangesAsync();
-
-        TempData["ToastSuccess"] = "Admin group deleted.";
-        return RedirectToAction(nameof(Index));
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Edit)]
-    [HttpGet]
-    public async Task<IActionResult> Permissions(int id)
-    {
-        var group = await _db.AdminGroups.AsNoTracking().FirstOrDefaultAsync(g => g.Id == id);
-        if (group == null) return NotFound();
-
-        var perms = await _db.GroupPermissions.AsNoTracking()
-            .Where(p => p.AdminGroupId == id)
-            .ToListAsync();
-
-        var grantAll = perms.Any(p => p.Module == "*" && p.Action == "*");
-        var set = new HashSet<string>(perms.Select(p => $"{p.Module}.{p.Action}"), StringComparer.OrdinalIgnoreCase);
-
-        var modules = PermissionConstants.AllModules;
-        var rows = modules.Select(m => new PermissionRowVm
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Edit)]
+        public async Task<IActionResult> Edit(int id)
         {
-            Module = m,
-            Show = grantAll || set.Contains($"{m}.{PermissionConstants.Actions.Show}"),
-            Create = grantAll || set.Contains($"{m}.{PermissionConstants.Actions.Create}"),
-            Edit = grantAll || set.Contains($"{m}.{PermissionConstants.Actions.Edit}"),
-            Delete = grantAll || set.Contains($"{m}.{PermissionConstants.Actions.Delete}")
-        }).ToList();
+            var entity = await _db.AdminGroups.FindAsync(id);
+            if (entity == null) return NotFound();
 
-        return View(new GroupPermissionsVm
-        {
-            AdminGroupId = id,
-            GroupName = group.Name,
-            GrantAll = grantAll,
-            Rows = rows
-        });
-    }
-
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.AdminGroups + "." + PermissionConstants.Actions.Edit)]
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Permissions(GroupPermissionsVm vm)
-    {
-        var group = await _db.AdminGroups.FirstOrDefaultAsync(g => g.Id == vm.AdminGroupId);
-        if (group == null) return NotFound();
-
-        var modules = new HashSet<string>(PermissionConstants.AllModules, StringComparer.OrdinalIgnoreCase);
-
-        vm.Rows ??= new();
-        vm.Rows = vm.Rows.Where(r => modules.Contains(r.Module)).ToList();
-
-        var old = await _db.GroupPermissions.Where(p => p.AdminGroupId == vm.AdminGroupId).ToListAsync();
-        _db.GroupPermissions.RemoveRange(old);
-
-        if (vm.GrantAll)
-        {
-            _db.GroupPermissions.Add(new GroupPermission
+            // Block editing Super Admin group
+            if (SuperAdminProtection.IsSuperAdminGroupName(entity.Name))
             {
-                AdminGroupId = vm.AdminGroupId,
-                Module = "*",
-                Action = "*"
-            });
-        }
-        else
-        {
-            foreach (var row in vm.Rows)
-            {
-                AddIf(row.Module, PermissionConstants.Actions.Show, row.Show);
-                AddIf(row.Module, PermissionConstants.Actions.Create, row.Create);
-                AddIf(row.Module, PermissionConstants.Actions.Edit, row.Edit);
-                AddIf(row.Module, PermissionConstants.Actions.Delete, row.Delete);
+                TempData["ToastError"] = "You cannot edit the Super Admin group.";
+                return RedirectToAction(nameof(Index));
             }
+
+            return View(entity);
         }
 
-        await _db.SaveChangesAsync();
-
-        TempData["ToastSuccess"] = "Permissions saved.";
-        return RedirectToAction(nameof(Permissions), new { id = vm.AdminGroupId });
-
-        void AddIf(string module, string action, bool enabled)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Edit)]
+        public async Task<IActionResult> Edit(AdminGroup model)
         {
-            if (!enabled) return;
+            if (!ModelState.IsValid) return View(model);
 
-            _db.GroupPermissions.Add(new GroupPermission
+            var entity = await _db.AdminGroups.FindAsync(model.Id);
+            if (entity == null) return NotFound();
+
+            // Block editing Super Admin group
+            if (SuperAdminProtection.IsSuperAdminGroupName(entity.Name))
             {
-                AdminGroupId = vm.AdminGroupId,
-                Module = module,
-                Action = action
-            });
+                TempData["ToastError"] = "You cannot edit the Super Admin group.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            entity.Name = model.Name;
+            entity.Description = model.Description;
+
+            await _db.SaveChangesAsync();
+
+            TempData["ToastSuccess"] = "Admin group updated.";
+            return RedirectToAction(nameof(Index));
         }
-    }
 
-    // ===== ViewModels =====
-    public sealed class GroupPermissionsVm
-    {
-        public int AdminGroupId { get; set; }
-        public string GroupName { get; set; } = "";
-        public bool GrantAll { get; set; }
-        public List<PermissionRowVm> Rows { get; set; } = new();
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Delete)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var group = await _db.AdminGroups
+                .Include(g => g.Permissions)
+                .FirstOrDefaultAsync(g => g.Id == id);
 
-    public sealed class PermissionRowVm
-    {
-        public string Module { get; set; } = "";
-        public bool Show { get; set; }
-        public bool Create { get; set; }
-        public bool Edit { get; set; }
-        public bool Delete { get; set; }
+            if (group == null) return NotFound();
+
+            // Block deleting Super Admin group
+            if (SuperAdminProtection.IsSuperAdminGroupName(group.Name))
+            {
+                TempData["ToastError"] = "You cannot delete the Super Admin group.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _db.GroupPermissions.RemoveRange(group.Permissions);
+            _db.AdminGroups.Remove(group);
+
+            await _db.SaveChangesAsync();
+
+            TempData["ToastSuccess"] = "Admin group deleted.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Edit)]
+        public async Task<IActionResult> Permissions(int id)
+        {
+            var group = await _db.AdminGroups.AsNoTracking().FirstOrDefaultAsync(g => g.Id == id);
+            if (group == null) return NotFound();
+
+            var existing = await _db.GroupPermissions
+                .AsNoTracking()
+                .Where(p => p.AdminGroupId == id)
+                .ToListAsync();
+
+            var set = new HashSet<string>(existing.Select(p => $"{p.Module}:{p.Action}"));
+
+            var vm = new GroupPermissionsVm
+            {
+                GroupId = id,
+                GroupName = group.Name ?? string.Empty,
+                GrantAll = set.Contains("*:*"),
+                Rows = PermissionConstants.AllModules.Select(m => new PermissionRowVm
+                {
+                    Module = m,
+                    Show = set.Contains($"{m}:{PermissionConstants.Actions.Show}"),
+                    Create = set.Contains($"{m}:{PermissionConstants.Actions.Create}"),
+                    Edit = set.Contains($"{m}:{PermissionConstants.Actions.Edit}"),
+                    Delete = set.Contains($"{m}:{PermissionConstants.Actions.Delete}"),
+                    Approve = set.Contains($"{m}:{PermissionConstants.Actions.Approve}"),
+                    Export = set.Contains($"{m}:{PermissionConstants.Actions.Export}"),
+                    Manage = set.Contains($"{m}:{PermissionConstants.Actions.Manage}")
+                }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Edit)]
+        public async Task<IActionResult> Permissions(GroupPermissionsVm vm)
+        {
+            // Always re-check server side
+            var group = await _db.AdminGroups.AsNoTracking().FirstOrDefaultAsync(g => g.Id == vm.GroupId);
+            if (group == null) return NotFound();
+
+            // A) Super Admin group: allow view but reject saving (read-only)
+            if (SuperAdminProtection.IsSuperAdminGroupName(group.Name))
+            {
+                TempData["ToastError"] = "Super Admin group permissions are read-only.";
+                return RedirectToAction(nameof(Permissions), new { id = vm.GroupId });
+            }
+
+            var existing = await _db.GroupPermissions.Where(p => p.AdminGroupId == vm.GroupId).ToListAsync();
+            _db.GroupPermissions.RemoveRange(existing);
+
+            var newPerms = new List<GroupPermission>();
+
+            if (vm.GrantAll)
+            {
+                newPerms.Add(new GroupPermission
+                {
+                    AdminGroupId = vm.GroupId,
+                    Module = PermissionConstants.Wildcard,
+                    Action = PermissionConstants.Wildcard
+                });
+            }
+            else
+            {
+                vm.Rows ??= new List<PermissionRowVm>();
+
+                foreach (var row in vm.Rows.Where(r => !string.IsNullOrWhiteSpace(r.Module)))
+                {
+                    void AddIf(bool ok, string action)
+                    {
+                        if (!ok) return;
+                        newPerms.Add(new GroupPermission
+                        {
+                            AdminGroupId = vm.GroupId,
+                            Module = row.Module,
+                            Action = action
+                        });
+                    }
+
+                    AddIf(row.Show, PermissionConstants.Actions.Show);
+                    AddIf(row.Create, PermissionConstants.Actions.Create);
+                    AddIf(row.Edit, PermissionConstants.Actions.Edit);
+                    AddIf(row.Delete, PermissionConstants.Actions.Delete);
+                    AddIf(row.Approve, PermissionConstants.Actions.Approve);
+                    AddIf(row.Export, PermissionConstants.Actions.Export);
+                    AddIf(row.Manage, PermissionConstants.Actions.Manage);
+                }
+            }
+
+            if (newPerms.Count > 0)
+                _db.GroupPermissions.AddRange(newPerms);
+
+            await _db.SaveChangesAsync();
+
+            TempData["ToastSuccess"] = "Permissions updated.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        public class GroupPermissionsVm
+        {
+            public int GroupId { get; set; }
+            public string GroupName { get; set; } = string.Empty;
+            public bool GrantAll { get; set; }
+            public List<PermissionRowVm> Rows { get; set; } = new();
+        }
+
+        public class PermissionRowVm
+        {
+            public string Module { get; set; } = string.Empty;
+
+            public bool Show { get; set; }
+            public bool Create { get; set; }
+            public bool Edit { get; set; }
+            public bool Delete { get; set; }
+
+            public bool Approve { get; set; }
+            public bool Export { get; set; }
+            public bool Manage { get; set; }
+        }
     }
 }
