@@ -8,6 +8,13 @@
     <RootNamespace>OnlineSalesManagementSystem</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="wwwroot\Clients\**" />
+    <Content Remove="wwwroot\Clients\**" />
+    <EmbeddedResource Remove="wwwroot\Clients\**" />
+    <None Remove="wwwroot\Clients\**" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
@@ -24,7 +31,7 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Migrations\" />
-    <Folder Include="wwwroot\Clients\" />
+    <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
 
 </Project>

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Online Sales Management System")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6030d7c06c532da98011158caf5e2f67c4fd2106")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+631e600e5fe649fdc4c1f7504c8729bacd027137")]
 [assembly: System.Reflection.AssemblyProductAttribute("Online Sales Management System")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Online Sales Management System")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
