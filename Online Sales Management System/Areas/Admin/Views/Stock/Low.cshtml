@@ -1,68 +1,96 @@
 ﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Product>
 @{
-    ViewData["Title"] = "Low Stock";
+    ViewData["Title"] = "Cảnh báo Tồn kho";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-
     string q = ViewBag.Query as string ?? "";
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-        <div>
-            <h1 class="h3 mb-0">Low Stock</h1>
-            <div class="text-muted">Products where StockOnHand ≤ ReorderLevel.</div>
-        </div>
+<link rel="stylesheet" href="~/css/stock-ui.css" />
 
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-secondary" href="/Admin/Stock">Back to stock</a>
-            <a class="btn btn-outline-secondary" href="/Admin/Stock/Movements">Movements</a>
+<div class="container-fluid py-4" style="background-color: #f8f9fc;">
+
+    <div class="hero-header" style="border-left: 6px solid #ffc107;">
+        <i class="fas fa-exclamation-triangle hero-icon-bg" style="color: rgba(255, 193, 7, 0.1);"></i>
+        <div class="d-flex justify-content-between align-items-center position-relative" style="z-index: 1;">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom mb-2">
+                        <li class="breadcrumb-item"><a href="/Admin/Stock">Kho hàng</a></li>
+                        <li class="breadcrumb-item active">Cảnh báo</li>
+                    </ol>
+                </nav>
+                <div class="d-flex align-items-center gap-3">
+                    <h2 class="fw-bold text-dark mb-0">Sản phẩm sắp hết hàng</h2>
+                    <span class="badge bg-warning text-dark rounded-pill">@Model.Count cần nhập</span>
+                </div>
+                <p class="text-muted mt-2 mb-0">Danh sách các sản phẩm có số lượng tồn kho thấp hơn định mức đặt lại.</p>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a href="/Admin/Stock" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="fas fa-arrow-left me-2"></i>Quay lại kho
+                </a>
+                <a href="/Admin/Purchases/Create" class="btn btn-success shadow-sm rounded-pill px-4 fw-bold">
+                    <i class="fas fa-cart-plus me-2"></i>Nhập hàng ngay
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end mb-3">
-                <div class="col-12 col-md-7 col-xl-5">
-                    <label class="form-label small text-muted">Search</label>
-                    <input class="form-control" name="q" value="@q" placeholder="SKU or product name..." />
+    <div class="card card-modern border-warning border-opacity-25">
+        <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+            <form method="get" class="row g-3">
+                <div class="col-12 col-md-6">
+                    <div class="input-group shadow-sm" style="border-radius: 50px; overflow: hidden;">
+                        <span class="input-group-text bg-white border-end-0 ps-3"><i class="fas fa-search text-muted"></i></span>
+                        <input class="form-control border-start-0" name="q" value="@q" placeholder="Tìm trong danh sách cảnh báo..." style="border-left: none;">
+                    </div>
                 </div>
-
-                <div class="col-12 col-md-5 col-xl-3 d-flex gap-2">
-                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
-                    <a class="btn btn-outline-secondary w-100" href="/Admin/Stock/Low">Reset</a>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold">Tìm kiếm</button>
+                    <a href="/Admin/Stock/Low" class="btn btn-light rounded-pill px-3 ms-2">Reset</a>
                 </div>
             </form>
+        </div>
 
+        <div class="card-body px-0 pt-3">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-modern mb-0">
                     <thead>
-                        <tr class="table-light">
-                            <th style="width:90px;">#</th>
-                            <th style="width:160px;">SKU</th>
-                            <th>Name</th>
-                            <th style="width:180px;">Category</th>
-                            <th style="width:140px;">Unit</th>
-                            <th style="width:140px;">Stock</th>
-                            <th style="width:140px;">Reorder</th>
+                        <tr>
+                            <th class="ps-4">#ID</th>
+                            <th>Mã SKU</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Danh mục</th>
+                            <th>Đơn vị</th>
+                            <th class="text-center">Tồn kho</th>
+                            <th class="text-center">Định mức</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (Model.Count == 0)
                         {
-                            <tr><td colspan="7" class="text-center text-muted py-4">No low-stock products 🎉</td></tr>
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="fas fa-check-circle fa-3x text-success mb-3 opacity-50"></i>
+                                    <p class="text-muted fw-bold">Tuyệt vời! Không có sản phẩm nào sắp hết hàng.</p>
+                                </td>
+                            </tr>
                         }
                         else
                         {
                             foreach (var p in Model)
                             {
-                                <tr class="table-warning">
-                                    <td>@p.Id</td>
-                                    <td class="fw-semibold">@p.SKU</td>
+                                <tr class="row-low-stock">
+                                    <td class="ps-4 text-muted">@p.Id</td>
+                                    <td><span class="fw-bold text-dark">@p.SKU</span></td>
                                     <td>@p.Name</td>
                                     <td class="text-muted">@p.Category?.Name</td>
                                     <td class="text-muted">@p.Unit?.Name</td>
-                                    <td><span class="badge text-bg-warning">@p.StockOnHand</span></td>
-                                    <td class="text-muted">@p.ReorderLevel</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-danger">@p.StockOnHand</span>
+                                    </td>
+                                    <td class="text-center fw-bold text-muted">@p.ReorderLevel</td>
                                 </tr>
                             }
                         }

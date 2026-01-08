@@ -1,81 +1,101 @@
 ﻿@model OnlineSalesManagementSystem.Domain.Entities.Invoice
+@using OnlineSalesManagementSystem.Domain.Entities
 @{
-    ViewData["Title"] = "Invoice Details";
+    ViewData["Title"] = "Chi tiết Hóa đơn";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
-    string badge = Model.Status switch
+    string badgeClass = Model.Status switch
     {
-        OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Paid => "text-bg-success",
-        OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Cancelled => "text-bg-danger",
-        _ => "text-bg-secondary"
+        InvoiceStatus.Paid => "status-paid",
+        InvoiceStatus.Cancelled => "status-cancelled",
+        _ => "status-pending"
+    };
+    string statusLabel = Model.Status switch
+    {
+        InvoiceStatus.Paid => "Đã thanh toán",
+        InvoiceStatus.Cancelled => "Đã hủy",
+        _ => "Chờ thanh toán"
     };
 
     var due = Math.Max(0m, Model.GrandTotal - Model.PaidAmount);
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-        <div>
-            <h1 class="h3 mb-0">Invoice @Model.InvoiceNo</h1>
-            <div class="text-muted">
-                Customer: <span class="fw-semibold">@(Model.Customer?.Name ?? "Walk-in")</span> ·
-                Date: <span class="fw-semibold">@Model.InvoiceDate.ToString("yyyy-MM-dd")</span> ·
-                <span class="badge @badge">@Model.Status</span>
+<link rel="stylesheet" href="~/css/invoices-ui.css" />
+
+<div class="container-fluid py-4" style="background-color: #f8f9fc;">
+
+    <div class="hero-header mb-4">
+        <div class="d-flex justify-content-between align-items-start position-relative" style="z-index: 1;">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom mb-2">
+                        <li class="breadcrumb-item"><a href="/Admin/Invoices">Hóa đơn</a></li>
+                        <li class="breadcrumb-item active">Chi tiết</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold text-dark mb-1">Hóa đơn #@Model.InvoiceNo</h2>
+                <div class="d-flex align-items-center gap-3 mt-2">
+                    <span class="badge-status @badgeClass">@statusLabel</span>
+                    <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> @Model.InvoiceDate.ToString("dd/MM/yyyy")</span>
+                </div>
             </div>
-        </div>
 
-        <div class="d-flex flex-wrap gap-2">
-            <a class="btn btn-outline-secondary" href="/Admin/Invoices">Back</a>
-            <a class="btn btn-outline-primary" href="/Admin/Invoices/Print/@Model.Id" target="_blank">Print</a>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-secondary rounded-pill px-4" href="/Admin/Invoices">Quay lại</a>
+                <a class="btn btn-outline-primary rounded-pill px-4" href="/Admin/Invoices/Print/@Model.Id" target="_blank"><i class="fas fa-print me-2"></i>In phiếu</a>
 
-            @if (Model.Status != OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Cancelled)
-            {
-                <form method="post" action="/Admin/Invoices/Cancel/@Model.Id" class="m-0">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Cancel invoice and return stock?');">
-                        Cancel
-                    </button>
-                </form>
-            }
+                @if (Model.Status != InvoiceStatus.Cancelled)
+                {
+                    <form method="post" action="/Admin/Invoices/Cancel/@Model.Id" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger rounded-pill px-4" onclick="return confirm('Hủy hóa đơn và hoàn trả tồn kho?');">
+                            <i class="fas fa-ban me-2"></i>Hủy đơn
+                        </button>
+                    </form>
+                }
+            </div>
         </div>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-4">
         <div class="col-12 col-xl-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0">
-                    <div class="fw-semibold">Items</div>
+            <div class="card card-modern h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                    <h5 class="fw-bold text-dark mb-0">Chi tiết sản phẩm</h5>
+                    <div class="text-muted small">Khách hàng: <strong class="text-danger">@(Model.Customer?.Name ?? "Khách lẻ")</strong></div>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-modern mb-0">
                             <thead>
-                                <tr class="table-light">
-                                    <th style="width:90px;">#</th>
-                                    <th>Product</th>
-                                    <th style="width:120px;">Qty</th>
-                                    <th style="width:160px;">Unit Price</th>
-                                    <th style="width:170px;">Line Total</th>
+                                <tr>
+                                    <th class="ps-4" style="width:60px;">#</th>
+                                    <th>Sản phẩm</th>
+                                    <th class="text-center" style="width:100px;">SL</th>
+                                    <th class="text-end" style="width:150px;">Đơn giá</th>
+                                    <th class="text-end pe-4" style="width:150px;">Thành tiền</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (Model.Items == null || Model.Items.Count == 0)
                                 {
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">No items.</td>
-                                    </tr>
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">Không có sản phẩm nào.</td></tr>
                                 }
                                 else
                                 {
+                                    int stt = 1;
                                     foreach (var it in Model.Items)
                                     {
                                         <tr>
-                                            <td>@it.Id</td>
-                                            <td class="fw-semibold">@it.Product?.Name</td>
-                                            <td>@it.Qty</td>
-                                            <td>@it.UnitPrice.ToString("N0")</td>
-                                            <td>@it.LineTotal.ToString("N0")</td>
+                                            <td class="ps-4 text-muted">@stt</td>
+                                            <td>
+                                                <div class="fw-bold text-dark">@it.Product?.Name</div>
+                                            </td>
+                                            <td class="text-center fw-semibold">@it.Qty</td>
+                                            <td class="text-end text-muted">@it.UnitPrice.ToString("N0")</td>
+                                            <td class="text-end pe-4 fw-bold">@it.LineTotal.ToString("N0")</td>
                                         </tr>
+                                        stt++;
                                     }
                                 }
                             </tbody>
@@ -84,24 +104,27 @@
                 </div>
             </div>
 
-            @if (Model.Status != OnlineSalesManagementSystem.Domain.Entities.InvoiceStatus.Cancelled)
+            @if (Model.Status != InvoiceStatus.Cancelled)
             {
-                <div class="card border-0 shadow-sm mt-3">
-                    <div class="card-header bg-white border-0">
-                        <div class="fw-semibold">Record Payment</div>
+                <div class="card card-modern mt-4">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+                        <h6 class="fw-bold text-dark"><i class="fas fa-wallet me-2 text-success"></i>Ghi nhận thanh toán</h6>
                     </div>
-                    <div class="card-body">
-                        <form method="post" action="/Admin/Invoices/RecordPayment/@Model.Id" class="row g-2 align-items-end">
+                    <div class="card-body px-4 pb-4">
+                        <form method="post" action="/Admin/Invoices/RecordPayment/@Model.Id" class="row g-3 align-items-end">
                             @Html.AntiForgeryToken()
-                            <div class="col-12 col-md-6 col-xl-4">
-                                <label class="form-label small text-muted">Amount</label>
-                                <input class="form-control" type="number" name="amount" step="0.01" min="0" required />
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Số tiền thanh toán thêm</label>
+                                <div class="input-group">
+                                    <input class="form-control" type="number" name="amount" step="0.01" min="0" required placeholder="Nhập số tiền..." />
+                                    <span class="input-group-text">VNĐ</span>
+                                </div>
                             </div>
-                            <div class="col-12 col-md-6 col-xl-4">
-                                <button class="btn btn-primary w-100" type="submit">Add payment</button>
+                            <div class="col-md-3">
+                                <button class="btn btn-success w-100 fw-bold" type="submit">Xác nhận</button>
                             </div>
-                            <div class="col-12 col-xl-4 text-muted small">
-                                Due now: <span class="fw-semibold">@due.ToString("N0")</span>
+                            <div class="col-md-3 text-muted small">
+                                Còn nợ: <strong class="text-danger h6">@due.ToString("N0") đ</strong>
                             </div>
                         </form>
                     </div>
@@ -110,34 +133,36 @@
         </div>
 
         <div class="col-12 col-xl-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0">
-                    <div class="fw-semibold">Totals</div>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div class="text-muted">SubTotal</div>
-                        <div class="fw-semibold">@Model.SubTotal.ToString("N0")</div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-2">
-                        <div class="text-muted">GrandTotal</div>
-                        <div class="fw-semibold">@Model.GrandTotal.ToString("N0")</div>
-                    </div>
-                    <hr />
-                    <div class="d-flex justify-content-between">
-                        <div class="text-muted">Paid</div>
-                        <div class="fw-semibold">@Model.PaidAmount.ToString("N0")</div>
-                    </div>
-                    <div class="d-flex justify-content-between mt-2">
-                        <div class="text-muted">Due</div>
-                        <div class="fw-semibold">@due.ToString("N0")</div>
+            <div class="card card-modern mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Tổng thanh toán</h5>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Tổng tiền hàng:</span>
+                        <span class="fw-semibold">@Model.SubTotal.ToString("N0") đ</span>
                     </div>
 
-                    <div class="alert alert-info mt-3 mb-0 small">
-                        Creating an invoice decreases stock and writes StockMovement (Out).
-                        Cancelling returns stock with StockMovement (Adjust).
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                        <span class="fw-bold text-dark h5 mb-0">Tổng cộng:</span>
+                        <span class="fw-bold text-danger h4 mb-0">@Model.GrandTotal.ToString("N0") đ</span>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top border-dashed">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-success"><i class="fas fa-check-circle me-1"></i>Đã trả:</span>
+                            <span class="fw-bold text-success">@Model.PaidAmount.ToString("N0") đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-danger"><i class="fas fa-exclamation-circle me-1"></i>Còn nợ:</span>
+                            <span class="fw-bold text-danger">@due.ToString("N0") đ</span>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="alert alert-info shadow-sm border-0 small rounded-3">
+                <i class="fas fa-info-circle me-2"></i>
+                Hóa đơn này đã trừ tồn kho sản phẩm. Nếu hủy, tồn kho sẽ được hoàn trả lại.
             </div>
         </div>
     </div>

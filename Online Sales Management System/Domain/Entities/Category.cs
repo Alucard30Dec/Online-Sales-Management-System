@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace OnlineSalesManagementSystem.Domain.Entities;
 
@@ -12,4 +12,6 @@ public class Category
     public string? Description { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    public bool IsTrending { get; set; } = false;
 }

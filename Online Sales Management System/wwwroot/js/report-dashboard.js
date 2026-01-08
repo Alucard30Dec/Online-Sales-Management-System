@@ -1,27 +1,32 @@
-﻿/* File: wwwroot/js/report-dashboard.js */
+﻿// File: wwwroot/js/report-dashboard.js
 
 function initComparisonChart(canvasId, labels, dataSales, dataPurchases) {
     const ctx = document.getElementById(canvasId);
 
-    if (!ctx) return; // Nếu không tìm thấy canvas thì dừng
+    if (!ctx) return;
 
-    new Chart(ctx.getContext('2d'), {
-        type: 'bar', // Loại biểu đồ cột
+    // Màu sắc theo theme
+    const colorSales = '#10b981'; // Xanh lá
+    const colorCost = '#ef4444';  // Đỏ
+    const colorGrid = '#f3f4f6';  // Lưới mờ
+
+    new Chart(ctx, {
+        type: 'bar',
         data: {
             labels: labels,
             datasets: [
                 {
-                    label: 'Revenue (Sales)',
+                    label: 'Doanh thu',
                     data: dataSales,
-                    backgroundColor: '#10b981', // Màu xanh
+                    backgroundColor: colorSales,
                     borderRadius: 4,
                     barPercentage: 0.6,
                     categoryPercentage: 0.8
                 },
                 {
-                    label: 'Expenses (Purchases)',
+                    label: 'Chi phí',
                     data: dataPurchases,
-                    backgroundColor: '#ef4444', // Màu đỏ
+                    backgroundColor: colorCost,
                     borderRadius: 4,
                     barPercentage: 0.6,
                     categoryPercentage: 0.8
@@ -34,20 +39,20 @@ function initComparisonChart(canvasId, labels, dataSales, dataPurchases) {
             plugins: {
                 legend: {
                     position: 'top',
+                    align: 'end',
                     labels: {
                         usePointStyle: true,
-                        padding: 20,
-                        font: { family: "'Segoe UI', sans-serif" }
+                        boxWidth: 8,
+                        font: { size: 12, weight: '600', family: "'Segoe UI', sans-serif" }
                     }
                 },
                 tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    titleColor: '#1a202c',
-                    bodyColor: '#4a5568',
-                    borderColor: '#e2e8f0',
-                    borderWidth: 1,
+                    backgroundColor: '#1e293b',
+                    padding: 12,
+                    titleFont: { size: 13 },
+                    bodyFont: { size: 13 },
+                    cornerRadius: 8,
+                    displayColors: true,
                     callbacks: {
                         label: function (context) {
                             let label = context.dataset.label || '';
@@ -55,8 +60,8 @@ function initComparisonChart(canvasId, labels, dataSales, dataPurchases) {
                                 label += ': ';
                             }
                             if (context.parsed.y !== null) {
-                                // Định dạng tiền tệ (ví dụ: 1,000,000)
-                                label += new Intl.NumberFormat().format(context.parsed.y);
+                                // Format tiền tệ VN (ví dụ: 1,000,000)
+                                label += new Intl.NumberFormat('vi-VN').format(context.parsed.y);
                             }
                             return label;
                         }
@@ -66,14 +71,29 @@ function initComparisonChart(canvasId, labels, dataSales, dataPurchases) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#f1f5f9', drawBorder: false },
-                    ticks: { font: { size: 11 }, color: '#9ca3af' }
+                    grid: {
+                        color: colorGrid,
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#64748b'
+                    },
+                    border: { display: false }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { font: { size: 11 }, color: '#9ca3af' }
+                    ticks: {
+                        font: { size: 11 },
+                        color: '#64748b'
+                    },
+                    border: { display: false }
                 }
-            }
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
         }
     });
 }

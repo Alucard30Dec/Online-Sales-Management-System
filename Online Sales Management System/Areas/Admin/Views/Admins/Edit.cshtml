@@ -58,8 +58,7 @@
                 <div class="col-12 col-lg-6">
                     <div class="form-group mb-0 mt-4">
                         <div class="icheck-primary d-inline">
-                            <input type="hidden" name="IsActive" value="false" />
-                            <input type="checkbox" id="isActive" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") />
+                            <input asp-for="IsActive" id="isActive" />
                             <label for="isActive">Active</label>
                         </div>
                     </div>

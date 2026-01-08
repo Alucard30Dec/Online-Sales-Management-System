@@ -1,55 +1,73 @@
 ﻿@model OnlineSalesManagementSystem.Domain.Entities.Customer
 @{
-    ViewData["Title"] = "Create Customer";
+    ViewData["Title"] = "Thêm Khách hàng";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <div>
-            <h1 class="h3 mb-0">Create Customer</h1>
-            <div class="text-muted">Add a new customer.</div>
+<link rel="stylesheet" href="~/css/customers-ui.css" />
+
+<div class="container-fluid py-4" style="background-color: #f8f9fc;">
+    <div class="hero-header d-flex justify-content-between align-items-center">
+        <i class="fas fa-user-plus hero-icon-bg"></i>
+        <div style="z-index: 1;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom mb-2">
+                    <li class="breadcrumb-item"><a href="/Admin/Customers">Khách hàng</a></li>
+                    <li class="breadcrumb-item active">Thêm mới</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">Thêm khách hàng mới</h2>
         </div>
-        <a class="btn btn-outline-secondary" href="/Admin/Customers">Back</a>
+        <div style="z-index: 1;">
+            <a href="/Admin/Customers" class="btn btn-outline-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+        </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger">
-                    @Html.ValidationSummary(excludePropertyErrors: false)
-                </div>
-            }
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card card-modern p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger shadow-sm border-0 rounded-3 mb-4">
+                        @Html.ValidationSummary(excludePropertyErrors: false)
+                    </div>
+                }
 
-            <form method="post" action="/Admin/Customers/Create" class="row g-3">
-                @Html.AntiForgeryToken()
+                <form method="post" action="/Admin/Customers/Create" class="row g-4">
+                    @Html.AntiForgeryToken()
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                    <input class="form-control" name="Name" value="@Model.Name" maxlength="150" required />
-                </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted">Họ và tên <span class="text-danger">*</span></label>
+                        <input class="form-control form-control-lg" name="Name" value="@Model.Name" maxlength="150" required placeholder="Ví dụ: Nguyễn Văn A..." />
+                    </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Phone</label>
-                    <input class="form-control" name="Phone" value="@Model.Phone" maxlength="30" />
-                </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Số điện thoại</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="fas fa-phone-alt text-muted"></i></span>
+                            <input class="form-control" name="Phone" value="@Model.Phone" maxlength="30" placeholder="090..." />
+                        </div>
+                    </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Email</label>
-                    <input class="form-control" name="Email" value="@Model.Email" maxlength="150" type="email" />
-                </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="fas fa-envelope text-muted"></i></span>
+                            <input class="form-control" name="Email" value="@Model.Email" maxlength="150" type="email" placeholder="email@example.com" />
+                        </div>
+                    </div>
 
-                <div class="col-12">
-                    <label class="form-label">Address</label>
-                    <input class="form-control" name="Address" value="@Model.Address" maxlength="300" />
-                </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted">Địa chỉ</label>
+                        <textarea class="form-control" name="Address" rows="3" maxlength="300" placeholder="Số nhà, đường, phường/xã...">@Model.Address</textarea>
+                    </div>
 
-                <div class="col-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <a class="btn btn-outline-secondary" href="/Admin/Customers">Cancel</a>
-                </div>
-            </form>
+                    <div class="col-12 d-flex justify-content-end gap-3 mt-4">
+                        <a href="/Admin/Customers" class="btn btn-light rounded-pill px-4">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-gradient rounded-pill px-5 shadow fw-bold">Lưu thông tin</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
