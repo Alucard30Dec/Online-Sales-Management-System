@@ -12,7 +12,7 @@ using OnlineSalesManagementSystem.Data;
 namespace OnlineSalesManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260108040938_create")]
+    [Migration("20260108185609_create")]
     partial class create
     {
         /// <inheritdoc />

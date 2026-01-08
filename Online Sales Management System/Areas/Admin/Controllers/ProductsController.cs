@@ -12,10 +12,12 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
 public class ProductsController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly IWebHostEnvironment _env;
 
-    public ProductsController(ApplicationDbContext db)
+    public ProductsController(ApplicationDbContext db, IWebHostEnvironment env)
     {
         _db = db;
+        _env = env;
     }
 
     [HttpGet]
@@ -41,7 +43,7 @@ public class ProductsController : Controller
         var total = await query.CountAsync();
 
         var items = await query
-            .OrderByDescending(p => p.IsTrending) // Ưu tiên Trending lên đầu
+            .OrderByDescending(p => p.IsTrending)
             .ThenBy(p => p.Name)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -65,24 +67,61 @@ public class ProductsController : Controller
             IsActive = true,
             StockOnHand = 0,
             ReorderLevel = 5,
-            IsTrending = false // Mặc định
+            IsTrending = false
         });
     }
 
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Create)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Product model)
+    public async Task<IActionResult> Create(Product model, IFormFile? imageFile)
     {
         await LoadLookupsAsync();
 
+        // ===== Normalize =====
         model.SKU = (model.SKU ?? "").Trim();
         model.Name = (model.Name ?? "").Trim();
+        model.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
+
+        // Nếu bạn muốn cho nhập link ảnh thủ công thì giữ ImagePath,
+        // còn nếu ưu tiên upload file thì ImagePath sẽ set lại khi upload.
         model.ImagePath = string.IsNullOrWhiteSpace(model.ImagePath) ? null : model.ImagePath.Trim();
+
+        if (model.StockOnHand < 0) model.StockOnHand = 0;
+        if (model.ReorderLevel < 0) model.ReorderLevel = 0;
+        if (model.CostPrice < 0) model.CostPrice = 0;
+        if (model.SalePrice < 0) model.SalePrice = 0;
+
+        // ===== Validate dropdown (int default = 0 vẫn "hợp lệ" theo ModelState) =====
+        if (model.CategoryId <= 0)
+            ModelState.AddModelError(nameof(model.CategoryId), "Vui lòng chọn danh mục.");
+
+        if (model.UnitId <= 0)
+            ModelState.AddModelError(nameof(model.UnitId), "Vui lòng chọn đơn vị.");
+
+        // SKU thường nên bắt buộc (vì bạn đang check trùng).
+        if (string.IsNullOrWhiteSpace(model.SKU))
+            ModelState.AddModelError(nameof(model.SKU), "Vui lòng nhập SKU.");
 
         if (!ModelState.IsValid)
             return View(model);
 
+        // ===== Check tồn tại Category/Unit =====
+        var catOk = await _db.Categories.AsNoTracking().AnyAsync(c => c.Id == model.CategoryId && c.IsActive);
+        if (!catOk)
+        {
+            ModelState.AddModelError(nameof(model.CategoryId), "Danh mục không hợp lệ hoặc đã bị vô hiệu hoá.");
+            return View(model);
+        }
+
+        var unitOk = await _db.Units.AsNoTracking().AnyAsync(u => u.Id == model.UnitId);
+        if (!unitOk)
+        {
+            ModelState.AddModelError(nameof(model.UnitId), "Đơn vị không hợp lệ.");
+            return View(model);
+        }
+
+        // ===== Check SKU trùng =====
         var skuExists = await _db.Products.AnyAsync(p => p.SKU == model.SKU);
         if (skuExists)
         {
@@ -90,10 +129,36 @@ public class ProductsController : Controller
             return View(model);
         }
 
+        // ===== Upload ảnh (nếu có) =====
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+            var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".png", ".jpg", ".jpeg", ".webp" };
+
+            if (!allowed.Contains(ext))
+            {
+                ModelState.AddModelError(string.Empty, "Ảnh sản phẩm phải là .png/.jpg/.jpeg/.webp");
+                return View(model);
+            }
+
+            var uploads = Path.Combine(_env.WebRootPath, "uploads", "products");
+            Directory.CreateDirectory(uploads);
+
+            var fileName = $"prd_{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{ext}";
+            var filePath = Path.Combine(uploads, fileName);
+
+            using (var fs = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fs);
+            }
+
+            model.ImagePath = $"/uploads/products/{fileName}";
+        }
+
+        // ===== Business defaults =====
+        // Nếu bạn muốn luôn active khi tạo mới, giữ dòng này.
+        // Nếu muốn theo checkbox form, bỏ dòng này.
         model.IsActive = true;
-        if (model.StockOnHand < 0) model.StockOnHand = 0;
-        if (model.ReorderLevel < 0) model.ReorderLevel = 0;
-        // IsTrending tự bind từ form
 
         _db.Products.Add(model);
         await _db.SaveChangesAsync();
@@ -146,7 +211,7 @@ public class ProductsController : Controller
         entity.SalePrice = model.SalePrice;
         entity.ReorderLevel = model.ReorderLevel < 0 ? 0 : model.ReorderLevel;
         entity.ImagePath = model.ImagePath;
-        entity.IsTrending = model.IsTrending; // <--- Cập nhật Trending
+        entity.IsTrending = model.IsTrending;
 
         await _db.SaveChangesAsync();
 
@@ -154,7 +219,6 @@ public class ProductsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // --- MỚI THÊM: Toggle Trending API ---
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit)]
     [HttpPost]
     public async Task<IActionResult> ToggleTrending(int id)
@@ -185,6 +249,8 @@ public class ProductsController : Controller
 
     private async Task LoadLookupsAsync()
     {
+        // Create.cshtml đang dùng ViewBag.Categories/Units
+        // => ta sẽ trả về LIST để view tự loop (an toàn, không phụ thuộc SelectListItem).
         ViewBag.Categories = await _db.Categories.AsNoTracking()
             .Where(c => c.IsActive)
             .OrderBy(c => c.Name)
