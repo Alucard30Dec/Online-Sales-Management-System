@@ -1,102 +1,120 @@
 ﻿@model OnlineSalesManagementSystem.Domain.Entities.Product
 @using OnlineSalesManagementSystem.Domain.Entities
 @{
-    ViewData["Title"] = "Edit Product";
+    ViewData["Title"] = "Cập nhật Sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
     var categories = ViewBag.Categories as List<Category> ?? new();
     var units = ViewBag.Units as List<Unit> ?? new();
 }
+<link rel="stylesheet" href="~/css/products-ui.css" />
 
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <div>
-            <h1 class="h3 mb-0">Edit Product</h1>
-            <div class="text-muted">Update product information.</div>
+<div class="container-fluid py-4" style="background-color: #f8f9fc;">
+    <div class="hero-header d-flex justify-content-between align-items-center">
+        <div style="z-index: 1;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom mb-2">
+                    <li class="breadcrumb-item"><a href="/Admin/Products">Sản phẩm</a></li>
+                    <li class="breadcrumb-item active">Chỉnh sửa</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">Cập nhật thông tin</h2>
+            <p class="text-muted small mb-0">Sản phẩm: <strong>@Model.Name</strong></p>
         </div>
-        <a class="btn btn-outline-secondary" href="/Admin/Products">Back</a>
+        <div style="z-index: 1;">
+            <a href="/Admin/Products" class="btn btn-outline-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+        </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger">
-                    @Html.ValidationSummary(excludePropertyErrors: false)
-                </div>
-            }
-
-            <form method="post" action="/Admin/Products/Edit" class="row g-3">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="Id" value="@Model.Id" />
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">SKU <span class="text-danger">*</span></label>
-                    <input class="form-control" name="SKU" value="@Model.SKU" maxlength="50" required />
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                    <input class="form-control" name="Name" value="@Model.Name" maxlength="200" required />
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Category</label>
-                    <select class="form-select" name="CategoryId">
-                        <option value="">-- None --</option>
-                        @foreach (var c in categories)
-                        {
-                            var sel = (Model.CategoryId == c.Id) ? "selected" : "";
-                            <option value="@c.Id" selected="@sel">@c.Name</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Unit</label>
-                    <select class="form-select" name="UnitId">
-                        <option value="">-- None --</option>
-                        @foreach (var u in units)
-                        {
-                            var sel = (Model.UnitId == u.Id) ? "selected" : "";
-                            <option value="@u.Id" selected="@sel">@u.Name</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Cost Price</label>
-                    <input class="form-control" type="number" step="0.01" name="CostPrice" value="@Model.CostPrice" />
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Sale Price</label>
-                    <input class="form-control" type="number" step="0.01" name="SalePrice" value="@Model.SalePrice" />
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Reorder Level</label>
-                    <input class="form-control" type="number" name="ReorderLevel" value="@Model.ReorderLevel" />
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Image URL</label>
-                    <input class="form-control" name="ImagePath" value="@Model.ImagePath" />
-                </div>
-
-                <div class="col-12">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="IsTrending" name="IsTrending" value="true" @(Model.IsTrending ? "checked" : "")>
-                        <label class="form-check-label fw-bold" for="IsTrending">
-                            Set as Trending Product
-                        </label>
+    <div class="row justify-content-center mt-4">
+        <div class="col-12 col-lg-8">
+            <div class="card card-modern p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger shadow-sm border-0 rounded-3 mb-4">
+                        @Html.ValidationSummary(false)
                     </div>
-                </div>
+                }
 
-                <div class="col-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                    <a class="btn btn-outline-secondary" href="/Admin/Products">Cancel</a>
-                </div>
-            </form>
+                <form method="post" action="/Admin/Products/Edit" class="row g-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@Model.Id" />
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted">Mã SKU <span class="text-danger">*</span></label>
+                        <input class="form-control" name="SKU" value="@Model.SKU" required />
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold text-muted">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <input class="form-control" name="Name" value="@Model.Name" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Danh mục</label>
+                        <select class="form-select" name="CategoryId">
+                            <option value="">-- Chọn danh mục --</option>
+                            @foreach (var c in categories)
+                            {
+                                var sel = Model.CategoryId == c.Id ? "selected" : "";
+                                <option value="@c.Id" selected="@sel">@c.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Đơn vị tính</label>
+                        <select class="form-select" name="UnitId">
+                            <option value="">-- Chọn đơn vị --</option>
+                            @foreach (var u in units)
+                            {
+                                var sel = Model.UnitId == u.Id ? "selected" : "";
+                                <option value="@u.Id" selected="@sel">@u.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Giá vốn</label>
+                        <div class="input-group">
+                            <input class="form-control" type="number" name="CostPrice" value="@Model.CostPrice" />
+                            <span class="input-group-text">VNĐ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Giá bán</label>
+                        <div class="input-group">
+                            <input class="form-control fw-bold text-primary" type="number" name="SalePrice" value="@Model.SalePrice" />
+                            <span class="input-group-text">VNĐ</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Reorder Level</label>
+                        <input class="form-control" type="number" name="ReorderLevel" value="@Model.ReorderLevel" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-muted">Link Ảnh (URL)</label>
+                        <input class="form-control" name="ImagePath" value="@Model.ImagePath" />
+                    </div>
+
+                    <div class="col-12">
+                        <div class="p-3 bg-light rounded-3 d-flex align-items-center border">
+                            <label class="toggle-switch me-3">
+                                <input type="checkbox" name="IsTrending" value="true" @(Model.IsTrending ? "checked" : "")>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <input type="hidden" name="IsTrending" value="false" />
+                            <div>
+                                <label class="fw-bold mb-0 text-dark">Sản phẩm nổi bật (Trending)</label>
+                                <div class="text-muted small">Bật/tắt trạng thái nổi bật của sản phẩm.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end gap-3 mt-3">
+                        <a href="/Admin/Products" class="btn btn-light rounded-pill px-4">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-gradient rounded-pill px-5 shadow-sm fw-bold">Lưu thay đổi</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

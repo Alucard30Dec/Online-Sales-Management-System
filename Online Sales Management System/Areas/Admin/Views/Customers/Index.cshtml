@@ -3,7 +3,7 @@
 @using OnlineSalesManagementSystem.Services.Security
 @inject IAuthorizationService AuthorizationService
 @{
-    ViewData["Title"] = "Customers";
+    ViewData["Title"] = "Quản lý Khách hàng";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
     string q = ViewBag.Query as string ?? "";
@@ -14,10 +14,10 @@
     int totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
     bool hasPrev = page > 1;
     bool hasNext = page < totalPages;
-
     int start = (page - 1) * pageSize + (total == 0 ? 0 : 1);
     int end = Math.Min(page * pageSize, total);
 
+    // Permission Logic
     string pCreate = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Customers + "." + PermissionConstants.Actions.Create;
     string pEdit = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Customers + "." + PermissionConstants.Actions.Edit;
     string pDelete = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Customers + "." + PermissionConstants.Actions.Delete;
@@ -27,92 +27,121 @@
     bool canDelete = (await AuthorizationService.AuthorizeAsync(User, pDelete)).Succeeded;
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
-        <div>
-            <h1 class="h3 mb-0">Customers</h1>
-            <div class="text-muted">Customer directory with search + paging.</div>
+<link rel="stylesheet" href="~/css/customers-ui.css" />
+
+<div class="container-fluid py-4" style="background-color: #f8f9fc;">
+
+    <div class="hero-header">
+        <i class="fas fa-address-book hero-icon-bg"></i>
+        <div class="d-flex justify-content-between align-items-center position-relative" style="z-index: 1;">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom mb-2">
+                        <li class="breadcrumb-item"><a href="/Admin/Dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Khách hàng</li>
+                    </ol>
+                </nav>
+                <div class="d-flex align-items-center gap-3">
+                    <h2 class="fw-bold text-dark mb-0">Danh sách khách hàng</h2>
+                    <span class="stat-badge"><i class="fas fa-user-check"></i> @total hồ sơ</span>
+                </div>
+                <p class="text-muted mt-2 mb-0">Quản lý thông tin liên hệ và lịch sử giao dịch của khách hàng.</p>
+            </div>
+
+            @if (canCreate)
+            {
+                <a href="/Admin/Customers/Create" class="btn btn-gradient shadow-lg px-4 py-3 rounded-pill d-flex align-items-center gap-2">
+                    <div class="bg-white text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                        <i class="fas fa-plus fa-xs"></i>
+                    </div>
+                    <span class="fw-bold">Thêm khách hàng</span>
+                </a>
+            }
         </div>
-        @if (canCreate)
-        {
-            <a class="btn btn-primary" href="/Admin/Customers/Create">+ New Customer</a>
-        }
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end mb-3">
-                <div class="col-12 col-md-6 col-xl-4">
-                    <label class="form-label small text-muted">Search</label>
-                    <input class="form-control" name="q" value="@q" placeholder="Name, phone, email..." />
+    <div class="card card-modern">
+        <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-0">
+            <form method="get" class="row g-3 align-items-center">
+                <input type="hidden" name="page" value="1" />
+
+                <div class="col-12 col-md-5">
+                    <div class="input-group shadow-sm" style="border-radius: 50px; overflow: hidden;">
+                        <span class="input-group-text bg-white border-end-0 ps-3"><i class="fas fa-search text-muted"></i></span>
+                        <input class="form-control border-start-0" name="q" value="@q" placeholder="Tìm tên, email, sđt..." style="border-left: none;">
+                    </div>
                 </div>
 
-                <div class="col-12 col-md-3 col-xl-2">
-                    <label class="form-label small text-muted">Show entries</label>
-                    <select class="form-select" name="pageSize">
+                <div class="col-6 col-md-2">
+                    <select class="form-select shadow-sm" name="pageSize" onchange="this.form.submit()" style="border-radius: 20px;">
                         @{
                             var sizes = new[] { 10, 25, 50, 100 };
-                            foreach (var s in sizes)
-                            {
-                                var selected = (s == pageSize) ? "selected" : null;
-                                <option value="@s" selected="@selected">@s</option>
-                            }
+                        }
+                        @foreach (var s in sizes)
+                        {
+                            <option value="@s" selected="@(s == pageSize ? "selected" : null)">@s dòng</option>
                         }
                     </select>
                 </div>
 
-                <div class="col-12 col-md-3 col-xl-2 d-flex gap-2">
-                    <button class="btn btn-outline-primary w-100" type="submit">Search</button>
-                    <a class="btn btn-outline-secondary w-100" href="/Admin/Customers">Reset</a>
+                <div class="col-auto ms-auto">
+                    <a href="/Admin/Customers" class="btn btn-light rounded-pill px-3 shadow-sm"><i class="fas fa-sync-alt me-1"></i> Reset</a>
+                    <button type="submit" class="btn btn-outline-info rounded-pill px-3 shadow-sm">Tìm kiếm</button>
                 </div>
-
-                <input type="hidden" name="page" value="1" />
             </form>
+        </div>
 
+        <div class="card-body px-0 pt-3">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-modern mb-0">
                     <thead>
-                        <tr class="table-light">
-                            <th style="width:90px;">#</th>
-                            <th>Name</th>
-                            <th style="width:160px;">Phone</th>
+                        <tr>
+                            <th class="ps-4">Họ và tên</th>
+                            <th>Số điện thoại</th>
                             <th>Email</th>
-                            <th>Address</th>
-                            <th style="width:160px;">Created</th>
-                            <th style="width:240px;" class="text-end">Actions</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày tạo</th>
+                            <th class="text-end pe-4">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (total == 0)
                         {
-                            <tr><td colspan="7" class="text-center text-muted py-4">No customers found.</td></tr>
+                            <tr><td colspan="6" class="text-center py-5 text-muted">Không tìm thấy dữ liệu khách hàng.</td></tr>
                         }
                         else
                         {
                             foreach (var c in Model)
                             {
+                                // Avatar giả lập
+                                var initial = !string.IsNullOrEmpty(c.Name) ? c.Name.Substring(0, 1).ToUpper() : "?";
+
                                 <tr>
-                                    <td>@c.Id</td>
-                                    <td class="fw-semibold">@c.Name</td>
-                                    <td class="text-muted">@c.Phone</td>
-                                    <td class="text-muted">@c.Email</td>
-                                    <td class="text-muted">@c.Address</td>
-                                    <td class="text-muted">@c.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
-                                    <td class="text-end">
-                                        <div class="d-inline-flex gap-2">
-                                            @if (canEdit)
-                                            {
-                                                <a class="btn btn-sm btn-outline-primary" href="/Admin/Customers/Edit/@c.Id">Edit</a>
-                                            }
-                                            @if (canDelete)
-                                            {
-                                                <form method="post" action="/Admin/Customers/Delete/@c.Id" class="m-0"
-                                                      onsubmit="return confirm('Delete this customer (disable)?');">
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                                </form>
-                                            }
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle">@initial</div>
+                                            <div>
+                                                <div class="fw-bold text-dark">@c.Name</div>
+                                                <div class="small text-muted">ID: #@c.Id</div>
+                                            </div>
                                         </div>
+                                    </td>
+                                    <td class="text-dark fw-semibold">@c.Phone</td>
+                                    <td class="text-muted">@c.Email</td>
+                                    <td class="text-muted text-truncate" style="max-width: 200px;" title="@c.Address">@c.Address</td>
+                                    <td class="text-muted small">@c.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                    <td class="text-end pe-4">
+                                        @if (canEdit)
+                                        {
+                                            <a href="/Admin/Customers/Edit/@c.Id" class="btn btn-icon edit me-2" title="Sửa"><i class="fas fa-pen fa-xs"></i></a>
+                                        }
+                                        @if (canDelete)
+                                        {
+                                            <form method="post" action="/Admin/Customers/Delete/@c.Id" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa khách hàng này?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-icon delete" title="Xóa"><i class="fas fa-trash fa-xs"></i></button>
+                                            </form>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -120,36 +149,27 @@
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
-                <div class="text-muted small">
-                    Showing @start to @end of @total entries
-                </div>
-
-                <nav aria-label="Customers pagination">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(hasPrev ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page - 1)">Prev</a>
-                        </li>
-
+        @if (total > 0)
+        {
+            <div class="card-footer bg-white border-top-0 d-flex align-items-center justify-content-between py-3 px-4">
+                <div class="text-muted small">Hiển thị @start - @end trong @total khách hàng</div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0 shadow-sm">
+                        <li class="page-item @(hasPrev ? "" : "disabled")"><a class="page-link rounded-start" href="@BuildUrl(page - 1)">Trước</a></li>
                         @{
-                            int s = Math.Max(1, page - 2);
-                            int e = Math.Min(totalPages, page + 2);
-                            for (int i = s; i <= e; i++)
+                            int s = Math.Max(1, page - 2); int endP = Math.Min(totalPages, page + 2);
+                            for (int i = s; i <= endP; i++)
                             {
-                                <li class="page-item @(i == page ? "active" : "")">
-                                    <a class="page-link" href="@BuildUrl(i)">@i</a>
-                                </li>
+                                <li class="page-item @(i == page ? "active" : "")"><a class="page-link" href="@BuildUrl(i)">@i</a></li>
                             }
                         }
-
-                        <li class="page-item @(hasNext ? "" : "disabled")">
-                            <a class="page-link" href="@BuildUrl(page + 1)">Next</a>
-                        </li>
+                        <li class="page-item @(hasNext ? "" : "disabled")"><a class="page-link rounded-end" href="@BuildUrl(page + 1)">Sau</a></li>
                     </ul>
                 </nav>
             </div>
-        </div>
+        }
     </div>
 </div>
 

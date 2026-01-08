@@ -1,101 +1,97 @@
 ﻿@model OnlineSalesManagementSystem.Domain.Entities.Product
-@using OnlineSalesManagementSystem.Domain.Entities
+
 @{
-    ViewData["Title"] = "Create Product";
+    ViewData["Title"] = "Thêm mới Sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-    var categories = ViewBag.Categories as List<Category> ?? new();
-    var units = ViewBag.Units as List<Unit> ?? new();
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <div>
-            <h1 class="h3 mb-0">Create Product</h1>
-            <div class="text-muted">Add a new product.</div>
-        </div>
-        <a class="btn btn-outline-secondary" href="/Admin/Products">Back</a>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">Thêm sản phẩm mới</h2>
+        <a href="/Admin/Products" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger">
-                    @Html.ValidationSummary(excludePropertyErrors: false)
-                </div>
-            }
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <form method="post" action="/Admin/Products/Create" class="row g-3">
-                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm..." />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">SKU <span class="text-danger">*</span></label>
-                    <input class="form-control" name="SKU" value="@Model.SKU" maxlength="50" required />
-                </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SKU" class="form-label fw-bold">Mã SKU</label>
+                                <input asp-for="SKU" class="form-control" placeholder="VD: SP001" />
+                                <span asp-validation-for="SKU" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CategoryId" class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                                <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories">
+                                    <option value="">-- Chọn danh mục --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                    <input class="form-control" name="Name" value="@Model.Name" maxlength="200" required />
-                </div>
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Mô tả chi tiết</label>
+                            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Category</label>
-                    <select class="form-select" name="CategoryId">
-                        <option value="">-- None --</option>
-                        @foreach (var c in categories)
-                        {
-                            var sel = (Model.CategoryId == c.Id) ? "selected" : "";
-                            <option value="@c.Id" selected="@sel">@c.Name</option>
-                        }
-                    </select>
-                </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="SalePrice" class="form-label fw-bold">Giá bán (VNĐ)</label>
+                            <input asp-for="SalePrice" class="form-control" type="number" />
+                            <span asp-validation-for="SalePrice" class="text-danger"></span>
+                        </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Unit</label>
-                    <select class="form-select" name="UnitId">
-                        <option value="">-- None --</option>
-                        @foreach (var u in units)
-                        {
-                            var sel = (Model.UnitId == u.Id) ? "selected" : "";
-                            <option value="@u.Id" selected="@sel">@u.Name</option>
-                        }
-                    </select>
-                </div>
+                        <div class="mb-3">
+                            <label asp-for="StockOnHand" class="form-label fw-bold">Số lượng tồn kho</label>
+                            <input asp-for="StockOnHand" class="form-control" type="number" />
+                            <span asp-validation-for="StockOnHand" class="text-danger"></span>
+                        </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Cost Price</label>
-                    <input class="form-control" type="number" step="0.01" name="CostPrice" value="@Model.CostPrice" />
-                </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ảnh sản phẩm</label>
+                            <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                        </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Sale Price</label>
-                    <input class="form-control" type="number" step="0.01" name="SalePrice" value="@Model.SalePrice" />
-                </div>
+                        <div class="card bg-light border-0 p-3 mt-3">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" asp-for="IsActive" checked>
+                                <label class="form-check-label" asp-for="IsActive">Kích hoạt hiển thị</label>
+                            </div>
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Reorder Level</label>
-                    <input class="form-control" type="number" name="ReorderLevel" value="@Model.ReorderLevel" />
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Image URL</label>
-                    <input class="form-control" name="ImagePath" value="@Model.ImagePath" />
-                </div>
-
-                <div class="col-12">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="IsTrending" name="IsTrending" value="true" @(Model.IsTrending ? "checked" : "")>
-                        <label class="form-check-label fw-bold" for="IsTrending">
-                            Set as Trending Product
-                        </label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" asp-for="IsTrending">
+                                <label class="form-check-label" asp-for="IsTrending">Sản phẩm nổi bật (Trending)</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <a class="btn btn-outline-secondary" href="/Admin/Products">Cancel</a>
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary px-4 py-2">
+                        <i class="fas fa-save"></i> Lưu sản phẩm
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

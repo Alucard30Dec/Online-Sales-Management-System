@@ -1,27 +1,18 @@
 ﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Supplier>
-@using Microsoft.AspNetCore.Authorization
-@using OnlineSalesManagementSystem.Services.Security
-@inject IAuthorizationService AuthorizationService
 @{
-    ViewData["Title"] = "Suppliers Management";
+    ViewData["Title"] = "Quản lý Nhà cung cấp";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
-    // Logic phân trang và permission giữ nguyên
+    // Logic phân trang
     string q = ViewBag.Query as string ?? "";
     int page = (int)(ViewBag.Page ?? 1);
     int pageSize = (int)(ViewBag.PageSize ?? 10);
     int total = (int)(ViewBag.Total ?? 0);
-
     int totalPages = pageSize <= 0 ? 0 : (int)Math.Ceiling(total / (double)pageSize);
     bool hasPrev = page > 1;
     bool hasNext = page < totalPages;
-
     int start = (page - 1) * pageSize + (total == 0 ? 0 : 1);
     int end = Math.Min(page * pageSize, total);
-
-    bool canCreate = (await AuthorizationService.AuthorizeAsync(User, PermissionConstants.Policies.Require(PermissionConstants.Modules.Suppliers, PermissionConstants.Actions.Create))).Succeeded;
-    bool canEdit = (await AuthorizationService.AuthorizeAsync(User, PermissionConstants.Policies.Require(PermissionConstants.Modules.Suppliers, PermissionConstants.Actions.Edit))).Succeeded;
-    bool canDelete = (await AuthorizationService.AuthorizeAsync(User, PermissionConstants.Policies.Require(PermissionConstants.Modules.Suppliers, PermissionConstants.Actions.Delete))).Succeeded;
 }
 
 <link rel="stylesheet" href="~/css/suppliers.css" asp-append-version="true" />
@@ -29,16 +20,13 @@
 <div class="container-fluid py-4">
     <div class="row align-items-center mb-4">
         <div class="col-md-6">
-            <h3 class="page-header-title">Suppliers List</h3>
-            <p class="text-muted mb-0 small">Manage your product sources and partners.</p>
+            <h3 class="page-header-title mb-1">Danh sách Nhà cung cấp</h3>
+            <p class="text-muted mb-0 small">Quản lý nguồn hàng và đối tác kinh doanh.</p>
         </div>
         <div class="col-md-6 text-md-end mt-3 mt-md-0">
-            @if (canCreate)
-            {
-                <a class="btn btn-warning text-white btn-sm px-3 py-2 shadow-sm rounded-pill" href="/Admin/Suppliers/Create">
-                    <i class="fas fa-plus me-1"></i> New Supplier
-                </a>
-            }
+            <a class="btn btn-warning text-white btn-sm px-4 py-2 shadow-sm fw-bold rounded-pill" href="/Admin/Suppliers/Create">
+                <i class="fa fa-plus me-2"></i>Thêm mới
+            </a>
         </div>
     </div>
 
@@ -46,27 +34,27 @@
         <div class="card-body p-3">
             <form method="get" action="/Admin/Suppliers" class="row g-3 align-items-center">
                 <div class="col-12 col-md-5">
-                    <div class="input-group search-group shadow-sm">
-                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
-                        <input class="form-control border-start-0 ps-0" name="q" value="@q" placeholder="Search supplier name, phone..." />
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fa fa-search text-muted"></i></span>
+                        <input class="form-control border-start-0 bg-light" name="q" value="@q" placeholder="Tìm tên NCC, số điện thoại..." />
                     </div>
                 </div>
 
                 <div class="col-6 col-md-2">
-                    <select class="form-select border-0 bg-light" name="pageSize">
+                    <select class="form-select bg-light border-0" name="pageSize" onchange="this.form.submit()">
                         @{
                             var sizes = new[] { 10, 25, 50, 100 };
                             foreach (var s in sizes)
                             {
-                                <option value="@s" selected="@(s == pageSize ? "selected" : null)">Show @s</option>
+                                <option value="@s" selected="@(s == pageSize ? "selected" : null)">Hiển thị @s</option>
                             }
                         }
                     </select>
                 </div>
 
                 <div class="col-6 col-md-5 text-end">
-                    <button class="btn btn-warning text-white px-4 rounded-pill" type="submit">Filter</button>
-                    <a class="btn btn-light px-3 rounded-pill ms-1" href="/Admin/Suppliers"><i class="fas fa-undo"></i></a>
+                    <button class="btn btn-warning text-white px-4 rounded-pill fw-bold" type="submit">Lọc dữ liệu</button>
+                    <a class="btn btn-light px-3 rounded-pill ms-1 border" href="/Admin/Suppliers"><i class="fa fa-undo"></i></a>
                 </div>
                 <input type="hidden" name="page" value="1" />
             </form>
@@ -78,10 +66,10 @@
             <table class="table table-modern mb-0 align-middle">
                 <thead>
                     <tr>
-                        <th class="ps-4">Supplier Name</th>
-                        <th>Contact Info</th>
-                        <th>Address</th>
-                        <th class="text-end pe-4">Actions</th>
+                        <th class="ps-4">Tên Nhà Cung Cấp</th>
+                        <th>Thông tin liên hệ</th>
+                        <th>Địa chỉ</th>
+                        <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,8 +78,9 @@
                         <tr>
                             <td colspan="4" class="text-center py-5">
                                 <div class="text-muted">
-                                    <i class="fas fa-truck-loading fa-2x mb-3 text-warning opacity-50"></i>
-                                    <p class="mb-0">No suppliers found.</p>
+                                    <i class="fa fa-dropbox fa-3x mb-3 text-warning opacity-25"></i>
+                                    <p class="mb-0 fw-bold">Không tìm thấy dữ liệu.</p>
+                                    <small>Vui lòng thử từ khóa tìm kiếm khác.</small>
                                 </div>
                             </td>
                         </tr>
@@ -105,16 +94,8 @@
                             <tr>
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-supplier">
-                                            @if (!string.IsNullOrEmpty(s.Name))
-                                            {
-                                                <i class="fas fa-building text-white small" style="font-size:0.9rem"></i>
-                                            }
-                                            else
-                                            {
-
-                                                <span>@firstLetter</span>
-                                            }
+                                        <div class="avatar-supplier flex-shrink-0">
+                                            @firstLetter
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">@s.Name</div>
@@ -123,32 +104,24 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="d-flex flex-column">
-                                        <span class="mb-1 text-dark"><i class="fas fa-phone-alt text-warning me-2 small"></i>@s.Phone</span>
-                                        <span class="small text-muted"><i class="fas fa-envelope text-muted me-2 small"></i>@s.Email</span>
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="small text-dark"><i class="fa fa-phone text-warning me-2" style="width:16px"></i>@s.Phone</div>
+                                        <div class="small text-muted"><i class="fa fa-envelope text-secondary me-2" style="width:16px"></i>@s.Email</div>
                                     </div>
                                 </td>
-                                <td class="text-muted" style="max-width: 250px;">
-                                    <i class="fas fa-map-marker-alt text-muted me-1 small"></i> @s.Address
+                                <td class="text-secondary small" style="max-width: 280px;">
+                                    <i class="fa fa-map-marker text-danger opacity-50 me-1"></i> @s.Address
                                 </td>
                                 <td class="text-end pe-4">
-                                    <a href="/Admin/Suppliers/Details/@s.Id" class="btn-action details me-1" title="View Details">
-                                        <i class="fas fa-eye small"></i>
+                                    <a href="/Admin/Suppliers/Details/@s.Id" class="btn-action details me-1" title="Xem chi tiết">
+                                        <i class="fa fa-eye small"></i>
                                     </a>
-
-                                    @if (canEdit)
-                                    {
-                                        <a href="/Admin/Suppliers/Edit/@s.Id" class="btn-action edit me-1" title="Edit">
-                                            <i class="fas fa-pen small"></i>
-                                        </a>
-                                    }
-
-                                    @if (canDelete)
-                                    {
-                                        <a href="/Admin/Suppliers/Delete/@s.Id" class="btn-action delete" title="Delete">
-                                            <i class="fas fa-trash small"></i>
-                                        </a>
-                                    }
+                                    <a href="/Admin/Suppliers/Edit/@s.Id" class="btn-action edit me-1" title="Chỉnh sửa">
+                                        <i class="fa fa-edit small"></i>
+                                    </a>
+                                    <a href="/Admin/Suppliers/Delete/@s.Id" class="btn-action delete" title="Xóa">
+                                        <i class="fa fa-trash small"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }
@@ -161,13 +134,13 @@
         {
             <div class="card-footer bg-white border-0 py-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
                 <div class="text-muted small mb-2 mb-md-0">
-                    Showing <strong>@start</strong> to <strong>@end</strong> of <strong>@total</strong> entries
+                    Hiển thị <strong>@start</strong> đến <strong>@end</strong> trong tổng số <strong>@total</strong> bản ghi
                 </div>
 
                 <nav>
                     <ul class="pagination pagination-sm mb-0">
                         <li class="page-item @(hasPrev ? "" : "disabled")">
-                            <a class="page-link border-0 rounded-circle mx-1" href="@(hasPrev? BuildUrl(page - 1) : "#")"><i class="fas fa-chevron-left"></i></a>
+                            <a class="page-link border-0 rounded-circle mx-1" href="@(hasPrev? BuildUrl(page - 1) : "#")"><i class="fa fa-chevron-left"></i></a>
                         </li>
 
                         @{
@@ -176,13 +149,13 @@
                             for (int p = startPage; p <= endPage; p++)
                             {
                                 <li class="page-item @(p == page ? "active" : "")">
-                                    <a class="page-link border-0 rounded-circle mx-1 @(p == page ? "bg-warning border-warning text-white" : "")" href="@BuildUrl(p)">@p</a>
+                                    <a class="page-link border-0 rounded-circle mx-1 @(p == page ? "bg-warning border-warning text-white shadow-sm" : "text-secondary")" href="@BuildUrl(p)">@p</a>
                                 </li>
                             }
                         }
 
                         <li class="page-item @(hasNext ? "" : "disabled")">
-                            <a class="page-link border-0 rounded-circle mx-1" href="@(hasNext? BuildUrl(page + 1) : "#")"><i class="fas fa-chevron-right"></i></a>
+                            <a class="page-link border-0 rounded-circle mx-1" href="@(hasNext? BuildUrl(page + 1) : "#")"><i class="fa fa-chevron-right"></i></a>
                         </li>
                     </ul>
                 </nav>
@@ -192,20 +165,14 @@
 </div>
 
 @functions {
-    // Hàm Helper để build URL phân trang (giữ lại ở phía Server vì dùng logic C#)
     string BuildUrl(int p)
     {
         var q = ViewBag.Query as string ?? "";
         var pageSize = (int)(ViewBag.PageSize ?? 10);
-
         var qs = new List<string>();
         if (!string.IsNullOrWhiteSpace(q)) qs.Add($"q={Uri.EscapeDataString(q)}");
         qs.Add($"page={p}");
         qs.Add($"pageSize={pageSize}");
         return "/Admin/Suppliers" + (qs.Count > 0 ? "?" + string.Join("&", qs) : "");
     }
-}
-
-@section Scripts {
-    <script src="~/js/suppliers.js" asp-append-version="true"></script>
 }

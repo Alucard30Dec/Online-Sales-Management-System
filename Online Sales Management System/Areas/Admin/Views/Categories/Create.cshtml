@@ -1,54 +1,77 @@
 ﻿@model OnlineSalesManagementSystem.Domain.Entities.Category
 @{
-    ViewData["Title"] = "Create Category";
+    ViewData["Title"] = "Thêm mới Danh mục";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-        <div>
-            <h1 class="h3 mb-0">Create Category</h1>
-            <div class="text-muted">Add a new category.</div>
+<link rel="stylesheet" href="~/css/categories-form.css" />
+
+<div class="container-fluid py-4" style="background-color: #f8f9fc;">
+    <div class="hero-header d-flex justify-content-between align-items-center">
+        <div style="z-index: 1;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom mb-2">
+                    <li class="breadcrumb-item"><a href="/Admin/Home">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="/Admin/Categories">Danh mục</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Thêm mới</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">Thêm mới Danh mục</h2>
+            <p class="text-muted mt-1 mb-0 small">Điền thông tin để tạo danh mục sản phẩm mới.</p>
         </div>
-        <a class="btn btn-outline-secondary" href="/Admin/Categories">Back</a>
+        <div style="z-index: 1;">
+            <a href="/Admin/Categories" class="btn btn-light-custom shadow-sm">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </a>
+        </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div class="alert alert-danger">
-                    @Html.ValidationSummary(excludePropertyErrors: false)
-                </div>
-            }
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card card-modern">
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger shadow-sm border-0" style="border-radius: 10px;">
+                            @Html.ValidationSummary(excludePropertyErrors: false)
+                        </div>
+                    }
 
-            <form method="post" action="/Admin/Categories/Create" class="row g-3">
-                @Html.AntiForgeryToken()
+                    <form method="post" action="/Admin/Categories/Create" class="row g-4">
+                        @Html.AntiForgeryToken()
 
-                <div class="col-12 col-lg-6">
-                    <label class="form-label">Name <span class="text-danger">*</span></label>
-                    <input class="form-control" name="Name" value="@Model.Name" maxlength="120" required />
-                </div>
+                        <div class="col-12">
+                            <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                            <input class="form-control form-control-lg" name="Name" value="@Model.Name" maxlength="120" required placeholder="Ví dụ: Điện thoại, Laptop..." />
+                        </div>
 
-                <div class="col-12">
-                    <label class="form-label">Description</label>
-                    <textarea class="form-control" name="Description" rows="3">@Model.Description</textarea>
-                </div>
+                        <div class="col-12">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" name="Description" rows="4" placeholder="Nhập mô tả ngắn gọn về danh mục này...">@Model.Description</textarea>
+                        </div>
 
-                <div class="col-12">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="IsTrending" name="IsTrending" value="true" @(Model.IsTrending ? "checked" : "")>
-                        <label class="form-check-label fw-bold" for="IsTrending">
-                            Trending Category <span class="text-muted fw-normal">(Hiển thị mục này lên Trang chủ)</span>
-                        </label>
-                    </div>
-                </div>
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-3 d-flex align-items-center">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="IsTrending" name="IsTrending" value="true" @(Model.IsTrending ? "checked" : "")>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <div>
+                                    <label class="fw-bold mb-0 text-dark" for="IsTrending" style="cursor:pointer;">Trending Category</label>
+                                    <div class="text-muted small">Bật để hiển thị danh mục này lên trang chủ cửa hàng.</div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="col-12 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <a class="btn btn-outline-secondary" href="/Admin/Categories">Cancel</a>
+                        <div class="col-12 d-flex gap-3 mt-4 justify-content-end">
+                            <a href="/Admin/Categories" class="btn btn-light-custom">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-gradient shadow-lg px-5">
+                                <i class="fas fa-save me-2"></i>Tạo mới
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

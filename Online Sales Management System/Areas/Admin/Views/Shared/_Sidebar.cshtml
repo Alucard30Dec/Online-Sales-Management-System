@@ -1,12 +1,21 @@
+﻿@using System.Security.Claims
 @{
     var path = (Context.Request.Path.Value ?? "").ToLowerInvariant();
 
+    // Hàm kiểm tra Active Menu
     bool IsActive(string startsWith) => path.StartsWith(startsWith.ToLowerInvariant());
     bool IsAny(params string[] startsWithAny) => startsWithAny.Any(s => IsActive(s));
 
+    // Logic mở menu cha (Giữ nguyên của bạn)
     var adminOpen = IsAny("/admin/admins", "/admin/admingroups");
-    var stockOpen = IsAny("/admin/stock");
+    var stockOpen = IsAny("/admin/stock", "/admin/purchases", "/admin/suppliers"); // Gom nhóm Stock mở rộng
+
+    // Lấy Role của User hiện tại để phân quyền hiển thị (Giả sử bạn dùng Role cơ bản)
+    var isSuperAdmin = User.IsInRole("SuperAdmin") || User.Identity.Name == "admin@osms.local"; // Logic mẫu, bạn có thể chỉnh theo code thật
+    var isSales = User.IsInRole("Sales") || isSuperAdmin;
+    var isWarehouse = User.IsInRole("Warehouse") || isSuperAdmin;
 }
+
 <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
@@ -17,124 +26,67 @@
             </a>
         </li>
 
-        <li class="nav-item @(adminOpen ? "menu-open" : "")">
-            <a href="#" class="nav-link @(adminOpen ? "active" : "")">
-                <i class="nav-icon fas fa-user-shield"></i>
-                <p>
-                    Admin
-                    <i class="right fas fa-angle-left"></i>
-                </p>
+        <li class="nav-header">BÁN HÀNG (POS)</li>
+
+        <li class="nav-item">
+            <a href="/Admin/Invoices/Create" class="nav-link @(IsActive("/admin/invoices/create") ? "active" : "")">
+                <i class="nav-icon fas fa-cash-register text-warning"></i>
+                <p>Bán hàng ngay</p>
             </a>
-            <ul class="nav nav-treeview">
-                <li class="nav-item">
-                    <a href="/Admin/Admins" class="nav-link @(IsActive("/admin/admins") ? "active" : "")">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Admins List</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Admin/Admins/Create" class="nav-link @(IsActive("/admin/admins/create") ? "active" : "")">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Create Admin</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Admin/AdminGroups" class="nav-link @(IsActive("/admin/admingroups") ? "active" : "")">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Admin Groups</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/Admin/AdminGroups/Create" class="nav-link @(IsActive("/admin/admingroups/create") ? "active" : "")">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Create Admin Group</p>
-                    </a>
-                </li>
-            </ul>
         </li>
 
         <li class="nav-item">
-            <a href="/Admin/Suppliers" class="nav-link @(IsActive("/admin/suppliers") ? "active" : "")">
-                <i class="nav-icon fas fa-truck"></i>
-                <p>Suppliers</p>
+            <a href="/Admin/Invoices" class="nav-link @(IsActive("/admin/invoices") && !IsActive("/admin/invoices/create") ? "active" : "")">
+                <i class="nav-icon fas fa-file-invoice-dollar"></i>
+                <p>Hóa đơn</p>
             </a>
         </li>
 
         <li class="nav-item">
             <a href="/Admin/Customers" class="nav-link @(IsActive("/admin/customers") ? "active" : "")">
-                <i class="nav-icon fas fa-users"></i>
-                <p>Customers</p>
+                <i class="nav-icon fas fa-users text-info"></i>
+                <p>Khách hàng</p>
             </a>
         </li>
 
-        <li class="nav-item">
-            <a href="/Admin/Employees" class="nav-link @(IsActive("/admin/employees") ? "active" : "")">
-                <i class="nav-icon fas fa-user-tie"></i>
-                <p>Employees</p>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a href="/Admin/Categories" class="nav-link @(IsActive("/admin/categories") ? "active" : "")">
-                <i class="nav-icon fas fa-tags"></i>
-                <p>Categories</p>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a href="/Admin/Units" class="nav-link @(IsActive("/admin/units") ? "active" : "")">
-                <i class="nav-icon fas fa-ruler-combined"></i>
-                <p>Units</p>
-            </a>
-        </li>
+        <li class="nav-header">KHO & SẢN PHẨM</li>
 
         <li class="nav-item">
             <a href="/Admin/Products" class="nav-link @(IsActive("/admin/products") ? "active" : "")">
                 <i class="nav-icon fas fa-box"></i>
-                <p>Products</p>
+                <p>Sản phẩm</p>
             </a>
         </li>
 
-        <li class="nav-item">
-            <a href="/Admin/Purchases" class="nav-link @(IsActive("/admin/purchases") ? "active" : "")">
-                <i class="nav-icon fas fa-cart-plus"></i>
-                <p>Purchases</p>
+        <li class="nav-item @(IsAny("/admin/categories", "/admin/units") ? "menu-open" : "")">
+            <a href="#" class="nav-link @(IsAny("/admin/categories", "/admin/units") ? "active" : "")">
+                <i class="nav-icon fas fa-layer-group"></i>
+                <p>
+                    Danh mục & Đơn vị
+                    <i class="fas fa-angle-left right"></i>
+                </p>
             </a>
-        </li>
-
-        <li class="nav-item">
-            <a href="/Admin/Invoices" class="nav-link @(IsActive("/admin/invoices") ? "active" : "")">
-                <i class="nav-icon fas fa-file-invoice-dollar"></i>
-                <p>Invoices</p>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a href="/Admin/Expenses" class="nav-link @(IsActive("/admin/expenses") ? "active" : "")">
-                <i class="nav-icon fas fa-receipt"></i>
-                <p>Expenses</p>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a href="/Admin/Attendance" class="nav-link @(IsActive("/admin/attendance") ? "active" : "")">
-                <i class="nav-icon fas fa-calendar-check"></i>
-                <p>Attendance</p>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a href="/Admin/Reports" class="nav-link @(IsActive("/admin/reports") ? "active" : "")">
-                <i class="nav-icon fas fa-chart-bar"></i>
-                <p>Reports</p>
-            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/Admin/Categories" class="nav-link @(IsActive("/admin/categories") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Danh mục</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/Units" class="nav-link @(IsActive("/admin/units") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Đơn vị tính</p>
+                    </a>
+                </li>
+            </ul>
         </li>
 
         <li class="nav-item @(stockOpen ? "menu-open" : "")">
             <a href="#" class="nav-link @(stockOpen ? "active" : "")">
                 <i class="nav-icon fas fa-warehouse"></i>
                 <p>
-                    Stock
+                    Quản lý Kho
                     <i class="right fas fa-angle-left"></i>
                 </p>
             </a>
@@ -142,19 +94,91 @@
                 <li class="nav-item">
                     <a href="/Admin/Stock" class="nav-link @(IsActive("/admin/stock") && !IsActive("/admin/stock/low") && !IsActive("/admin/stock/movements") ? "active" : "")">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Stock Summary</p>
+                        <p>Tồn kho hiện tại</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/Purchases" class="nav-link @(IsActive("/admin/purchases") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Nhập hàng (Purchases)</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/Suppliers" class="nav-link @(IsActive("/admin/suppliers") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Nhà cung cấp</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="/Admin/Stock/Low" class="nav-link @(IsActive("/admin/stock/low") ? "active" : "")">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Low Stock</p>
+                        <i class="far fa-circle nav-icon text-warning"></i>
+                        <p>Cảnh báo tồn thấp</p>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="/Admin/Stock/Movements" class="nav-link @(IsActive("/admin/stock/movements") ? "active" : "")">
                         <i class="far fa-circle nav-icon"></i>
-                        <p>Movements</p>
+                        <p>Lịch sử kho</p>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-header">QUẢN TRỊ HỆ THỐNG</li>
+
+        <li class="nav-item">
+            <a href="/Admin/Employees" class="nav-link @(IsActive("/admin/employees") ? "active" : "")">
+                <i class="nav-icon fas fa-id-card-alt"></i>
+                <p>Nhân viên</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Attendance" class="nav-link @(IsActive("/admin/attendance") ? "active" : "")">
+                <i class="nav-icon fas fa-calendar-check"></i>
+                <p>Chấm công</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Expenses" class="nav-link @(IsActive("/admin/expenses") ? "active" : "")">
+                <i class="nav-icon fas fa-coins text-danger"></i>
+                <p>Chi phí</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="/Admin/Reports" class="nav-link @(IsActive("/admin/reports") ? "active" : "")">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Báo cáo</p>
+            </a>
+        </li>
+
+        <li class="nav-item @(adminOpen ? "menu-open" : "")">
+            <a href="#" class="nav-link @(adminOpen ? "active" : "")">
+                <i class="nav-icon fas fa-user-shield"></i>
+                <p>
+                    Admin & Phân quyền
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/Admin/Admins" class="nav-link @(IsActive("/admin/admins") && !IsActive("/admin/admins/create") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Danh sách Admin</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/Admins/Create" class="nav-link @(IsActive("/admin/admins/create") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Tạo Admin mới</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/Admin/AdminGroups" class="nav-link @(IsActive("/admin/admingroups") ? "active" : "")">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p>Nhóm quyền (Groups)</p>
                     </a>
                 </li>
             </ul>
@@ -162,9 +186,10 @@
 
         <li class="nav-item">
             <a href="/Admin/Settings" class="nav-link @(IsActive("/admin/settings") ? "active" : "")">
-                <i class="nav-icon fas fa-cog"></i>
-                <p>Settings</p>
+                <i class="nav-icon fas fa-cogs"></i>
+                <p>Cài đặt chung</p>
             </a>
         </li>
+
     </ul>
 </nav>
