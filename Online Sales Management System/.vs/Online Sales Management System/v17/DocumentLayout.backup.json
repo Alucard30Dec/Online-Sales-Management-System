@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Migrations\\20260107180554_create.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Migrations\\20260107180554_create.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\migrations\\20260107180554_create.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|solutionrelative:migrations\\20260107180554_create.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C31D58CF-85CB-4F3F-8B31-2DFFE3956564}|Online Sales Management System.csproj|e:\\project\\online-sales-management-system\\online sales management system\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -55,8 +55,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAFgAAAAAAAAAAAAqwHMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-07T17:49:14.475Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-07T17:49:14.475Z"
             },
             {
               "$type": "Document",
@@ -68,8 +67,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-01-07T17:49:03.586Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-07T17:49:03.586Z"
             }
           ]
         }
