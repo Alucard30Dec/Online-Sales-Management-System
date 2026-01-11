@@ -1,4 +1,4 @@
-﻿// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/UnitsController.cs
+// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/UnitsController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,7 @@ public class UnitsController : Controller
         if (pageSize <= 0) pageSize = 10;
         if (pageSize > 100) pageSize = 100;
 
-        var query = _db.Units.AsNoTracking().AsQueryable();
+        var query = _db.Units.AsNoTracking().Where(u => u.IsActive).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
         {
@@ -68,13 +68,25 @@ public class UnitsController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var exists = await _db.Units.AnyAsync(u => u.Name == model.Name);
-        if (exists)
+        var existing = await _db.Units.FirstOrDefaultAsync(u => u.Name == model.Name);
+        if (existing != null)
         {
-            ModelState.AddModelError(nameof(model.Name), "Unit name already exists.");
-            return View(model);
+            if (existing.IsActive)
+            {
+                ModelState.AddModelError(nameof(model.Name), "Unit name already exists.");
+                return View(model);
+            }
+
+            // Nếu unit từng bị xoá (IsActive=false) thì khôi phục lại
+            existing.IsActive = true;
+            existing.ShortName = model.ShortName;
+            await _db.SaveChangesAsync();
+
+            TempData["ToastSuccess"] = "Unit restored.";
+            return RedirectToAction(nameof(Index));
         }
 
+        model.IsActive = true;
         _db.Units.Add(model);
         await _db.SaveChangesAsync();
 
@@ -86,7 +98,7 @@ public class UnitsController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var entity = await _db.Units.FirstOrDefaultAsync(u => u.Id == id);
+        var entity = await _db.Units.FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
         if (entity == null) return NotFound();
 
         return View(entity);
@@ -103,7 +115,7 @@ public class UnitsController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var entity = await _db.Units.FirstOrDefaultAsync(u => u.Id == model.Id);
+        var entity = await _db.Units.FirstOrDefaultAsync(u => u.Id == model.Id && u.IsActive);
         if (entity == null) return NotFound();
 
         var exists = await _db.Units.AnyAsync(u => u.Id != model.Id && u.Name == model.Name);
@@ -127,7 +139,7 @@ public class UnitsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var entity = await _db.Units.FirstOrDefaultAsync(u => u.Id == id);
+        var entity = await _db.Units.FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
         if (entity == null) return NotFound();
 
         var used = await _db.Products.AnyAsync(p => p.UnitId == id);
@@ -137,10 +149,11 @@ public class UnitsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        _db.Units.Remove(entity);
+        entity.IsActive = false;
         await _db.SaveChangesAsync();
 
-        TempData["ToastSuccess"] = "Unit deleted.";
+        TempData["ToastSuccess"] = "Unit deleted (disabled).";
         return RedirectToAction(nameof(Index));
     }
 }
+ 

@@ -24,9 +24,9 @@ public static class DemoDataSeeder
 
         var units = new[]
         {
-            new Unit { Name = "Cái", ShortName = "cái" },
-            new Unit { Name = "Bộ", ShortName = "bộ" },
-            new Unit { Name = "Đôi", ShortName = "đôi" }
+            new Unit { Name = "Cái", ShortName = "cái", IsActive = true },
+            new Unit { Name = "Bộ", ShortName = "bộ", IsActive = true },
+            new Unit { Name = "Đôi", ShortName = "đôi", IsActive = true }
         };
         db.Units.AddRange(units);
 
@@ -207,3 +207,4 @@ public static class DemoDataSeeder
         await db.SaveChangesAsync();
     }
 }
+ 

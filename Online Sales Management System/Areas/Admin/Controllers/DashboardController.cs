@@ -27,7 +27,7 @@ public class DashboardController : Controller
 
         ViewBag.PurchasesCount = await _db.Purchases.CountAsync();
         ViewBag.InvoicesCount = await _db.Invoices.CountAsync();
-        ViewBag.ExpensesCount = await _db.Expenses.CountAsync();
+        ViewBag.ExpensesCount = await _db.Expenses.CountAsync(x => x.IsActive);
 
         ViewBag.LowStockCount = await _db.Products.CountAsync(p => p.IsActive && p.StockOnHand <= p.ReorderLevel);
 
@@ -48,3 +48,4 @@ public class DashboardController : Controller
         return View();
     }
 }
+ 

@@ -11,4 +11,7 @@ public class Unit
 
     [MaxLength(20)]
     public string? ShortName { get; set; }
+
+    public bool IsActive { get; set; } = true;
 }
+ 

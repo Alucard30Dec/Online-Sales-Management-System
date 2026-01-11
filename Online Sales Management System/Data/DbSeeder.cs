@@ -18,13 +18,13 @@ namespace OnlineSalesManagementSystem.Data
             {
                 var units = new List<Unit>
                 {
-                    new Unit { Name = "Cái", ShortName = "cái" },
-                    new Unit { Name = "Hộp", ShortName = "hộp" },
-                    new Unit { Name = "Bộ", ShortName = "bộ" },
-                    new Unit { Name = "Chiếc", ShortName = "chiếc" },
-                    new Unit { Name = "Kg", ShortName = "kg" },
-                    new Unit { Name = "Thùng", ShortName = "thùng" },
-                    new Unit { Name = "Chai", ShortName = "chai" }
+                    new Unit { Name = "Cái", ShortName = "cái", IsActive = true },
+                    new Unit { Name = "Hộp", ShortName = "hộp", IsActive = true },
+                    new Unit { Name = "Bộ", ShortName = "bộ", IsActive = true },
+                    new Unit { Name = "Chiếc", ShortName = "chiếc", IsActive = true },
+                    new Unit { Name = "Kg", ShortName = "kg", IsActive = true },
+                    new Unit { Name = "Thùng", ShortName = "thùng", IsActive = true },
+                    new Unit { Name = "Chai", ShortName = "chai", IsActive = true }
                 };
                 db.Units.AddRange(units);
                 await db.SaveChangesAsync();
@@ -53,8 +53,13 @@ namespace OnlineSalesManagementSystem.Data
             var superGroup = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Super Admin");
             if (superGroup == null)
             {
-                superGroup = new AdminGroup { Name = "Super Admin", Description = "Full System Access" };
+                superGroup = new AdminGroup { Name = "Super Admin", Description = "Full System Access", IsActive = true };
                 db.AdminGroups.Add(superGroup);
+                await db.SaveChangesAsync();
+            }
+            else if (!superGroup.IsActive)
+            {
+                superGroup.IsActive = true;
                 await db.SaveChangesAsync();
             }
 
@@ -73,8 +78,13 @@ namespace OnlineSalesManagementSystem.Data
             var warehouseGroup = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Warehouse Staff");
             if (warehouseGroup == null)
             {
-                warehouseGroup = new AdminGroup { Name = "Warehouse Staff", Description = "Quản lý kho, nhập hàng, sản phẩm" };
+                warehouseGroup = new AdminGroup { Name = "Warehouse Staff", Description = "Quản lý kho, nhập hàng, sản phẩm", IsActive = true };
                 db.AdminGroups.Add(warehouseGroup);
+                await db.SaveChangesAsync();
+            }
+            else if (!warehouseGroup.IsActive)
+            {
+                warehouseGroup.IsActive = true;
                 await db.SaveChangesAsync();
             }
 
@@ -109,8 +119,13 @@ namespace OnlineSalesManagementSystem.Data
             var salesGroup = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Sales Staff");
             if (salesGroup == null)
             {
-                salesGroup = new AdminGroup { Name = "Sales Staff", Description = "Nhân viên kinh doanh" };
+                salesGroup = new AdminGroup { Name = "Sales Staff", Description = "Nhân viên kinh doanh", IsActive = true };
                 db.AdminGroups.Add(salesGroup);
+                await db.SaveChangesAsync();
+            }
+            else if (!salesGroup.IsActive)
+            {
+                salesGroup.IsActive = true;
                 await db.SaveChangesAsync();
             }
             // Seed quyền Sales nếu cần (Logic tương tự Warehouse nhưng đổi Module thành Customers, Invoices...)
@@ -190,7 +205,7 @@ namespace OnlineSalesManagementSystem.Data
             if (!await db.Products.AnyAsync())
             {
                 var catIds = await db.Categories.Select(c => c.Id).ToListAsync();
-                var unitIds = await db.Units.Select(u => u.Id).ToListAsync();
+                var unitIds = await db.Units.Where(u => u.IsActive).Select(u => u.Id).ToListAsync();
 
                 if (catIds.Any() && unitIds.Any())
                 {
@@ -359,3 +374,4 @@ namespace OnlineSalesManagementSystem.Data
         }
     }
 }
+ 

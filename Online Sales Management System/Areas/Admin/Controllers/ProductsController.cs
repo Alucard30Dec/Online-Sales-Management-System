@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Services.Security;
@@ -83,8 +83,8 @@ public class ProductsController : Controller
         model.Name = (model.Name ?? "").Trim();
         model.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
 
-        // Nếu bạn muốn cho nhập link ảnh thủ công thì giữ ImagePath,
-        // còn nếu ưu tiên upload file thì ImagePath sẽ set lại khi upload.
+        // N?u b?n mu?n cho nh?p link ?nh th? cng th gi? ImagePath,
+        // cn n?u uu tin upload file th ImagePath s? set l?i khi upload.
         model.ImagePath = string.IsNullOrWhiteSpace(model.ImagePath) ? null : model.ImagePath.Trim();
 
         if (model.StockOnHand < 0) model.StockOnHand = 0;
@@ -92,36 +92,36 @@ public class ProductsController : Controller
         if (model.CostPrice < 0) model.CostPrice = 0;
         if (model.SalePrice < 0) model.SalePrice = 0;
 
-        // ===== Validate dropdown (int default = 0 vẫn "hợp lệ" theo ModelState) =====
+        // ===== Validate dropdown (int default = 0 v?n "h?p l?" theo ModelState) =====
         if (model.CategoryId <= 0)
-            ModelState.AddModelError(nameof(model.CategoryId), "Vui lòng chọn danh mục.");
+            ModelState.AddModelError(nameof(model.CategoryId), "Vui lng ch?n danh m?c.");
 
         if (model.UnitId <= 0)
-            ModelState.AddModelError(nameof(model.UnitId), "Vui lòng chọn đơn vị.");
+            ModelState.AddModelError(nameof(model.UnitId), "Vui lng ch?n don v?.");
 
-        // SKU thường nên bắt buộc (vì bạn đang check trùng).
+        // SKU thu?ng nn b?t bu?c (v b?n dang check trng).
         if (string.IsNullOrWhiteSpace(model.SKU))
-            ModelState.AddModelError(nameof(model.SKU), "Vui lòng nhập SKU.");
+            ModelState.AddModelError(nameof(model.SKU), "Vui lng nh?p SKU.");
 
         if (!ModelState.IsValid)
             return View(model);
 
-        // ===== Check tồn tại Category/Unit =====
+        // ===== Check t?n t?i Category/Unit =====
         var catOk = await _db.Categories.AsNoTracking().AnyAsync(c => c.Id == model.CategoryId && c.IsActive);
         if (!catOk)
         {
-            ModelState.AddModelError(nameof(model.CategoryId), "Danh mục không hợp lệ hoặc đã bị vô hiệu hoá.");
+            ModelState.AddModelError(nameof(model.CategoryId), "Danh m?c khng h?p l? ho?c d b? v hi?u ho.");
             return View(model);
         }
 
-        var unitOk = await _db.Units.AsNoTracking().AnyAsync(u => u.Id == model.UnitId);
+        var unitOk = await _db.Units.AsNoTracking().AnyAsync(u => u.Id == model.UnitId && u.IsActive);
         if (!unitOk)
         {
-            ModelState.AddModelError(nameof(model.UnitId), "Đơn vị không hợp lệ.");
+            ModelState.AddModelError(nameof(model.UnitId), "on v? khng h?p l?.");
             return View(model);
         }
 
-        // ===== Check SKU trùng =====
+        // ===== Check SKU trng =====
         var skuExists = await _db.Products.AnyAsync(p => p.SKU == model.SKU);
         if (skuExists)
         {
@@ -129,7 +129,7 @@ public class ProductsController : Controller
             return View(model);
         }
 
-        // ===== Upload ảnh (nếu có) =====
+        // ===== Upload ?nh (n?u c) =====
         if (imageFile != null && imageFile.Length > 0)
         {
             var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
@@ -137,7 +137,7 @@ public class ProductsController : Controller
 
             if (!allowed.Contains(ext))
             {
-                ModelState.AddModelError(string.Empty, "Ảnh sản phẩm phải là .png/.jpg/.jpeg/.webp");
+                ModelState.AddModelError(string.Empty, "?nh s?n ph?m ph?i l .png/.jpg/.jpeg/.webp");
                 return View(model);
             }
 
@@ -156,8 +156,8 @@ public class ProductsController : Controller
         }
 
         // ===== Business defaults =====
-        // Nếu bạn muốn luôn active khi tạo mới, giữ dòng này.
-        // Nếu muốn theo checkbox form, bỏ dòng này.
+        // N?u b?n mu?n lun active khi t?o m?i, gi? dng ny.
+        // N?u mu?n theo checkbox form, b? dng ny.
         model.IsActive = true;
 
         _db.Products.Add(model);
@@ -249,15 +249,17 @@ public class ProductsController : Controller
 
     private async Task LoadLookupsAsync()
     {
-        // Create.cshtml đang dùng ViewBag.Categories/Units
-        // => ta sẽ trả về LIST để view tự loop (an toàn, không phụ thuộc SelectListItem).
+        // Create.cshtml dang dng ViewBag.Categories/Units
+        // => ta s? tr? v? LIST d? view t? loop (an ton, khng ph? thu?c SelectListItem).
         ViewBag.Categories = await _db.Categories.AsNoTracking()
             .Where(c => c.IsActive)
             .OrderBy(c => c.Name)
             .ToListAsync();
 
         ViewBag.Units = await _db.Units.AsNoTracking()
+            .Where(u => u.IsActive)
             .OrderBy(u => u.Name)
             .ToListAsync();
     }
 }
+ 

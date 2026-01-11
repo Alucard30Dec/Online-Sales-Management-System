@@ -47,7 +47,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Create)]
         public async Task<IActionResult> Create()
         {
-            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
             return View(new AdminCreateVm { IsActive = true });
         }
 
@@ -56,7 +56,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Create)]
         public async Task<IActionResult> Create(AdminCreateVm vm)
         {
-            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
 
             if (!ModelState.IsValid) return View(vm);
 
@@ -95,7 +95,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
             if (user == null) return NotFound();
 
-            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
 
             var vm = new AdminEditVm
             {
@@ -114,7 +114,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Edit)]
         public async Task<IActionResult> Edit(AdminEditVm vm)
         {
-            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().OrderBy(g => g.Name).ToListAsync();
+            ViewBag.Groups = await _db.AdminGroups.AsNoTracking().Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
 
             if (!ModelState.IsValid) return View(vm);
 
@@ -233,14 +233,17 @@ TempData["ToastSuccess"] = "Admin account updated.";
                 return RedirectToAction(nameof(Index));
             }
 
-            var result = await _userManager.DeleteAsync(user);
+            // Soft delete: chỉ ẩn (deactivate) chứ KHÔNG xoá khỏi DB
+            user.IsActive = false;
+            var result = await _userManager.UpdateAsync(user);
+
             if (!result.Succeeded)
             {
                 TempData["ToastError"] = "Delete failed.";
             }
             else
             {
-                TempData["ToastSuccess"] = "Admin account deleted.";
+                TempData["ToastSuccess"] = "Admin account deleted (disabled).";
             }
 
             return RedirectToAction(nameof(Index));
@@ -288,4 +291,5 @@ public class AdminCreateVm
         }
     }
 }
+ 
  

@@ -15,4 +15,7 @@ public class Expense
     public DateTime ExpenseDate { get; set; } = DateTime.UtcNow;
 
     public string? Note { get; set; }
+
+    public bool IsActive { get; set; } = true;
 }
+ 

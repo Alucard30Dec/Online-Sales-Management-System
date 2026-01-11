@@ -29,16 +29,26 @@ public static class DbInitializer
         var super = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Super Admin");
         if (super == null)
         {
-            super = new AdminGroup { Name = "Super Admin", Description = "Full access to all modules." };
+            super = new AdminGroup { Name = "Super Admin", Description = "Full access to all modules.", IsActive = true };
             db.AdminGroups.Add(super);
+            await db.SaveChangesAsync();
+        }
+        else if (!super.IsActive)
+        {
+            super.IsActive = true;
             await db.SaveChangesAsync();
         }
 
         var sales = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Sales Staff");
         if (sales == null)
         {
-            sales = new AdminGroup { Name = "Sales Staff", Description = "Sales user with limited permissions." };
+            sales = new AdminGroup { Name = "Sales Staff", Description = "Sales user with limited permissions.", IsActive = true };
             db.AdminGroups.Add(sales);
+            await db.SaveChangesAsync();
+        }
+        else if (!sales.IsActive)
+        {
+            sales.IsActive = true;
             await db.SaveChangesAsync();
         }
 
@@ -161,3 +171,4 @@ public static class DbInitializer
         await db.SaveChangesAsync();
     }
 }
+ 

@@ -22,6 +22,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         {
             var groups = await _db.AdminGroups
                 .AsNoTracking()
+                .Where(g => g.IsActive)
                 .OrderBy(g => g.Id)
                 .ToListAsync();
 
@@ -51,7 +52,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Edit)]
         public async Task<IActionResult> Edit(int id)
         {
-            var entity = await _db.AdminGroups.FindAsync(id);
+            var entity = await _db.AdminGroups.FirstOrDefaultAsync(g => g.Id == id && g.IsActive);
             if (entity == null) return NotFound();
 
             // Block editing Super Admin group
@@ -71,7 +72,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var entity = await _db.AdminGroups.FindAsync(model.Id);
+            var entity = await _db.AdminGroups.FirstOrDefaultAsync(g => g.Id == model.Id && g.IsActive);
             if (entity == null) return NotFound();
 
             // Block editing Super Admin group
@@ -108,19 +109,27 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            _db.GroupPermissions.RemoveRange(group.Permissions);
-            _db.AdminGroups.Remove(group);
+            // Soft delete: chỉ ẩn (disable) chứ KHÔNG xoá khỏi DB
+            group.IsActive = false;
+
+            // Nếu đang có user thuộc group này thì vô hiệu hoá luôn để tránh còn quyền
+            var users = await _db.Users.Where(u => u.AdminGroupId == group.Id).ToListAsync();
+            foreach (var u in users)
+            {
+                u.AdminGroupId = null;
+                u.IsActive = false;
+            }
 
             await _db.SaveChangesAsync();
 
-            TempData["ToastSuccess"] = "Admin group deleted.";
+            TempData["ToastSuccess"] = "Admin group deleted (disabled).";
             return RedirectToAction(nameof(Index));
         }
 
         [PermissionAuthorize(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Edit)]
         public async Task<IActionResult> Permissions(int id)
         {
-            var group = await _db.AdminGroups.AsNoTracking().FirstOrDefaultAsync(g => g.Id == id);
+            var group = await _db.AdminGroups.AsNoTracking().FirstOrDefaultAsync(g => g.Id == id && g.IsActive);
             if (group == null) return NotFound();
 
             var existing = await _db.GroupPermissions
@@ -143,7 +152,8 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
                     Edit = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Edit) && set.Contains($"{m}:{PermissionConstants.Actions.Edit}"),
                     Delete = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Delete) && set.Contains($"{m}:{PermissionConstants.Actions.Delete}"),
                     Approve = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Approve) && set.Contains($"{m}:{PermissionConstants.Actions.Approve}"),
-                    Export = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Export) && set.Contains($"{m}:{PermissionConstants.Actions.Export}")}).ToList()
+                    Export = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Export) && set.Contains($"{m}:{PermissionConstants.Actions.Export}"),
+                }).ToList()
             };
 
             return View(vm);
@@ -155,7 +165,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         public async Task<IActionResult> Permissions(GroupPermissionsVm vm)
         {
             // Always re-check server side
-            var group = await _db.AdminGroups.AsNoTracking().FirstOrDefaultAsync(g => g.Id == vm.GroupId);
+            var group = await _db.AdminGroups.AsNoTracking().FirstOrDefaultAsync(g => g.Id == vm.GroupId && g.IsActive);
             if (group == null) return NotFound();
 
             // A) Super Admin group: allow view but reject saving (read-only)
@@ -202,7 +212,8 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
                     AddIf(row.Edit, PermissionConstants.Actions.Edit);
                     AddIf(row.Delete, PermissionConstants.Actions.Delete);
                     AddIf(row.Approve, PermissionConstants.Actions.Approve);
-                    AddIf(row.Export, PermissionConstants.Actions.Export);                }
+                    AddIf(row.Export, PermissionConstants.Actions.Export);
+                }
             }
 
             if (newPerms.Count > 0)
@@ -232,7 +243,9 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             public bool Delete { get; set; }
 
             public bool Approve { get; set; }
-            public bool Export { get; set; }        }
+            public bool Export { get; set; }
+        }
     }
 }
+ 
  

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Services.Security;
@@ -25,7 +25,7 @@ public class ExpensesController : Controller
         if (pageSize <= 0) pageSize = 10;
         if (pageSize > 100) pageSize = 100;
 
-        var query = _db.Expenses.AsNoTracking().AsQueryable();
+        var query = _db.Expenses.AsNoTracking().Where(e => e.IsActive).AsQueryable();
 
         if (from.HasValue)
             query = query.Where(e => e.ExpenseDate >= from.Value.Date);
@@ -72,6 +72,7 @@ public class ExpensesController : Controller
         if (model.ExpenseDate == default)
             model.ExpenseDate = DateTime.UtcNow.Date;
 
+        model.IsActive = true;
         _db.Expenses.Add(model);
         await _db.SaveChangesAsync();
 
@@ -83,7 +84,7 @@ public class ExpensesController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var entity = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id);
+        var entity = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.IsActive);
         if (entity == null) return NotFound();
 
         return View(entity);
@@ -100,7 +101,7 @@ public class ExpensesController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var entity = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == model.Id);
+        var entity = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == model.Id && e.IsActive);
         if (entity == null) return NotFound();
 
         entity.Title = model.Title;
@@ -119,13 +120,14 @@ public class ExpensesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var entity = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id);
+        var entity = await _db.Expenses.FirstOrDefaultAsync(e => e.Id == id && e.IsActive);
         if (entity == null) return NotFound();
 
-        _db.Expenses.Remove(entity);
+        entity.IsActive = false;
         await _db.SaveChangesAsync();
 
-        TempData["ToastSuccess"] = "Expense deleted.";
+        TempData["ToastSuccess"] = "Expense deleted (disabled).";
         return RedirectToAction(nameof(Index));
     }
 }
+ 

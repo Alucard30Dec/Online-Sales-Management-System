@@ -11,6 +11,9 @@ public class AdminGroup
 
     public string? Description { get; set; }
 
+
+    public bool IsActive { get; set; } = true;
     public ICollection<ApplicationUser> Users { get; set; } = new List<ApplicationUser>();
     public ICollection<GroupPermission> Permissions { get; set; } = new List<GroupPermission>();
 }
+ 

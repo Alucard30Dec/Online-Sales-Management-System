@@ -37,6 +37,9 @@ public sealed class PermissionService : IPermissionService
         if (appUser == null || !appUser.IsActive) return false;
         if (appUser.AdminGroupId == null) return false;
 
+        var groupActive = await _db.AdminGroups.AsNoTracking().AnyAsync(g => g.Id == appUser.AdminGroupId.Value && g.IsActive, ct);
+        if (!groupActive) return false;
+
         // Super simple evaluation: wildcard & exact
         // Supported:
         //   *.*  (stored as Module="*", Action="*")
@@ -74,11 +77,17 @@ public sealed class PermissionService : IPermissionService
 
         if (groupId == null) return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+        var groupActive2 = await _db.AdminGroups.AsNoTracking().AnyAsync(g => g.Id == groupId.Value && g.IsActive, ct);
+        if (!groupActive2) return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         return await GetGroupPermissionsAsync(groupId.Value, ct);
     }
 
     public async Task<HashSet<string>> GetGroupPermissionsAsync(int adminGroupId, CancellationToken ct = default)
     {
+        var groupActive = await _db.AdminGroups.AsNoTracking().AnyAsync(g => g.Id == adminGroupId && g.IsActive, ct);
+        if (!groupActive) return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         var perms = await _db.GroupPermissions
             .AsNoTracking()
             .Where(p => p.AdminGroupId == adminGroupId)
@@ -95,3 +104,4 @@ public sealed class PermissionService : IPermissionService
         return set;
     }
 }
+ 

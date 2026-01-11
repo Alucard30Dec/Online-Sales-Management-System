@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Domain.Entities;
 using AppUser = OnlineSalesManagementSystem.Domain.Entities.ApplicationUser;
@@ -18,7 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Unit> Units => Set<Unit>();
 
-    // --- Đã chuẩn hóa dòng này ---
+    // ---  chu?n ha dng ny ---
     public DbSet<Brand> Brands => Set<Brand>();
     // -----------------------------
 
@@ -55,6 +55,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<AdminGroup>(e =>
         {
             e.Property(x => x.Name).HasMaxLength(120).IsRequired();
+            e.Property(x => x.IsActive).HasDefaultValue(true);
             e.HasIndex(x => x.Name).IsUnique();
         });
 
@@ -111,6 +112,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Category>(e =>
         {
             e.Property(x => x.Name).HasMaxLength(120).IsRequired();
+            e.Property(x => x.IsActive).HasDefaultValue(true);
             e.HasIndex(x => x.Name).IsUnique();
             e.Property(x => x.IsActive).HasDefaultValue(true);
         });
@@ -120,10 +122,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
             e.Property(x => x.Name).HasMaxLength(80).IsRequired();
             e.Property(x => x.ShortName).HasMaxLength(20);
+            e.Property(x => x.IsActive).HasDefaultValue(true);
             e.HasIndex(x => x.Name).IsUnique();
         });
 
-        // --- CẤU HÌNH CHO BRAND (Mới thêm) ---
+        // --- C?U HNH CHO BRAND (M?i thm) ---
         modelBuilder.Entity<Brand>(e =>
         {
             e.Property(x => x.Name).HasMaxLength(100).IsRequired();
@@ -143,7 +146,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.StockOnHand).HasDefaultValue(0);
             e.Property(x => x.ReorderLevel).HasDefaultValue(5);
             e.Property(x => x.IsActive).HasDefaultValue(true);
-            e.Property(x => x.IsTrending).HasDefaultValue(false); // Thêm dòng này cho rõ ràng
+            e.Property(x => x.IsTrending).HasDefaultValue(false); // Thm dng ny cho r rng
 
             e.HasOne(x => x.Category)
              .WithMany()
@@ -155,11 +158,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
              .HasForeignKey(x => x.UnitId)
              .OnDelete(DeleteBehavior.Restrict);
 
-            // --- CẤU HÌNH QUAN HỆ BRAND (Mới thêm) ---
+            // --- C?U HNH QUAN H? BRAND (M?i thm) ---
             e.HasOne(x => x.Brand)
              .WithMany()
              .HasForeignKey(x => x.BrandId)
-             .OnDelete(DeleteBehavior.Restrict); // Không cho xóa Brand nếu có SP đang dùng
+             .OnDelete(DeleteBehavior.Restrict); // Khng cho xa Brand n?u c SP dang dng
             // -----------------------------------------
         });
 
@@ -227,7 +230,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
              .HasForeignKey(x => x.ProductId)
              .OnDelete(DeleteBehavior.Restrict);
 
-            // Cấu hình cột tính toán
+            // C?u hnh c?t tnh ton
             e.Property(x => x.LineTotal)
              .HasComputedColumnSql("[UnitPrice] * [Quantity]", stored: true)
              .ValueGeneratedOnAddOrUpdate();
@@ -240,6 +243,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
             e.Property(x => x.Title).HasMaxLength(200).IsRequired();
             e.Property(x => x.Amount).HasColumnType("decimal(18,2)");
+            e.Property(x => x.IsActive).HasDefaultValue(true);
         });
 
         // Attendance
@@ -275,3 +279,4 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         });
     }
 }
+ 
