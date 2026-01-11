@@ -138,13 +138,13 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
                 Rows = PermissionConstants.AllModules.Select(m => new PermissionRowVm
                 {
                     Module = m,
-                    Show = set.Contains($"{m}:{PermissionConstants.Actions.Show}"),
-                    Create = set.Contains($"{m}:{PermissionConstants.Actions.Create}"),
-                    Edit = set.Contains($"{m}:{PermissionConstants.Actions.Edit}"),
-                    Delete = set.Contains($"{m}:{PermissionConstants.Actions.Delete}"),
-                    Approve = set.Contains($"{m}:{PermissionConstants.Actions.Approve}"),
-                    Export = set.Contains($"{m}:{PermissionConstants.Actions.Export}"),
-                    Manage = set.Contains($"{m}:{PermissionConstants.Actions.Manage}")
+                    Show = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Show) && set.Contains($"{m}:{PermissionConstants.Actions.Show}"),
+                    Create = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Create) && set.Contains($"{m}:{PermissionConstants.Actions.Create}"),
+                    Edit = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Edit) && set.Contains($"{m}:{PermissionConstants.Actions.Edit}"),
+                    Delete = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Delete) && set.Contains($"{m}:{PermissionConstants.Actions.Delete}"),
+                    Approve = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Approve) && set.Contains($"{m}:{PermissionConstants.Actions.Approve}"),
+                    Export = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Export) && set.Contains($"{m}:{PermissionConstants.Actions.Export}"),
+                    Manage = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Manage) && set.Contains($"{m}:{PermissionConstants.Actions.Manage}")
                 }).ToList()
             };
 
@@ -190,6 +190,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
                     void AddIf(bool ok, string action)
                     {
                         if (!ok) return;
+                        if (!PermissionUiFeatureMatrix.Supports(row.Module, action)) return;
                         newPerms.Add(new GroupPermission
                         {
                             AdminGroupId = vm.GroupId,
@@ -240,3 +241,4 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         }
     }
 }
+ 
