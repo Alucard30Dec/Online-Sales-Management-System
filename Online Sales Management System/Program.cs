@@ -1,8 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
+
+// ✅ Resolve ambiguous references if OSMS.PermissionPatch is also in the solution
+using PermissionPolicyProvider = OnlineSalesManagementSystem.Services.Security.PermissionPolicyProvider;
+using PermissionAuthorizationHandler = OnlineSalesManagementSystem.Services.Security.PermissionAuthorizationHandler;
+using IPermissionService = OnlineSalesManagementSystem.Services.Security.IPermissionService;
+using PermissionService = OnlineSalesManagementSystem.Services.Security.PermissionService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,9 +55,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 // Authorization: permission-based policies
 builder.Services.AddAuthorization();
 
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, OnlineSalesManagementSystem.Services.Security.PermissionPolicyProvider>();
-builder.Services.AddScoped<IAuthorizationHandler, OnlineSalesManagementSystem.Services.Security.PermissionAuthorizationHandler>();
-builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Security.IPermissionService, OnlineSalesManagementSystem.Services.Security.PermissionService>();
+// ✅ Use ONLY ONE policy provider (avoid conflicts/ambiguity)
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
 
 builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Inventory.IStockService, OnlineSalesManagementSystem.Services.Inventory.StockService>();
 builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Sales.IInvoiceTotalsService, OnlineSalesManagementSystem.Services.Sales.InvoiceTotalsService>();
@@ -70,7 +78,7 @@ await using (var scope = app.Services.CreateAsyncScope())
         var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
 
         logger.LogInformation("Applying EF Core migrations...");
-        await db.Database.MigrateAsync(); // khuyến nghị khi apply migrations programmatically :contentReference[oaicite:2]{index=2}
+        await db.Database.MigrateAsync();
 
         // Sanity check: nếu bảng Identity thiếu, nổ ngay tại đây cho dễ debug
         _ = await db.Users.AsNoTracking().Select(x => x.Id).Take(1).ToListAsync();

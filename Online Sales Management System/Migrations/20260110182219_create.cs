@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OnlineSalesManagementSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class create : Migration
+    public partial class Create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -750,3 +750,4 @@ namespace OnlineSalesManagementSystem.Migrations
         }
     }
 }
+ 
