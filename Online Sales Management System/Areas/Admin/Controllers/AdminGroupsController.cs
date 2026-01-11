@@ -143,9 +143,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
                     Edit = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Edit) && set.Contains($"{m}:{PermissionConstants.Actions.Edit}"),
                     Delete = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Delete) && set.Contains($"{m}:{PermissionConstants.Actions.Delete}"),
                     Approve = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Approve) && set.Contains($"{m}:{PermissionConstants.Actions.Approve}"),
-                    Export = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Export) && set.Contains($"{m}:{PermissionConstants.Actions.Export}"),
-                    Manage = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Manage) && set.Contains($"{m}:{PermissionConstants.Actions.Manage}")
-                }).ToList()
+                    Export = PermissionUiFeatureMatrix.Supports(m, PermissionConstants.Actions.Export) && set.Contains($"{m}:{PermissionConstants.Actions.Export}")}).ToList()
             };
 
             return View(vm);
@@ -204,9 +202,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
                     AddIf(row.Edit, PermissionConstants.Actions.Edit);
                     AddIf(row.Delete, PermissionConstants.Actions.Delete);
                     AddIf(row.Approve, PermissionConstants.Actions.Approve);
-                    AddIf(row.Export, PermissionConstants.Actions.Export);
-                    AddIf(row.Manage, PermissionConstants.Actions.Manage);
-                }
+                    AddIf(row.Export, PermissionConstants.Actions.Export);                }
             }
 
             if (newPerms.Count > 0)
@@ -236,9 +232,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             public bool Delete { get; set; }
 
             public bool Approve { get; set; }
-            public bool Export { get; set; }
-            public bool Manage { get; set; }
-        }
+            public bool Export { get; set; }        }
     }
 }
  

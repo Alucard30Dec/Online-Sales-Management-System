@@ -90,11 +90,6 @@ namespace OnlineSalesManagementSystem.Services.Security
 
                     if (actions.Contains("Export"))
                         supported.Add(PermissionConstants.Actions.Export);
-
-                    // Manage: permission management / admin-only operations.
-                    if (actions.Contains("Permissions") || actions.Contains("Manage"))
-                        supported.Add(PermissionConstants.Actions.Manage);
-
                     // Fallback: if controller exists but doesn't follow naming, still let it be visible.
                     if (supported.Count == 0 && actions.Count > 0)
                         supported.Add(PermissionConstants.Actions.Show);

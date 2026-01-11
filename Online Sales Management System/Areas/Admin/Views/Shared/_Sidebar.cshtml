@@ -44,11 +44,7 @@
     }
 
     // ====== POS (Sales) ======
-    var canInvoiceCreate = Has(PermissionConstants.Modules.Invoices, PermissionConstants.Actions.Create)
-                           || Has(PermissionConstants.Modules.Invoices, PermissionConstants.Actions.Manage);
-    var canInvoiceShow = Has(PermissionConstants.Modules.Invoices, PermissionConstants.Actions.Show)
-                         || Has(PermissionConstants.Modules.Invoices, PermissionConstants.Actions.Manage);
-    var canCustomers = HasAny(PermissionConstants.Modules.Customers);
+    var canInvoiceCreate = Has(PermissionConstants.Modules.Invoices, PermissionConstants.Actions.Create);var canInvoiceShow = Has(PermissionConstants.Modules.Invoices, PermissionConstants.Actions.Show);var canCustomers = HasAny(PermissionConstants.Modules.Customers);
 
     var showPosSection = canInvoiceCreate || canInvoiceShow || canCustomers;
 
@@ -74,15 +70,7 @@
     var canSettings = HasAny(PermissionConstants.Modules.Settings);
 
     // Admin & permissions
-    var canAdminsList = Has(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Show)
-                        || Has(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Manage);
-    var canAdminsCreate = Has(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Create)
-                          || Has(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Manage);
-
-    var canGroupsList = Has(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Show)
-                        || Has(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Manage);
-
-    var showAdminPermissionGroup = canAdminsList || canAdminsCreate || canGroupsList;
+    var canAdminsList = Has(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Show);var canAdminsCreate = Has(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Create);var canGroupsList = Has(PermissionConstants.Modules.AdminGroups, PermissionConstants.Actions.Show);var showAdminPermissionGroup = canAdminsList || canAdminsCreate || canGroupsList;
 
     var showSystemSection =
         canEmployees || canAttendance || canExpenses || canReports || canSettings || showAdminPermissionGroup;

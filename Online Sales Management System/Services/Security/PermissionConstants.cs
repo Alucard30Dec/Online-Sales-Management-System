@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace OnlineSalesManagementSystem.Services.Security;
 
@@ -90,7 +90,7 @@ public static class PermissionConstants
     public static class Actions
     {
         public const string Show = "Show";
-        // Legacy alias: nếu chỗ nào còn dùng View thì vẫn map về Show
+        // Legacy alias: n?u ch? no cn dng View th v?n map v? Show
         public const string View = Show;
 
         public const string Create = "Create";
@@ -99,21 +99,20 @@ public static class PermissionConstants
 
         public const string Approve = "Approve";
         public const string Export = "Export";
-        public const string Manage = "Manage";
-
         public static readonly string[] All = new[]
         {
-            Show, Create, Edit, Delete, Approve, Export, Manage
+            Show, Create, Edit, Delete, Approve, Export
         };
     }
 
     public static string[] AllActions => Actions.All;
 
-    // Keep method name from old file so code cũ không gãy
+    // Keep method name from old file so code cu khng gy
     public static string Build(string module, string action) => Permission(module, action);
     public static class Policies
     {
         public static string Require(string module, string action)
             => $"{PolicyPrefix}{module}.{action}";
-    }
+    };
 }
+ 
