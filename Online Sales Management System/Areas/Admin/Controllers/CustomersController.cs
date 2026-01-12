@@ -185,5 +185,38 @@ public class CustomersController : Controller
         TempData["ToastSuccess"] = "Customer deleted (disabled).";
         return RedirectToAction(nameof(Index));
     }
+
+
+    // GET: /Admin/Customers/QuickInfo/5
+    // Dùng cho tooltip/popup nhanh ở trang Hóa đơn & Tạo hóa đơn
+    [HttpGet]
+    public async Task<IActionResult> QuickInfo(int id)
+    {
+        var c = await _db.Customers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        if (c == null) return Json(new { success = false });
+
+        // Tổng đơn + tổng chi (không tính đơn hủy)
+        var invoices = await _db.Invoices.AsNoTracking()
+            .Where(x => x.CustomerId == id)
+            .ToListAsync();
+
+        var totalOrders = invoices.Count;
+        var totalSpent = invoices
+            .Where(x => x.Status != InvoiceStatus.Cancelled)
+            .Sum(x => x.GrandTotal);
+
+        return Json(new
+        {
+            success = true,
+            id = c.Id,
+            name = c.Name,
+            phone = c.Phone,
+            email = c.Email,
+            address = c.Address,
+            totalOrders,
+            totalSpent,
+            totalSpentText = totalSpent.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) + " VNĐ"
+        });
+    }
+
 }
- 

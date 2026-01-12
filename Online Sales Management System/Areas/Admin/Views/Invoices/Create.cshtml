@@ -1,9 +1,11 @@
 @model OnlineSalesManagementSystem.Areas.Admin.Controllers.InvoicesController.InvoiceCreateVm
 @using OnlineSalesManagementSystem.Domain.Entities
 @using System.Globalization
+
 @{
     ViewData["Title"] = "Tạo hóa đơn";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
     var customers = ViewBag.Customers as List<Customer> ?? new();
     var products = ViewBag.Products as List<Product> ?? new();
 
@@ -47,17 +49,43 @@
                         </div>
                     }
 
+                    <!-- ✅ FIX: Cùng 1 row chứa 2 cột: Khách hàng + Ngày tạo đơn -->
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-muted">Khách hàng</label>
-                            <select class="form-select form-select-lg" id="customerSelect" name="CustomerId">
-                                <option value="" data-walkin="1">-- Khách lẻ (Walk-in) --</option>
-                                @foreach (var c in customers)
-                                {
-                                    var selected = (Model.CustomerId == c.Id) ? "selected" : null;
-                                    <option value="@c.Id" selected="@selected">@c.Name (@c.Phone)</option>
-                                }
-                            </select>
+
+                            <div class="d-flex align-items-center gap-2">
+                                <select class="form-select form-select-lg" id="customerSelect" name="CustomerId">
+                                    <option value="" data-walkin="1">-- Khách lẻ (Walk-in) --</option>
+                                    @foreach (var c in customers)
+                                    {
+                                        <option value="@c.Id"
+                                                data-name="@c.Name"
+                                                data-phone="@c.Phone"
+                                                data-email="@c.Email"
+                                                data-address="@c.Address">
+                                            @c.Name (@c.Phone)
+                                        </option>
+                                    }
+                                </select>
+
+                                <!-- nút info -->
+                                <button type="button"
+                                        id="customerInfoBtn"
+                                        class="btn btn-outline-secondary btn-sm rounded-circle customer-info-btn"
+                                        style="display:none;">
+                                    <i class="fas fa-info"></i>
+                                </button>
+                            </div>
+
+                            <!-- POPUP OVERLAY (fixed, không đổi layout) -->
+                            <div id="customerInfoPopover" class="customer-info-popover">
+                                <div class="customer-pop-arrow"></div>
+                                <div class="customer-pop-title" id="ciName"></div>
+                                <div class="customer-pop-row" id="ciPhone"></div>
+                                <div class="customer-pop-row" id="ciEmail"></div>
+                                <div class="customer-pop-row" id="ciAddress"></div>
+                            </div>
                         </div>
 
                         <div class="col-md-6">
@@ -68,6 +96,7 @@
                 </div>
             </div>
 
+            <!-- Danh sách sản phẩm -->
             <div class="col-12">
                 <div class="card card-modern">
                     <div class="card-header bg-white border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center">
@@ -93,8 +122,8 @@
                                 <tbody>
                                     @{
                                         var rows = (Model.Items?.Any() == true)
-                                            ? Model.Items
-                                            : new List<OnlineSalesManagementSystem.Areas.Admin.Controllers.InvoicesController.InvoiceItemVm> { new() { Qty = 1 } };
+                                        ? Model.Items
+                                        : new List<OnlineSalesManagementSystem.Areas.Admin.Controllers.InvoicesController.InvoiceItemVm> { new() { Qty = 1 } };
                                     }
 
                                     @for (var i = 0; i < rows.Count; i++)
@@ -117,7 +146,10 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <input class="table-input text-center fw-bold qty-input" type="number" min="1" step="1" name="Items[@i].Qty" value="@(rows[i].Qty <= 0 ? 1 : rows[i].Qty)" required />
+                                                <input class="table-input text-center fw-bold qty-input"
+                                                       type="number" min="1" step="1"
+                                                       name="Items[@i].Qty"
+                                                       value="@(rows[i].Qty <= 0 ? 1 : rows[i].Qty)" required />
                                             </td>
 
                                             <td>
@@ -135,7 +167,8 @@
                                             <td class="text-end pe-4 fw-bold line-total">0 VNĐ</td>
 
                                             <td class="text-center">
-                                                <button type="button" class="btn btn-sm text-danger btn-light rounded-circle" style="width:32px;height:32px;" onclick="removeRow(this)">
+                                                <button type="button" class="btn btn-sm text-danger btn-light rounded-circle"
+                                                        style="width:32px;height:32px;" onclick="removeRow(this)">
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </td>
@@ -158,6 +191,7 @@
                 </div>
             </div>
 
+            <!-- Nút -->
             <div class="col-12 d-flex justify-content-end gap-3 pb-5">
                 <a class="btn btn-light rounded-pill px-4" href="/Admin/Invoices">Hủy bỏ</a>
                 <button type="submit" class="btn btn-gradient rounded-pill px-5 shadow fw-bold">
@@ -169,173 +203,232 @@
 </div>
 
 <script type="text/template" id="productOptionsTemplate">
-@foreach (var p in products)
-{
-<text>
-<option value="@p.Id"
-        data-price="@p.SalePrice.ToString(CultureInfo.InvariantCulture)"
-        data-stock="@p.StockOnHand"
-        data-reorder="@p.ReorderLevel">
-    @p.Name (@p.SKU)
-</option>
-</text>
-}
+    @foreach (var p in products)
+    {
+        <text>
+        <option value="@p.Id"
+                data-price="@p.SalePrice.ToString(CultureInfo.InvariantCulture)"
+                data-stock="@p.StockOnHand"
+                data-reorder="@p.ReorderLevel">
+            @p.Name (@p.SKU)
+        </option>
+        </text>
+    }
 </script>
 
 @section Scripts {
-<script>
-  function pad2(n){ return String(n).padStart(2,'0'); }
+    <script>
+        // =====================
+        // Time format HH:mm dd/MM/yyyy
+        // =====================
+        function pad2(n){ return String(n).padStart(2,'0'); }
 
-  function nowPostValue(){
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const MM = pad2(d.getMonth()+1);
-    const dd = pad2(d.getDate());
-    const hh = pad2(d.getHours());
-    const mm = pad2(d.getMinutes());
-    return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
-  }
+        function nowPostValue(){
+          const d = new Date();
+          const yyyy = d.getFullYear();
+          const MM = pad2(d.getMonth()+1);
+          const dd = pad2(d.getDate());
+          const hh = pad2(d.getHours());
+          const mm = pad2(d.getMinutes());
+          return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+        }
 
-  function nowDisplayValue(){
-    const d = new Date();
-    return `${pad2(d.getHours())}:${pad2(d.getMinutes())} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
-  }
+        function nowDisplayValue(){
+          const d = new Date();
+          return `${pad2(d.getHours())}:${pad2(d.getMinutes())} ${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+        }
 
-  function syncInvoiceTime(){
-    document.getElementById('invoiceDatePost').value = nowPostValue();
-    document.getElementById('invoiceDateDisplay').value = nowDisplayValue();
-  }
+        function syncInvoiceTime(){
+          const post = document.getElementById('invoiceDatePost');
+          const dis  = document.getElementById('invoiceDateDisplay');
+          if (post) post.value = nowPostValue();
+          if (dis)  dis.value  = nowDisplayValue();
+        }
 
-  const money = (n) => {
-    const v = Number(n || 0);
-    return v.toLocaleString('vi-VN');
-  };
+        // =====================
+        // Money + row calc
+        // =====================
+        const money = (n) => Number(n || 0).toLocaleString('vi-VN');
 
-  function calcRow(tr) {
-    const sel = tr.querySelector('.product-select');
-    const qtyEl = tr.querySelector('.qty-input');
-    const unitEl = tr.querySelector('.unitprice-input');
-    const unitHidden = tr.querySelector('.unitprice-hidden');
-    const totalEl = tr.querySelector('.line-total');
-    const stockBadge = tr.querySelector('.stock-remaining');
+        function calcRow(tr) {
+          const sel = tr.querySelector('.product-select');
+          const qtyEl = tr.querySelector('.qty-input');
+          const unitEl = tr.querySelector('.unitprice-input');
+          const unitHidden = tr.querySelector('.unitprice-hidden');
+          const totalEl = tr.querySelector('.line-total');
+          const stockBadge = tr.querySelector('.stock-remaining');
 
-    if (!sel || !qtyEl) return;
+          if (!sel || !qtyEl) return;
 
-    const opt = sel.options[sel.selectedIndex];
-    const price = opt ? Number(opt.dataset.price || 0) : 0;
-    const stock = opt ? Number(opt.dataset.stock || 0) : 0;
-    const reorder = opt ? Number(opt.dataset.reorder || 0) : 0;
+          const opt = sel.options[sel.selectedIndex];
+          const price = opt ? Number(opt.dataset.price || 0) : 0;
+          const stock = opt ? Number(opt.dataset.stock || 0) : 0;
+          const reorder = opt ? Number(opt.dataset.reorder || 0) : 0;
 
-    const qty = Math.max(1, Number(qtyEl.value || 1));
-    qtyEl.value = qty;
+          const qty = Math.max(1, Number(qtyEl.value || 1));
+          qtyEl.value = qty;
 
-    if (unitEl) unitEl.value = money(price);
-    if (unitHidden) unitHidden.value = price;
+          if (unitEl) unitEl.value = money(price);
+          if (unitHidden) unitHidden.value = price;
 
-    const line = price * qty;
-    if (totalEl) totalEl.textContent = `${money(line)} VNĐ`;
+          const line = price * qty;
+          if (totalEl) totalEl.textContent = `${money(line)} VNĐ`;
 
-    const remain = Math.max(0, stock - qty);
+          const remain = Math.max(0, stock - qty);
 
-    tr.classList.remove('row-stock-warn','row-stock-danger');
+          tr.classList.remove('row-stock-warn','row-stock-danger');
 
-    if (stockBadge) {
-      stockBadge.textContent = remain;
-      stockBadge.classList.remove('bg-success-subtle','text-success','bg-warning-subtle','text-warning','bg-danger-subtle','text-danger');
+          if (stockBadge) {
+            stockBadge.textContent = remain;
+            stockBadge.classList.remove('bg-success-subtle','text-success','bg-warning-subtle','text-warning','bg-danger-subtle','text-danger');
 
-      if (stock <= 0 || remain <= 0) {
-        stockBadge.classList.add('bg-danger-subtle','text-danger');
-        tr.classList.add('row-stock-danger');
-      } else if (remain <= reorder) {
-        stockBadge.classList.add('bg-warning-subtle','text-warning');
-        tr.classList.add('row-stock-warn');
-      } else {
-        stockBadge.classList.add('bg-success-subtle','text-success');
-      }
-    }
-  }
+            if (stock <= 0 || remain <= 0) {
+              stockBadge.classList.add('bg-danger-subtle','text-danger');
+              tr.classList.add('row-stock-danger');
+            } else if (remain <= reorder) {
+              stockBadge.classList.add('bg-warning-subtle','text-warning');
+              tr.classList.add('row-stock-warn');
+            } else {
+              stockBadge.classList.add('bg-success-subtle','text-success');
+            }
+          }
+        }
 
-  function bindRow(tr){
-    const sel = tr.querySelector('.product-select');
-    const qty = tr.querySelector('.qty-input');
+        function bindRow(tr){
+          const sel = tr.querySelector('.product-select');
+          const qty = tr.querySelector('.qty-input');
 
-    if (sel) sel.addEventListener('change', () => calcRow(tr));
-    if (qty) qty.addEventListener('input', () => calcRow(tr));
+          if (sel) sel.addEventListener('change', () => calcRow(tr));
+          if (qty) qty.addEventListener('input', () => calcRow(tr));
 
-    calcRow(tr);
-  }
+          calcRow(tr);
+        }
 
-  function reindex(){
-    const tbody = document.querySelector('#itemsTable tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    rows.forEach((tr, idx) => {
-      tr.querySelectorAll('select, input').forEach(el => {
-        const name = el.getAttribute('name');
-        if (!name) return;
-        el.setAttribute('name', name.replace(/Items\[\d+\]/, `Items[${idx}]`));
-      });
-    });
-  }
+        function reindex(){
+          const tbody = document.querySelector('#itemsTable tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          rows.forEach((tr, idx) => {
+            tr.querySelectorAll('select, input').forEach(el => {
+              const name = el.getAttribute('name');
+              if (!name) return;
+              el.setAttribute('name', name.replace(/Items\[\d+\]/, `Items[${idx}]`));
+            });
+          });
+        }
 
-  function getProductOptionsHtml(){
-    return document.getElementById('productOptionsTemplate').innerHTML;
-  }
+        function getProductOptionsHtml(){
+          return document.getElementById('productOptionsTemplate').innerHTML;
+        }
 
-  function addRow(){
-    const tbody = document.querySelector('#itemsTable tbody');
-    const idx = tbody.querySelectorAll('tr').length;
+        window.addRow = function addRow(){
+          const tbody = document.querySelector('#itemsTable tbody');
+          const idx = tbody.querySelectorAll('tr').length;
 
-    const tr = document.createElement('tr');
-    tr.className = 'item-row';
-    tr.innerHTML = `
-      <td class="ps-4">
-        <select class="form-select table-input product-select" name="Items[${idx}].ProductId" required>
-          <option value="">-- Chọn sản phẩm --</option>
-          ${getProductOptionsHtml()}
-        </select>
-      </td>
-      <td class="text-center">
-        <input class="table-input text-center fw-bold qty-input" type="number" min="1" step="1" name="Items[${idx}].Qty" value="1" required />
-      </td>
-      <td>
-        <div class="input-group input-group-sm">
-          <input class="form-control table-input text-end unitprice-input" type="text" readonly />
-          <span class="input-group-text bg-white border-start-0">VNĐ</span>
-        </div>
-        <input type="hidden" class="unitprice-hidden" name="Items[${idx}].UnitPrice" value="0" />
-      </td>
-      <td class="text-center">
-        <span class="stock-remaining badge rounded-pill px-3 bg-success-subtle text-success">0</span>
-      </td>
-      <td class="text-end pe-4 fw-bold line-total">0 VNĐ</td>
-      <td class="text-center">
-        <button type="button" class="btn btn-sm text-danger btn-light rounded-circle" style="width:32px;height:32px;" onclick="removeRow(this)">
-          <i class="fas fa-times"></i>
-        </button>
-      </td>
-    `;
+          const tr = document.createElement('tr');
+          tr.className = 'item-row';
+          tr.innerHTML = `
+            <td class="ps-4">
+              <select class="form-select table-input product-select" name="Items[${idx}].ProductId" required>
+                <option value="">-- Chọn sản phẩm --</option>
+                ${getProductOptionsHtml()}
+              </select>
+            </td>
+            <td class="text-center">
+              <input class="table-input text-center fw-bold qty-input" type="number" min="1" step="1" name="Items[${idx}].Qty" value="1" required />
+            </td>
+            <td>
+              <div class="input-group input-group-sm">
+                <input class="form-control table-input text-end unitprice-input" type="text" readonly />
+                <span class="input-group-text bg-white border-start-0">VNĐ</span>
+              </div>
+              <input type="hidden" class="unitprice-hidden" name="Items[${idx}].UnitPrice" value="0" />
+            </td>
+            <td class="text-center">
+              <span class="stock-remaining badge rounded-pill px-3 bg-success-subtle text-success">0</span>
+            </td>
+            <td class="text-end pe-4 fw-bold line-total">0 VNĐ</td>
+            <td class="text-center">
+              <button type="button" class="btn btn-sm text-danger btn-light rounded-circle" style="width:32px;height:32px;" onclick="removeRow(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </td>
+          `;
 
-    tbody.appendChild(tr);
-    bindRow(tr);
-    reindex();
-  }
+          tbody.appendChild(tr);
+          bindRow(tr);
+          reindex();
+        }
 
-  function removeRow(btn){
-    const tr = btn.closest('tr');
-    if (!tr) return;
-    tr.remove();
+        window.removeRow = function removeRow(btn){
+          const tr = btn.closest('tr');
+          if (!tr) return;
+          tr.remove();
 
-    const tbody = document.querySelector('#itemsTable tbody');
-    if (tbody.querySelectorAll('tr').length === 0) addRow();
+          const tbody = document.querySelector('#itemsTable tbody');
+          if (tbody.querySelectorAll('tr').length === 0) addRow();
 
-    reindex();
-  }
+          reindex();
+        }
 
-  document.addEventListener('DOMContentLoaded', function(){
-    syncInvoiceTime();
-    setInterval(syncInvoiceTime, 60000);
+        // =====================
+        // Customer popover (nút i)
+        // =====================
+        function initCustomerPopover(){
+          const select = document.getElementById('customerSelect');
+          const btn = document.getElementById('customerInfoBtn');
+          const pop = document.getElementById('customerInfoPopover');
+          if (!select || !btn || !pop) return;
 
-    document.querySelectorAll('#itemsTable tbody tr').forEach(bindRow);
-  });
-</script>
+          const n = document.getElementById('ciName');
+          const p = document.getElementById('ciPhone');
+          const e = document.getElementById('ciEmail');
+          const a = document.getElementById('ciAddress');
+
+          function update(){
+            const opt = select.options[select.selectedIndex];
+            const isWalkin = !opt || opt.dataset.walkin === "1" || !select.value;
+            btn.style.display = isWalkin ? 'none' : 'inline-flex';
+            if (isWalkin) { pop.style.display = 'none'; return; }
+
+            n.textContent = opt.dataset.name || '';
+            p.innerHTML = opt.dataset.phone ? `<b>📞</b> ${opt.dataset.phone}` : '';
+            e.innerHTML = opt.dataset.email ? `<b>✉️</b> ${opt.dataset.email}` : '';
+            a.innerHTML = opt.dataset.address ? `<b>📍</b> ${opt.dataset.address}` : '';
+          }
+
+          function place(){
+            const r = btn.getBoundingClientRect();
+            pop.style.left = Math.min(r.left, window.innerWidth - pop.offsetWidth - 12) + 'px';
+            pop.style.top  = (r.bottom + 8) + 'px';
+          }
+
+          let t;
+          btn.addEventListener('mouseenter', () => {
+            clearTimeout(t);
+            pop.style.display = 'block';
+            place();
+          });
+          btn.addEventListener('mouseleave', () => t = setTimeout(() => pop.style.display = 'none', 150));
+          pop.addEventListener('mouseenter', () => clearTimeout(t));
+          pop.addEventListener('mouseleave', () => t = setTimeout(() => pop.style.display = 'none', 150));
+
+          select.addEventListener('change', () => { update(); pop.style.display='none'; });
+          window.addEventListener('scroll', () => { if (pop.style.display === 'block') place(); }, { passive:true });
+          window.addEventListener('resize', () => { if (pop.style.display === 'block') place(); });
+
+          update();
+        }
+
+        // =====================
+        // Init
+        // =====================
+        document.addEventListener('DOMContentLoaded', function(){
+          syncInvoiceTime();
+          setInterval(syncInvoiceTime, 60000);
+
+          document.querySelectorAll('#itemsTable tbody tr').forEach(bindRow);
+
+          initCustomerPopover();
+        });
+    </script>
 }
