@@ -43,6 +43,7 @@ wwwroot\css\adminlte-custom.css
 wwwroot\css\categories-form.css
 wwwroot\css\categories-index.css
 wwwroot\css\chat-widget.css
+wwwroot\css\customer-details.css
 wwwroot\css\customers-ui.css
 wwwroot\css\dashboard.css
 wwwroot\css\employees-ui.css

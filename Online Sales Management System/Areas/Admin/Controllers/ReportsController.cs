@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Services.Security;
@@ -33,13 +33,13 @@ public class ReportsController : Controller
         var invoicesQuery = _db.Invoices
             .AsNoTracking()
             .Include(i => i.Customer)
-            .Where(i => i.InvoiceDate >= f && i.InvoiceDate <= t && i.Status != InvoiceStatus.Cancelled);
+            .Where(i => i.InvoiceDate >= f && i.InvoiceDate < t.AddDays(1) && i.Status != InvoiceStatus.Cancelled);
 
         // Purchases = purchases received (or all non-cancelled)
         var purchasesQuery = _db.Purchases
             .AsNoTracking()
             .Include(p => p.Supplier)
-            .Where(p => p.PurchaseDate >= f && p.PurchaseDate <= t && p.Status != PurchaseStatus.Cancelled);
+            .Where(p => p.PurchaseDate >= f && p.PurchaseDate < t.AddDays(1) && p.Status != PurchaseStatus.Cancelled);
 
         var invoices = await invoicesQuery
             .OrderByDescending(i => i.InvoiceDate)
@@ -86,3 +86,4 @@ public class ReportsController : Controller
         public List<Purchase> Purchases { get; set; } = new();
     }
 }
+ 

@@ -1,4 +1,4 @@
-﻿/* File: wwwroot/css/invoices-ui.css */
+/* File: wwwroot/css/invoices-ui.css */
 
 /* --- 1. Hero Header (Theme Sunset Orange) --- */
 .hero-header {
@@ -19,7 +19,7 @@
         top: 0;
         bottom: 0;
         width: 6px;
-        /* Gradient Cam Vàng rực rỡ */
+        /* Gradient Cam Vng r?c r? */
         background: linear-gradient(180deg, #ff9966 0%, #ff5e62 100%);
     }
 
@@ -77,7 +77,7 @@
 }
 
 .table-modern thead th {
-    background-color: #fffbf8; /* Nền cam rất nhạt */
+    background-color: #fffbf8; /* N?n cam r?t nh?t */
     color: #5a5c69;
     font-weight: 700;
     text-transform: uppercase;
@@ -119,13 +119,13 @@
     color: #842029;
     border: 1px solid #f5c2c7;
 }
-/* Đỏ */
+/* ? */
 .status-pending {
     background: #fff3cd;
     color: #856404;
     border: 1px solid #ffeeba;
 }
-/* Vàng */
+/* Vng */
 
 /* --- 4. Buttons --- */
 .btn-gradient {
@@ -162,3 +162,48 @@
         outline: none;
         box-shadow: 0 0 0 3px rgba(255, 94, 98, 0.1);
     }
+
+/* Customer mini info popover (Create Invoice) */
+.customer-mini {
+    position: relative;
+}
+
+.customer-info-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.customer-info-popover {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    min-width: 280px;
+    max-width: 340px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    z-index: 999;
+}
+
+.customer-info-popover::before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    right: 14px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-left: 1px solid rgba(0,0,0,0.08);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    transform: rotate(45deg);
+}
+
+.customer-info-popover .small {
+    line-height: 1.35;
+}

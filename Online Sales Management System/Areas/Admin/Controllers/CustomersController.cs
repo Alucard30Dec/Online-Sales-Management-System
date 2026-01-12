@@ -1,10 +1,11 @@
-﻿// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/CustomersController.cs
+// FILE: OnlineSalesManagementSystem/Areas/Admin/Controllers/CustomersController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Services.Security;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
+using OnlineSalesManagementSystem.Areas.Admin.ViewModels.Customers;
 
 namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
 
@@ -96,6 +97,53 @@ public class CustomersController : Controller
         return View(entity);
     }
 
+
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        var customer = await _db.Customers.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
+
+        if (customer == null) return NotFound();
+
+        var invoices = await _db.Invoices.AsNoTracking()
+            .Where(i => i.CustomerId == id)
+            .Include(i => i.Items)
+                .ThenInclude(it => it.Product)
+            .OrderByDescending(i => i.InvoiceDate)
+            .ToListAsync();
+
+        var orders = invoices.Select(i => new CustomerOrderRowVm
+        {
+            Id = i.Id,
+            InvoiceNo = i.InvoiceNo,
+            InvoiceDate = i.InvoiceDate,
+            Status = i.Status,
+            SubTotal = i.SubTotal,
+            GrandTotal = i.GrandTotal,
+            PaidAmount = i.PaidAmount,
+            Balance = Math.Max(0, i.GrandTotal - i.PaidAmount),
+            ItemCount = i.Items?.Sum(x => x.Quantity) ?? 0,
+            ProductPreview = i.Items == null
+                ? string.Empty
+                : string.Join(", ", i.Items
+                    .Take(3)
+                    .Select(x => x.Product != null ? x.Product.Name : $"#{x.ProductId}"))
+        }).ToList();
+
+        var vm = new CustomerDetailsVm
+        {
+            Customer = customer,
+            Orders = orders,
+            TotalOrders = orders.Count,
+            TotalSpent = invoices.Where(x => x.Status != InvoiceStatus.Cancelled).Sum(x => x.GrandTotal),
+            TotalPaid = invoices.Sum(x => x.PaidAmount),
+            TotalOutstanding = invoices.Where(x => x.Status != InvoiceStatus.Cancelled).Sum(x => Math.Max(0, x.GrandTotal - x.PaidAmount)),
+            LastOrder = orders.FirstOrDefault()
+        };
+
+        return View(vm);
+    }
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Customers + "." + PermissionConstants.Actions.Edit)]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -138,3 +186,4 @@ public class CustomersController : Controller
         return RedirectToAction(nameof(Index));
     }
 }
+ 

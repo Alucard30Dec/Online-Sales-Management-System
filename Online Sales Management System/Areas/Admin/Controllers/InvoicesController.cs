@@ -83,7 +83,7 @@ public class InvoicesController : Controller
         await LoadLookupsAsync();
         return View(new InvoiceCreateVm
         {
-            InvoiceDate = DateTime.UtcNow.Date,
+            InvoiceDate = DateTime.Now,
             Items = new List<InvoiceItemVm> { new() },
             PaidAmount = 0m
         });
@@ -121,16 +121,31 @@ public class InvoicesController : Controller
         {
             InvoiceNo = await GenerateInvoiceNoAsync(),
             CustomerId = customer?.Id,
-            InvoiceDate = vm.InvoiceDate.Date,
+            InvoiceDate = DateTime.Now,
             PaidAmount = vm.PaidAmount
         };
 
         decimal subTotal = 0m;
 
+        // Always use server-side SalePrice (do NOT trust posted UnitPrice)
+        var productIds = items.Where(x => x.ProductId.HasValue).Select(x => x.ProductId!.Value).Distinct().ToList();
+        var priceMap = await _db.Products
+            .AsNoTracking()
+            .Where(p => p.IsActive && productIds.Contains(p.Id))
+            .Select(p => new { p.Id, p.SalePrice, p.Name })
+            .ToDictionaryAsync(x => x.Id, x => x);
+
         foreach (var row in items)
         {
             var qty = row.Qty;
-            var price = row.UnitPrice;
+            if (!row.ProductId.HasValue || !priceMap.TryGetValue(row.ProductId.Value, out var pinfo))
+            {
+                ModelState.AddModelError("", "Invalid product selected.");
+                await LoadLookupsAsync();
+                return View(vm);
+            }
+
+            var price = pinfo.SalePrice;
             var lineTotal = qty * price;
             subTotal += lineTotal;
 
@@ -316,8 +331,8 @@ public class InvoicesController : Controller
         public int? CustomerId { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
-        public DateTime InvoiceDate { get; set; } = DateTime.UtcNow.Date;
+        [DataType(DataType.DateTime)]
+        public DateTime InvoiceDate { get; set; } = DateTime.Now;
 
         [Range(0, double.MaxValue)]
         public decimal PaidAmount { get; set; } = 0m;
@@ -337,4 +352,5 @@ public class InvoicesController : Controller
         public decimal UnitPrice { get; set; } = 0m;
     }
 }
+ 
  

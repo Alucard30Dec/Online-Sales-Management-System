@@ -1,7 +1,7 @@
-﻿@model OnlineSalesManagementSystem.Areas.Admin.Controllers.InvoicesController.InvoiceCreateVm
+@model OnlineSalesManagementSystem.Areas.Admin.Controllers.InvoicesController.InvoiceCreateVm
 @using OnlineSalesManagementSystem.Domain.Entities
 @{
-    ViewData["Title"] = "Tạo Hóa đơn";
+    ViewData["Title"] = "T?o Ha don";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
     var customers = ViewBag.Customers as List<Customer> ?? new();
     var products = ViewBag.Products as List<Product> ?? new();
@@ -15,14 +15,14 @@
         <div style="z-index: 1;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-custom mb-2">
-                    <li class="breadcrumb-item"><a href="/Admin/Invoices">Hóa đơn</a></li>
-                    <li class="breadcrumb-item active">Tạo mới</li>
+                    <li class="breadcrumb-item"><a href="/Admin/Invoices">Ha don</a></li>
+                    <li class="breadcrumb-item active">T?o m?i</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold text-dark mb-0">Tạo hóa đơn bán hàng</h2>
+            <h2 class="fw-bold text-dark mb-0">T?o ha don bn hng</h2>
         </div>
         <div style="z-index: 1;">
-            <a href="/Admin/Invoices" class="btn btn-outline-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+            <a href="/Admin/Invoices" class="btn btn-outline-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2"></i>Quay l?i</a>
         </div>
     </div>
 
@@ -39,19 +39,32 @@
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-muted">Khách hàng</label>
-                            <select class="form-select form-select-lg" name="CustomerId">
-                                <option value="">-- Khách lẻ (Walk-in) --</option>
+                            <label class="form-label fw-bold text-muted">Khch hng</label>
+                            <div class="customer-select-wrap d-flex align-items-center gap-2">
+                                <select class="form-select form-select-lg" id="customerSelect" name="CustomerId">
+                                <option value="" data-walkin="1">-- Khch l? (Walk-in) --</option>
                                 @foreach (var c in customers)
                                 {
                                     var selected = (Model.CustomerId == c.Id) ? "selected" : null;
-                                    <option value="@c.Id" selected="@selected">@c.Name</option>
+                                    <option value="@c.Id" selected="@selected" data-name="@c.Name" data-phone="@c.Phone" data-email="@c.Email" data-address="@c.Address">@c.Name</option>
                                 }
                             </select>
+                                <div class="customer-mini position-relative">
+                                    <button type="button" id="customerInfoBtn" class="btn btn-outline-secondary btn-sm rounded-circle customer-info-btn" style="display:none;" aria-label="Customer info">
+                                        <i class="fas fa-info"></i>
+                                    </button>
+                                    <div id="customerInfoPopover" class="customer-info-popover" style="display:none;">
+                                        <div class="fw-semibold mb-1" id="ciName"></div>
+                                        <div class="small text-muted" id="ciPhone"></div>
+                                        <div class="small text-muted" id="ciEmail"></div>
+                                        <div class="small text-muted" id="ciAddress"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-muted">Ngày lập</label>
-                            <input class="form-control form-control-lg" type="date" name="InvoiceDate" value="@Model.InvoiceDate.ToString("yyyy-MM-dd")" />
+                            <label class="form-label fw-bold text-muted">Ngy l?p</label>
+                            <input class="form-control form-control-lg" type="datetime-local" id="invoiceDate" name="InvoiceDate" value="@Model.InvoiceDate.ToString("yyyy-MM-ddTHH:mm")" step="60" readonly />
                         </div>
                     </div>
                 </div>
@@ -60,9 +73,9 @@
             <div class="col-12">
                 <div class="card card-modern">
                     <div class="card-header bg-white border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0 text-danger"><i class="fas fa-list-ul me-2"></i>Danh sách sản phẩm</h5>
+                        <h5 class="fw-bold mb-0 text-danger"><i class="fas fa-list-ul me-2"></i>Danh sch s?n ph?m</h5>
                         <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="addRow()">
-                            <i class="fas fa-plus me-1"></i> Thêm dòng
+                            <i class="fas fa-plus me-1"></i> Thm dng
                         </button>
                     </div>
 
@@ -71,9 +84,9 @@
                             <table class="table table-modern mb-0" id="itemsTable">
                                 <thead>
                                     <tr>
-                                        <th class="ps-4" style="min-width: 300px;">Sản phẩm</th>
-                                        <th style="width: 150px;">Số lượng</th>
-                                        <th style="width: 200px;">Đơn giá bán</th>
+                                        <th class="ps-4" style="min-width: 300px;">S?n ph?m</th>
+                                        <th style="width: 150px;">S? lu?ng</th>
+                                        <th style="width: 200px;">on gi bn</th>
                                         <th style="width: 80px;" class="text-center"><i class="fas fa-trash"></i></th>
                                     </tr>
                                 </thead>
@@ -86,11 +99,11 @@
                                         <tr>
                                             <td class="ps-4">
                                                 <select class="form-select table-input" name="Items[@i].ProductId" required>
-                                                    <option value="">-- Chọn sản phẩm --</option>
+                                                    <option value="">-- Ch?n s?n ph?m --</option>
                                                     @foreach (var p in products)
                                                     {
                                                         var selected = (rows[i].ProductId == p.Id) ? "selected" : null;
-                                                        <option value="@p.Id" selected="@selected">@p.Name (@p.SKU) - Tồn: @p.StockOnHand</option>
+                                                        <option value="@p.Id" selected="@selected" data-price="@p.SalePrice.ToString(System.Globalization.CultureInfo.InvariantCulture)">@p.Name (@p.SKU) - T?n: @p.StockOnHand</option>
                                                     }
                                                 </select>
                                             </td>
@@ -99,8 +112,8 @@
                                             </td>
                                             <td>
                                                 <div class="input-group input-group-sm">
-                                                    <input class="form-control table-input text-end" type="number" min="0" step="0.01" name="Items[@i].UnitPrice" value="@rows[i].UnitPrice" required />
-                                                    <span class="input-group-text bg-white border-start-0">đ</span>
+                                                    <input class="form-control table-input text-end" type="number" min="0" step="0.01" name="Items[@i].UnitPrice" value="@rows[i].UnitPrice" readonly required />
+                                                    <span class="input-group-text bg-white border-start-0">d</span>
                                                 </div>
                                             </td>
                                             <td class="text-center">
@@ -119,8 +132,8 @@
                         <div class="alert alert-warning mb-0 small border-0 shadow-sm d-flex align-items-center">
                             <i class="fas fa-exclamation-triangle fa-lg me-3 text-warning"></i>
                             <div>
-                                <strong>Lưu ý:</strong> Việc tạo hóa đơn sẽ tự động <strong>trừ tồn kho</strong> ngay lập tức.<br />
-                                Vui lòng kiểm tra kỹ số lượng trước khi lưu.
+                                <strong>Luu :</strong> Vi?c t?o ha don s? t? d?ng <strong>tr? t?n kho</strong> ngay l?p t?c.<br />
+                                Vui lng ki?m tra k? s? lu?ng tru?c khi luu.
                             </div>
                         </div>
                     </div>
@@ -128,8 +141,8 @@
             </div>
 
             <div class="col-12 d-flex justify-content-end gap-3 pb-5">
-                <a class="btn btn-light rounded-pill px-4" href="/Admin/Invoices">Hủy bỏ</a>
-                <button type="submit" class="btn btn-gradient rounded-pill px-5 shadow fw-bold"><i class="fas fa-save me-2"></i> Lưu Hóa đơn</button>
+                <a class="btn btn-light rounded-pill px-4" href="/Admin/Invoices">H?y b?</a>
+                <button type="submit" class="btn btn-gradient rounded-pill px-5 shadow fw-bold"><i class="fas fa-save me-2"></i> Luu Ha don</button>
             </div>
         </div>
     </form>
@@ -137,6 +150,18 @@
 
 @section Scripts {
     <script>
+        function pad2(n) { return String(n).padStart(2, '0'); }
+
+        function nowForDatetimeLocal() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const MM = pad2(d.getMonth() + 1);
+            const dd = pad2(d.getDate());
+            const hh = pad2(d.getHours());
+            const mm = pad2(d.getMinutes());
+            return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+        }
+
         function reindex() {
             const tbody = document.querySelector('#itemsTable tbody');
             const rows = Array.from(tbody.querySelectorAll('tr'));
@@ -148,10 +173,25 @@
             });
         }
 
+        function getProductOptionsHtml() {
+            return document.getElementById('productOptionsTemplate').innerHTML;
+        }
+
+        function setUnitPriceForRow(tr) {
+            const select = tr.querySelector('select[name$=".ProductId"]');
+            const priceInput = tr.querySelector('input[name$=".UnitPrice"]');
+            if (!select || !priceInput) return;
+
+            const opt = select.options[select.selectedIndex];
+            const price = opt && opt.dataset ? parseFloat(opt.dataset.price || '0') : 0;
+            priceInput.value = Number.isFinite(price) ? price : 0;
+        }
+
         function addRow() {
             const tbody = document.querySelector('#itemsTable tbody');
             const idx = tbody.querySelectorAll('tr').length;
             const tr = document.createElement('tr');
+
             tr.innerHTML = `
                 <td class="ps-4">
                     <select class="form-select table-input" name="Items[${idx}].ProductId" required>
@@ -164,38 +204,136 @@
                 </td>
                 <td>
                     <div class="input-group input-group-sm">
-                        <input class="form-control table-input text-end" type="number" min="0" step="0.01" name="Items[${idx}].UnitPrice" value="0" required />
+                        <input class="form-control table-input text-end" type="number" name="Items[${idx}].UnitPrice" value="0" readonly required />
                         <span class="input-group-text bg-white border-start-0">đ</span>
                     </div>
                 </td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-sm text-danger btn-light rounded-circle" style="width:32px;height:32px;" onclick="removeRow(this)">
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle" onclick="removeRow(this)">
                         <i class="fas fa-times"></i>
                     </button>
                 </td>
             `;
+
             tbody.appendChild(tr);
+            reindex();
         }
 
         function removeRow(btn) {
             const tbody = document.querySelector('#itemsTable tbody');
             const tr = btn.closest('tr');
             if (!tr) return;
+
             tr.remove();
             if (tbody.querySelectorAll('tr').length === 0) addRow();
             reindex();
         }
 
-        function getProductOptionsHtml() {
-            return document.getElementById('productOptionsTemplate').innerHTML;
+        function wireInvoiceDate() {
+            const invoiceDate = document.getElementById('invoiceDate');
+            if (!invoiceDate) return;
+
+            // Always show current time on screen
+            invoiceDate.value = nowForDatetimeLocal();
+
+            const form = invoiceDate.closest('form') || document.querySelector('form');
+            if (!form) return;
+
+            // Ensure it is refreshed right before submit
+            form.addEventListener('submit', () => {
+                invoiceDate.value = nowForDatetimeLocal();
+            });
         }
+
+        function wireProductAutoPrice() {
+            const table = document.getElementById('itemsTable');
+            if (!table) return;
+
+            table.addEventListener('change', (e) => {
+                const el = e.target;
+                if (el && el.matches('select[name$=".ProductId"]')) {
+                    const tr = el.closest('tr');
+                    if (tr) setUnitPriceForRow(tr);
+                }
+            });
+
+            // Init existing rows
+            table.querySelectorAll('tbody tr').forEach(tr => setUnitPriceForRow(tr));
+        }
+
+        function wireCustomerInfoHover() {
+            const customerSelect = document.getElementById('customerSelect');
+            const btn = document.getElementById('customerInfoBtn');
+            const pop = document.getElementById('customerInfoPopover');
+
+            const elName = document.getElementById('ciName');
+            const elPhone = document.getElementById('ciPhone');
+            const elEmail = document.getElementById('ciEmail');
+            const elAddress = document.getElementById('ciAddress');
+
+            if (!customerSelect || !btn || !pop) return;
+
+            function update() {
+                const val = customerSelect.value;
+
+                if (!val) {
+                    btn.style.display = 'none';
+                    pop.style.display = 'none';
+                    if (elName) elName.textContent = '';
+                    if (elPhone) elPhone.textContent = '';
+                    if (elEmail) elEmail.textContent = '';
+                    if (elAddress) elAddress.textContent = '';
+                    return;
+                }
+
+                const opt = customerSelect.options[customerSelect.selectedIndex];
+                btn.style.display = 'inline-flex';
+
+                if (elName) elName.textContent = opt.dataset.name || opt.textContent.trim();
+                if (elPhone) elPhone.textContent = opt.dataset.phone ? `☎ ${opt.dataset.phone}` : '';
+                if (elEmail) elEmail.textContent = opt.dataset.email ? `✉ ${opt.dataset.email}` : '';
+                if (elAddress) elAddress.textContent = opt.dataset.address ? `📍 ${opt.dataset.address}` : '';
+            }
+
+            customerSelect.addEventListener('change', update);
+            update();
+
+            let hideTimer = null;
+            const show = () => {
+                if (btn.style.display === 'none') return;
+                pop.style.display = 'block';
+            };
+            const hide = () => { pop.style.display = 'none'; };
+
+            btn.addEventListener('mouseenter', () => {
+                if (hideTimer) clearTimeout(hideTimer);
+                show();
+            });
+            btn.addEventListener('mouseleave', () => {
+                hideTimer = setTimeout(hide, 150);
+            });
+
+            pop.addEventListener('mouseenter', () => {
+                if (hideTimer) clearTimeout(hideTimer);
+            });
+            pop.addEventListener('mouseleave', () => {
+                hideTimer = setTimeout(hide, 150);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            wireInvoiceDate();
+            wireProductAutoPrice();
+            wireCustomerInfoHover();
+        });
     </script>
 
     <script type="text/template" id="productOptionsTemplate">
         @foreach (var p in products)
         {
-                <text><option value="@p.Id">@p.Name (@p.SKU) - Tồn: @p.StockOnHand</option></text>
+            <text><option value="@p.Id" data-price="@p.SalePrice.ToString(System.Globalization.CultureInfo.InvariantCulture)">@p.Name (@p.SKU) - Tồn: @p.StockOnHand</option></text>
         }
     </script>
     <partial name="_ValidationScriptsPartial" />
 }
+

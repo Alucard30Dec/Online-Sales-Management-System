@@ -1,4 +1,4 @@
-﻿/* File: wwwroot/css/customers-ui.css */
+/* File: wwwroot/css/customers-ui.css */
 
 /* --- 1. Hero Header (Theme Cyan) --- */
 .hero-header {
@@ -19,7 +19,7 @@
         top: 0;
         bottom: 0;
         width: 6px;
-        /* Gradient Xanh Ngọc Lam */
+        /* Gradient Xanh Ng?c Lam */
         background: linear-gradient(180deg, #00c9ff 0%, #92fe9d 100%);
     }
 
@@ -57,7 +57,7 @@
 
 .stat-badge {
     background: rgba(0, 201, 255, 0.1);
-    color: #0099cc; /* Màu chữ đậm hơn một chút để dễ đọc */
+    color: #0099cc; /* M�u ch? d?m hon m?t ch�t d? d? d?c */
     padding: 5px 12px;
     border-radius: 20px;
     font-weight: 700;
@@ -77,7 +77,7 @@
 }
 
 .table-modern thead th {
-    background-color: #f0fdff; /* Nền xanh rất nhạt */
+    background-color: #f0fdff; /* N?n xanh r?t nh?t */
     color: #5a5c69;
     font-weight: 700;
     text-transform: uppercase;
@@ -160,3 +160,10 @@
         background: #ff6b6b;
         box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
     }
+
+    .btn-icon.view:hover {
+        background: #6c63ff;
+        box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+    }
+
+ 
