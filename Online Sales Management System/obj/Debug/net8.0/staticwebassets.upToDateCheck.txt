@@ -49,6 +49,8 @@ wwwroot\css\dashboard.css
 wwwroot\css\employees-ui.css
 wwwroot\css\expenses-ui.css
 wwwroot\css\invoices-ui.css
+wwwroot\css\invoices-ui.patch.css
+wwwroot\css\products-details-ui.css
 wwwroot\css\products-ui.css
 wwwroot\css\purchases-ui.css
 wwwroot\css\report-dashboard.css
