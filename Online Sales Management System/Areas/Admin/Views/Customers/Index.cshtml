@@ -1,9 +1,9 @@
-@model List<OnlineSalesManagementSystem.Domain.Entities.Customer>
+﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Customer>
 @using Microsoft.AspNetCore.Authorization
 @using OnlineSalesManagementSystem.Services.Security
 @inject IAuthorizationService AuthorizationService
 @{
-    ViewData["Title"] = "Qu&#7843;n l&#253; Kh&#225;ch h&#224;ng";
+    ViewData["Title"] = "Quản Lý Khách Hàng";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
     string q = ViewBag.Query as string ?? "";

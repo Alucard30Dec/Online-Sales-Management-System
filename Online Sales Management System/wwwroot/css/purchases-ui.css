@@ -155,3 +155,57 @@
         outline: none;
         box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.1);
     }
+
+
+/* --- Khung thông tin Nhà cung cấp (Purchase Create) --- */
+.supplier-info-box {
+    background: #fdfdfd;
+    border: 1px dashed #cbd5e1; /* Viền nét đứt */
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+    display: none; /* Ẩn mặc định */
+    transition: all 0.3s ease;
+}
+
+    .supplier-info-box.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .supplier-info-box .info-row {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        color: #334155;
+    }
+
+        .supplier-info-box .info-row i {
+            width: 24px;
+            color: #f59e0b; /* Màu cam theo theme Supplier */
+            margin-top: 3px;
+        }
+
+    .supplier-info-box .info-label {
+        font-weight: 600;
+        min-width: 90px;
+        color: #64748b;
+    }
+
+    .supplier-info-box .info-value {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -100,6 +100,59 @@ public class ProductsController : Controller
         return View(vm);
     }
 
+    // ==========================================================
+    // CÁC HÀM EDIT ĐÃ ĐƯỢC BỔ SUNG ĐỂ SỬA LỖI 404
+    // ==========================================================
+
+    // 1. GET: Hiển thị form chỉnh sửa
+    [HttpGet]
+    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit)]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var product = await _db.Products.FindAsync(id);
+        if (product == null) return NotFound();
+
+        // Lấy danh sách danh mục & đơn vị tính để hiển thị dropdown
+        ViewBag.Categories = await _db.Categories.ToListAsync();
+        ViewBag.Units = await _db.Units.ToListAsync();
+
+        return View(product);
+    }
+
+    // 2. POST: Xử lý lưu thay đổi
+    // Lưu ý: Route("Edit/{id?}") giúp chấp nhận cả URL có ID (Edit/10) và không ID (Edit)
+    [HttpPost("Edit/{id?}")]
+    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit)]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Product model)
+    {
+        // Tìm sản phẩm cũ trong database
+        var existing = await _db.Products.FindAsync(model.Id);
+        if (existing == null) return NotFound();
+
+        // Cập nhật thông tin mới
+        existing.SKU = model.SKU;
+        existing.Name = model.Name;
+        existing.CategoryId = model.CategoryId;
+        existing.UnitId = model.UnitId;
+        existing.Description = model.Description;
+        existing.SalePrice = model.SalePrice;
+        existing.CostPrice = model.CostPrice;
+        existing.ReorderLevel = model.ReorderLevel;
+        existing.ImagePath = model.ImagePath;
+        existing.IsTrending = model.IsTrending;
+        existing.IsActive = model.IsActive;
+
+        // Lưu xuống database
+        _db.Products.Update(existing);
+        await _db.SaveChangesAsync();
+
+        // Quay về trang danh sách
+        return RedirectToAction(nameof(Index));
+    }
+
+    // ==========================================================
+
     // ====== TOGGLE TRENDING ======
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit)]
     [HttpPost]

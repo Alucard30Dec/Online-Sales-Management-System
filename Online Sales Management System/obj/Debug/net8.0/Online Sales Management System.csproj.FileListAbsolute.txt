@@ -420,3 +420,11 @@ E:\Project\Test\obj\Debug\net8.0\Online Sales Management System.pdb
 E:\Project\Test\obj\Debug\net8.0\Online Sales Management System.genruntimeconfig.cache
 E:\Project\Test\obj\Debug\net8.0\ref\Online Sales Management System.dll
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\ClosedXML.dll
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\ClosedXML.Parser.dll
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\DocumentFormat.OpenXml.dll
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\DocumentFormat.OpenXml.Framework.dll
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\ExcelNumberFormat.dll
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\RBush.dll
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\SixLabors.Fonts.dll
+D:\Lap Web Nâng Cao\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\System.IO.Packaging.dll

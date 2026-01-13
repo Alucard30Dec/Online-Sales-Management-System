@@ -138,4 +138,55 @@ public class SuppliersController : Controller
         TempData["ToastSuccess"] = "Supplier deleted (disabled).";
         return RedirectToAction(nameof(Index));
     }
+
+    // --- UPDATED: DETAILS ACTION TO FETCH HISTORY ---
+    [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        // 1. Lấy thông tin Nhà cung cấp
+        var supplier = await _db.Suppliers.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+        if (supplier == null) return NotFound();
+
+        // 2. Lấy 20 giao dịch nhập hàng gần nhất
+        var history = await _db.Purchases
+            .AsNoTracking()
+            .Where(p => p.SupplierId == id)
+            .OrderByDescending(p => p.PurchaseDate)
+            .Take(20)
+            .Select(p => new SupplierPurchaseHistoryRow
+            {
+                PurchaseId = p.Id,
+                PurchaseDate = p.PurchaseDate,
+                PurchaseNo = p.PurchaseNo,
+                // Tính tổng tiền: Tổng số lượng * Đơn giá nhập của từng sản phẩm trong phiếu
+                TotalAmount = p.Items.Sum(i => i.Qty * i.UnitCost),
+                Status = p.Status
+            })
+            .ToListAsync();
+
+        // 3. Đóng gói vào ViewModel
+        var vm = new SupplierDetailsVm
+        {
+            Supplier = supplier,
+            History = history
+        };
+
+        return View(vm);
+    }
+
+    // ====== VIEWMODELS ======
+    public class SupplierDetailsVm
+    {
+        public Supplier Supplier { get; set; } = default!;
+        public List<SupplierPurchaseHistoryRow> History { get; set; } = new();
+    }
+
+    public class SupplierPurchaseHistoryRow
+    {
+        public int PurchaseId { get; set; }
+        public string PurchaseNo { get; set; } = "";
+        public DateTime PurchaseDate { get; set; }
+        public decimal TotalAmount { get; set; }
+        public PurchaseStatus Status { get; set; }
+    }
 }

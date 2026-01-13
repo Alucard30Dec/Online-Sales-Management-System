@@ -235,3 +235,136 @@ input:checked + .toggle-slider {
     input:checked + .toggle-slider:before {
         transform: translateX(20px);
     }
+
+/* --- Thêm vào cuối file products-ui.css --- */
+
+/* Product Detail Specifics */
+.product-avatar-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 16px;
+    padding: 4px;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.product-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.product-avatar-placeholder {
+    font-size: 2.5rem;
+    color: #cbd5e0;
+}
+
+/* Stat Box Grid */
+.stat-box {
+    background: #f8f9fc;
+    border-radius: 12px;
+    padding: 1.25rem;
+    height: 100%;
+    border: 1px solid #edf2f7;
+    transition: all 0.2s;
+}
+
+    .stat-box:hover {
+        background: #fff;
+        border-color: #bee3f8;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+    }
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+}
+
+.bg-icon-primary {
+    background: rgba(78, 115, 223, 0.1);
+    color: #4e73df;
+}
+
+.bg-icon-success {
+    background: rgba(28, 200, 138, 0.1);
+    color: #1cc88a;
+}
+
+.bg-icon-warning {
+    background: rgba(246, 194, 62, 0.1);
+    color: #f6c23e;
+}
+
+.bg-icon-danger {
+    background: rgba(231, 74, 59, 0.1);
+    color: #e74a3b;
+}
+
+.bg-icon-info {
+    background: rgba(54, 185, 204, 0.1);
+    color: #36b9cc;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #858796;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #5a5c69;
+}
+
+/* Price Tag */
+.price-tag {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+}
+
+/* Search Box Custom */
+.search-box-custom {
+    position: relative;
+    width: 300px;
+}
+
+    .search-box-custom i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+    }
+
+    .search-box-custom .form-control {
+        padding-left: 40px;
+        border-radius: 20px;
+        border: 1px solid #e3e6f0;
+        background: #f8f9fc;
+    }
+
+        .search-box-custom .form-control:focus {
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.15);
+        }

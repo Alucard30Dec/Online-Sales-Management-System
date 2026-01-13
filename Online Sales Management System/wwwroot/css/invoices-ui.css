@@ -266,3 +266,56 @@
     top: -6px;
     left: 18px;
 }
+
+/* Thiết kế Card khách hàng hiện đại */
+.customer-detail-box {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    position: relative;
+}
+
+    .customer-detail-box::before {
+        content: "Thông tin khách hàng";
+        position: absolute;
+        top: -12px;
+        left: 20px;
+        background: #fff;
+        padding: 0 10px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #ff5e62;
+        text-transform: uppercase;
+    }
+
+.info-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .info-group label {
+        font-size: 0.75rem;
+        color: #a0aec0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+
+    .info-group span, .info-group a {
+        font-size: 1rem;
+        color: #2d3748;
+        font-weight: 600;
+    }
+
+    /* Biểu tượng đi kèm */
+    .info-group i {
+        color: #ff9966;
+        width: 20px;
+    }
