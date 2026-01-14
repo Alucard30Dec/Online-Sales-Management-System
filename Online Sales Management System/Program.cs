@@ -13,9 +13,6 @@ using PermissionService = OnlineSalesManagementSystem.Services.Security.Permissi
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Needed for temporary server-side storage when previewing Excel imports
-builder.Services.AddMemoryCache();
-
 builder.Services.AddControllersWithViews();
 
 // EF Core
@@ -87,7 +84,12 @@ await using (var scope = app.Services.CreateAsyncScope())
         _ = await db.Users.AsNoTracking().Select(x => x.Id).Take(1).ToListAsync();
 
         logger.LogInformation("Seeding database...");
-        await DbSeeder.SeedAsync(db, userManager, roleManager);
+
+        // Optional: reseed dữ liệu demo mà không cần drop DB
+        // Bật bằng appsettings.Development.json:
+        //   "Seed": { "ResetDemoData": true }
+        var resetDemoData = builder.Configuration.GetValue<bool>("Seed:ResetDemoData");
+        await DbSeeder.SeedAsync(db, userManager, roleManager, resetDemoData);
 
         logger.LogInformation("Database migration + seeding done.");
     }

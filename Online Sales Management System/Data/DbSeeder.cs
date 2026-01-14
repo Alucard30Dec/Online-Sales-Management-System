@@ -7,8 +7,21 @@ namespace OnlineSalesManagementSystem.Data
 {
     public static class DbSeeder
     {
-        public static async Task SeedAsync(ApplicationDbContext db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        /// <summary>
+        /// Seed dữ liệu mẫu (idempotent).
+        /// - resetDemoData = true: xóa dữ liệu nghiệp vụ (products/invoices/purchases/...) rồi seed lại.
+        ///   Không xóa Identity users để tránh mất tài khoản login.
+        /// </summary>
+        public static async Task SeedAsync(
+            ApplicationDbContext db,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            bool resetDemoData = false)
         {
+            if (resetDemoData)
+            {
+                await ResetBusinessDataAsync(db);
+            }
             // =========================================================================
             // 1. SEED BASIC DATA (Units, Categories)
             // =========================================================================
@@ -42,6 +55,38 @@ namespace OnlineSalesManagementSystem.Data
                     new Category { Name = "Thời trang", Description = "Quần áo, giày dép", IsActive = true, IsTrending = true }
                 };
                 db.Categories.AddRange(cats);
+                await db.SaveChangesAsync();
+            }
+
+            // Seed Brands (Thương hiệu)
+            if (!await db.Brands.AnyAsync())
+            {
+                var brands = new List<Brand>
+                {
+                    new Brand { Name = "Apple", IsActive = true },
+                    new Brand { Name = "Samsung", IsActive = true },
+                    new Brand { Name = "Xiaomi", IsActive = true },
+                    new Brand { Name = "OPPO", IsActive = true },
+                    new Brand { Name = "Vivo", IsActive = true },
+                    new Brand { Name = "Dell", IsActive = true },
+                    new Brand { Name = "HP", IsActive = true },
+                    new Brand { Name = "Asus", IsActive = true },
+                    new Brand { Name = "Acer", IsActive = true },
+                    new Brand { Name = "Lenovo", IsActive = true },
+                    new Brand { Name = "Logitech", IsActive = true },
+                    new Brand { Name = "DareU", IsActive = true },
+                    new Brand { Name = "Anker", IsActive = true },
+                    new Brand { Name = "Sony", IsActive = true },
+                    new Brand { Name = "Philips", IsActive = true },
+                };
+
+                // chống trùng do seed chạy lại
+                brands = brands
+                    .GroupBy(x => x.Name.Trim().ToUpperInvariant())
+                    .Select(g => g.First())
+                    .ToList();
+
+                db.Brands.AddRange(brands);
                 await db.SaveChangesAsync();
             }
 
@@ -161,6 +206,18 @@ namespace OnlineSalesManagementSystem.Data
             // 4. SEED BUSINESS DATA (RICH DATA FOR TESTING)
             // =========================================================================
 
+            // Settings (Cài đặt hệ thống)
+            if (!await db.Settings.AnyAsync())
+            {
+                db.Settings.Add(new Setting
+                {
+                    CompanyName = "OSMS Store",
+                    Currency = "VND",
+                    LogoPath = null
+                });
+                await db.SaveChangesAsync();
+            }
+
             // A. Suppliers (Nhà cung cấp)
             if (!await db.Suppliers.AnyAsync())
             {
@@ -206,6 +263,7 @@ namespace OnlineSalesManagementSystem.Data
             {
                 var catIds = await db.Categories.Select(c => c.Id).ToListAsync();
                 var unitIds = await db.Units.Where(u => u.IsActive).Select(u => u.Id).ToListAsync();
+                var brandIds = await db.Brands.Where(b => b.IsActive).Select(b => b.Id).ToListAsync();
 
                 if (catIds.Any() && unitIds.Any())
                 {
@@ -230,6 +288,7 @@ namespace OnlineSalesManagementSystem.Data
                             IsTrending = i % 5 == 0,
                             CategoryId = catIds[random.Next(catIds.Count)],
                             UnitId = unitIds[random.Next(unitIds.Count)],
+                            BrandId = brandIds.Any() ? brandIds[random.Next(brandIds.Count)] : null,
                             ImagePath = null // Để null hoặc đường dẫn ảnh dummy
                         });
                     }
@@ -238,7 +297,107 @@ namespace OnlineSalesManagementSystem.Data
                 }
             }
 
-            // D. Purchases (Lịch sử nhập kho - quan trọng cho Warehouse)
+            // D0. Employees (Nhân viên)
+            if (!await db.Employees.AnyAsync())
+            {
+                var employees = new List<Employee>
+                {
+                    new Employee { Name = "Nguyễn Văn An", Phone = "0903000001", Email = "an@company.local", Address = "TP.HCM", Position = "Sales", Salary = 9000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-120) },
+                    new Employee { Name = "Trần Thị Bình", Phone = "0903000002", Email = "binh@company.local", Address = "TP.HCM", Position = "Sales", Salary = 9500000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-110) },
+                    new Employee { Name = "Lê Minh Châu", Phone = "0903000003", Email = "chau@company.local", Address = "Hà Nội", Position = "Warehouse", Salary = 10000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-200) },
+                    new Employee { Name = "Phạm Quốc Dũng", Phone = "0903000004", Email = "dung@company.local", Address = "Đà Nẵng", Position = "Warehouse", Salary = 10500000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-180) },
+                    new Employee { Name = "Võ Thị Em", Phone = "0903000005", Email = "em@company.local", Address = "TP.HCM", Position = "Accountant", Salary = 12000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-250) },
+                    new Employee { Name = "Đặng Hữu Phước", Phone = "0903000006", Email = "phuoc@company.local", Address = "TP.HCM", Position = "Manager", Salary = 18000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-365) },
+                };
+
+                db.Employees.AddRange(employees);
+                await db.SaveChangesAsync();
+            }
+
+            // D1. Attendance (Chấm công) - 30 ngày gần nhất
+            if (!await db.Attendances.AnyAsync())
+            {
+                var employees = await db.Employees.Where(e => e.IsActive).Select(e => e.Id).ToListAsync();
+                var random = new Random();
+                var today = DateTime.UtcNow.Date;
+
+                var attendances = new List<Attendance>();
+                foreach (var empId in employees)
+                {
+                    for (int d = 0; d < 30; d++)
+                    {
+                        var date = today.AddDays(-d);
+                        var roll = random.Next(0, 100);
+                        var status = roll switch
+                        {
+                            < 80 => AttendanceStatus.Present,
+                            < 88 => AttendanceStatus.Late,
+                            < 95 => AttendanceStatus.Leave,
+                            _ => AttendanceStatus.Absent
+                        };
+
+                        attendances.Add(new Attendance
+                        {
+                            EmployeeId = empId,
+                            Date = date,
+                            Status = status,
+                            Note = status == AttendanceStatus.Late ? "Đi trễ" : null
+                        });
+                    }
+                }
+
+                db.Attendances.AddRange(attendances);
+                await db.SaveChangesAsync();
+            }
+
+            // D2. Expenses (Chi phí) - để module Chi phí + báo cáo có dữ liệu
+            if (!await db.Expenses.AnyAsync())
+            {
+                var random = new Random();
+                var expenses = new List<Expense>();
+                var now = DateTime.UtcNow;
+
+                // Lương tháng gần nhất (tổng lương nhân viên)
+                var totalSalary = await db.Employees.Where(e => e.IsActive).SumAsync(e => e.Salary);
+                expenses.Add(new Expense
+                {
+                    Title = "Tổng lương nhân viên tháng này",
+                    Amount = totalSalary,
+                    ExpenseDate = now.AddDays(-3),
+                    Note = "Chi phí vận hành: lương"
+                });
+
+                // Một số chi phí phát sinh
+                var titles = new[]
+                {
+                    "Tiền điện",
+                    "Tiền nước",
+                    "Internet & dịch vụ",
+                    "Thuê mặt bằng",
+                    "Vận chuyển",
+                    "Marketing",
+                    "Văn phòng phẩm",
+                    "Bảo trì thiết bị",
+                    "Chi phí khác"
+                };
+
+                for (int i = 0; i < titles.Length; i++)
+                {
+                    expenses.Add(new Expense
+                    {
+                        Title = titles[i],
+                        Amount = random.Next(2, 50) * 100000,
+                        ExpenseDate = now.AddDays(-random.Next(1, 30)),
+                        Note = "Seed demo",
+                        IsActive = true
+                    });
+                }
+
+                db.Expenses.AddRange(expenses);
+                await db.SaveChangesAsync();
+            }
+
+            // E. Purchases (Lịch sử nhập kho - quan trọng cho Warehouse)
             if (!await db.Purchases.AnyAsync())
             {
                 var products = await db.Products.ToListAsync();
@@ -300,7 +459,7 @@ namespace OnlineSalesManagementSystem.Data
                 await db.SaveChangesAsync();
             }
 
-            // E. Invoices (Lịch sử bán hàng - Tạo doanh thu để Dashboard đẹp)
+            // F. Invoices (Lịch sử bán hàng - Tạo doanh thu để Dashboard đẹp)
             if (!await db.Invoices.AnyAsync())
             {
                 var products = await db.Products.Where(p => p.StockOnHand > 0).ToListAsync();
@@ -371,6 +530,39 @@ namespace OnlineSalesManagementSystem.Data
                 }
                 await db.SaveChangesAsync();
             }
+        }
+
+        private static async Task ResetBusinessDataAsync(ApplicationDbContext db)
+        {
+            // Xóa dữ liệu nghiệp vụ theo thứ tự phụ thuộc FK
+            // (giữ nguyên Identity + nhóm quyền, tránh mất tài khoản login)
+
+            // Stock
+            db.StockMovements.RemoveRange(await db.StockMovements.ToListAsync());
+
+            // Sales
+            db.InvoiceItems.RemoveRange(await db.InvoiceItems.ToListAsync());
+            db.Invoices.RemoveRange(await db.Invoices.ToListAsync());
+
+            // Purchases
+            db.PurchaseItems.RemoveRange(await db.PurchaseItems.ToListAsync());
+            db.Purchases.RemoveRange(await db.Purchases.ToListAsync());
+
+            // HR/Finance
+            db.Attendances.RemoveRange(await db.Attendances.ToListAsync());
+            db.Employees.RemoveRange(await db.Employees.ToListAsync());
+            db.Expenses.RemoveRange(await db.Expenses.ToListAsync());
+
+            // Masters
+            db.Products.RemoveRange(await db.Products.ToListAsync());
+            db.Brands.RemoveRange(await db.Brands.ToListAsync());
+            db.Categories.RemoveRange(await db.Categories.ToListAsync());
+            db.Units.RemoveRange(await db.Units.ToListAsync());
+            db.Customers.RemoveRange(await db.Customers.ToListAsync());
+            db.Suppliers.RemoveRange(await db.Suppliers.ToListAsync());
+            db.Settings.RemoveRange(await db.Settings.ToListAsync());
+
+            await db.SaveChangesAsync();
         }
     }
 }

@@ -12,7 +12,7 @@ using OnlineSalesManagementSystem.Data;
 namespace OnlineSalesManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260114050433_Init")]
+    [Migration("20260114071418_Init")]
     partial class Init
     {
         /// <inheritdoc />
