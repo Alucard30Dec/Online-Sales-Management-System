@@ -12,8 +12,8 @@ using OnlineSalesManagementSystem.Data;
 namespace OnlineSalesManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260111075532_create")]
-    partial class create
+    [Migration("20260114050433_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

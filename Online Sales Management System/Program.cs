@@ -13,6 +13,9 @@ using PermissionService = OnlineSalesManagementSystem.Services.Security.Permissi
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Needed for temporary server-side storage when previewing Excel imports
+builder.Services.AddMemoryCache();
+
 builder.Services.AddControllersWithViews();
 
 // EF Core

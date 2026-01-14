@@ -49,7 +49,8 @@
                 <div class="col-12 col-lg-6">
                     <div class="form-group">
                         <label>Email</label>
-                        <input class="form-control" value="@Model.Email" readonly />
+                        <!-- IMPORTANT: input without name won't be posted, causing ModelState invalid (Email is [Required]). -->
+                        <input asp-for="Email" class="form-control" readonly />
                     </div>
                 </div>
 

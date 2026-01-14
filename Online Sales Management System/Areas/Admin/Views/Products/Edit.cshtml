@@ -1,4 +1,4 @@
-﻿@model OnlineSalesManagementSystem.Domain.Entities.Product
+@model OnlineSalesManagementSystem.Domain.Entities.Product
 @using OnlineSalesManagementSystem.Domain.Entities
 @{
     ViewData["Title"] = "Cập nhật Sản phẩm";
@@ -65,7 +65,14 @@
                                             <option value="">-- Chọn danh mục --</option>
                                             @foreach (var c in categories)
                                             {
-                                                <!option value="@c.Id" @(Model.CategoryId == c.Id ? "selected" : "")>@c.Name</!option>
+                                                if (Model.CategoryId == c.Id)
+                                                {
+                                                    <option value="@c.Id" selected>@c.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@c.Id">@c.Name</option>
+                                                }
                                             }
                                         </select>
                                     </div>
@@ -75,7 +82,14 @@
                                             <option value="">-- Chọn đơn vị --</option>
                                             @foreach (var u in units)
                                             {
-                                                <!option value="@u.Id" @(Model.UnitId == u.Id ? "selected" : "")>@u.Name</!option>
+                                                if (Model.UnitId == u.Id)
+                                                {
+                                                    <option value="@u.Id" selected>@u.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@u.Id">@u.Name</option>
+                                                }
                                             }
                                         </select>
                                     </div>

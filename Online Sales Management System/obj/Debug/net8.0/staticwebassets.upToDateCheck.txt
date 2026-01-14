@@ -51,6 +51,7 @@ wwwroot\css\expenses-ui.css
 wwwroot\css\invoices-ui.css
 wwwroot\css\invoices-ui.css.append.txt
 wwwroot\css\invoices-ui.patch.css
+wwwroot\css\products-create.css
 wwwroot\css\products-details-ui.css
 wwwroot\css\products-ui.css
 wwwroot\css\purchases-ui.css
@@ -126,3 +127,4 @@ wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
 wwwroot\uploads\logos\logo_20260108041424.jpeg
+wwwroot\uploads\products\8dd6b4d0ab7d4c97b534c66a044fe694.png

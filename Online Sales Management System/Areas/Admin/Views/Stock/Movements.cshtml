@@ -1,4 +1,5 @@
-﻿@model List<OnlineSalesManagementSystem.Domain.Entities.StockMovement>
+@using OnlineSalesManagementSystem.Services.Common
+@model List<OnlineSalesManagementSystem.Domain.Entities.StockMovement>
 @using OnlineSalesManagementSystem.Domain.Entities
 @{
     ViewData["Title"] = "Lịch sử Kho";
@@ -69,6 +70,11 @@
                 <div class="col-12 col-md-2 d-flex gap-2">
                     <button class="btn btn-gradient w-100 fw-bold shadow-sm" type="submit">Lọc</button>
                     <a class="btn btn-light w-100 shadow-sm" href="/Admin/Stock/Movements"><i class="fas fa-sync-alt"></i></a>
+                    <a class="btn btn-success w-100 fw-bold shadow-sm"
+                       href="/Admin/Stock/ExportMovementsExcel?productId=@(productId?.ToString() ?? "")&from=@from&to=@to"
+                       title="Xuất Excel">
+                        <i class="fas fa-file-excel me-1"></i>Excel
+                    </a>
                 </div>
 
                 <div class="col-12 col-xl-3">
@@ -127,7 +133,7 @@
 
                                 <tr>
                                     <td class="ps-4 text-muted">@m.Id</td>
-                                    <td>@m.MovementDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@AppTime.ToVietnamTime(m.MovementDate).ToString("HH:mm dd/MM/yyyy")</td>
                                     <td><span class="fw-bold text-dark">@m.Product?.Name</span></td>
                                     <td class="text-center"><span class="badge-move @badgeClass">@typeLabel</span></td>
                                     <td class="text-center fw-bold">@m.Qty</td>

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
 using OnlineSalesManagementSystem.Services.Security;
+using OnlineSalesManagementSystem.Services.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
@@ -83,7 +84,7 @@ public class InvoicesController : Controller
         await LoadLookupsAsync();
         return View(new InvoiceCreateVm
         {
-            InvoiceDate = DateTime.Now,
+            InvoiceDate = AppTime.VietnamNow(),
             Items = new List<InvoiceItemVm> { new() },
             PaidAmount = 0m
         });
@@ -121,7 +122,7 @@ public class InvoicesController : Controller
         {
             InvoiceNo = await GenerateInvoiceNoAsync(),
             CustomerId = customer?.Id,
-            InvoiceDate = DateTime.Now,
+            InvoiceDate = AppTime.VietnamNow(),
             PaidAmount = vm.PaidAmount
         };
 

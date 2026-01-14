@@ -1,25 +1,40 @@
-﻿@using OnlineSalesManagementSystem.Domain.Entities
+@using OnlineSalesManagementSystem.Domain.Entities
 @model OnlineSalesManagementSystem.Domain.Entities.Product
 
 @{
-    ViewData["Title"] = "Thêm mới Sản phẩm";
+    ViewData["Title"] = "Thêm mới sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
-    var categories = ViewBag.Categories as List<Category> ?? new List<Category>();
-    var units = ViewBag.Units as List<Unit> ?? new List<Unit>();
+    var categories = ViewBag.Categories as List<Category> ?? new();
+    var units = ViewBag.Units as List<Unit> ?? new();
+    var brands = ViewBag.Brands as List<Brand> ?? new();
 }
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark">Thêm sản phẩm mới</h2>
-        <a href="/Admin/Products" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Quay lại
-        </a>
+<link rel="stylesheet" href="~/css/products-create.css" />
+
+<div class="container-fluid py-4" style="background-color: #f8f9fc;">
+    <div class="hero-header d-flex justify-content-between align-items-center mb-4">
+        <i class="fas fa-box-open hero-icon-bg"></i>
+        <div style="z-index: 1;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-custom mb-2">
+                    <li class="breadcrumb-item"><a href="/Admin/Products">Sản phẩm</a></li>
+                    <li class="breadcrumb-item active">Thêm mới</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold text-dark mb-0">Thêm sản phẩm mới</h2>
+            <div class="text-muted small">Nhập đầy đủ thông tin cơ bản, giá và hình ảnh để hiển thị tốt trên trang bán hàng.</div>
+        </div>
+        <div style="z-index: 1;">
+            <a href="/Admin/Products" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </a>
+        </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm product-form-card">
         <div class="card-body p-4">
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <form asp-action="Create" method="post" enctype="multipart/form-data" autocomplete="off">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="row">
@@ -50,14 +65,8 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Description" class="form-label fw-bold">Mô tả chi tiết</label>
-                            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
-
                         <div class="row">
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label asp-for="UnitId" class="form-label fw-bold">Đơn vị <span class="text-danger">*</span></label>
                                 <select asp-for="UnitId" class="form-select">
                                     <option value="0">-- Chọn đơn vị --</option>
@@ -68,50 +77,86 @@
                                 </select>
                                 <span asp-validation-for="UnitId" class="text-danger"></span>
                             </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BrandId" class="form-label fw-bold">Thương hiệu</label>
+                                <select asp-for="BrandId" class="form-select">
+                                    <option value="0">-- (Tuỳ chọn) --</option>
+                                    @foreach (var b in brands)
+                                    {
+                                        <option value="@b.Id">@b.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="BrandId" class="text-danger"></span>
+                            </div>
+                        </div>
 
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-bold">Mô tả ngắn</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Tóm tắt nổi bật (sẽ hiển thị ở danh sách/preview)"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label fw-bold">Nội dung chi tiết (HTML)</label>
+                            <textarea asp-for="Content" class="form-control" rows="6" placeholder="Có thể dán nội dung HTML. Nếu không dùng, để trống."></textarea>
+                            <div class="form-text text-muted">Mẹo: Bạn có thể dán đoạn mô tả dài kèm thẻ HTML cơ bản (ul/li, b, i...).</div>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
                             <div class="col-md-4 mb-3">
                                 <label asp-for="CostPrice" class="form-label fw-bold">Giá nhập</label>
-                                <input asp-for="CostPrice" class="form-control" />
+                                <input asp-for="CostPrice" class="form-control money" inputmode="decimal" placeholder="0" />
                                 <span asp-validation-for="CostPrice" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-4 mb-3">
                                 <label asp-for="SalePrice" class="form-label fw-bold">Giá bán</label>
-                                <input asp-for="SalePrice" class="form-control" />
+                                <input asp-for="SalePrice" class="form-control money" inputmode="decimal" placeholder="0" />
                                 <span asp-validation-for="SalePrice" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="ReorderLevel" class="form-label fw-bold">Cảnh báo tồn</label>
+                                <input asp-for="ReorderLevel" class="form-control" inputmode="numeric" placeholder="0" />
+                                <span asp-validation-for="ReorderLevel" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="StockOnHand" class="form-label fw-bold">Tồn kho</label>
-                                <input asp-for="StockOnHand" class="form-control" />
+                                <input asp-for="StockOnHand" class="form-control" inputmode="numeric" placeholder="0" />
                                 <span asp-validation-for="StockOnHand" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label asp-for="ReorderLevel" class="form-label fw-bold">Mức cảnh báo tồn</label>
-                                <input asp-for="ReorderLevel" class="form-control" />
-                                <span asp-validation-for="ReorderLevel" class="text-danger"></span>
+                                <div class="h-100 d-flex align-items-end justify-content-end">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" asp-for="IsTrending" />
+                                        <label class="form-check-label fw-bold" asp-for="IsTrending">Trending</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-md-4">
+                        <div class="image-preview-wrap mb-3">
+                            <div id="imgPreview" class="image-preview">
+                                <div class="text-muted"><i class="fas fa-image me-2"></i>Preview ảnh</div>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label fw-bold">Ảnh sản phẩm</label>
-                            <input type="file" name="imageFile" class="form-control" accept=".png,.jpg,.jpeg,.webp" />
+                            <input type="file" name="imageFile" class="form-control" accept=".png,.jpg,.jpeg,.webp" onchange="previewFile(this)" />
                             <div class="form-text text-muted">Hỗ trợ: png/jpg/jpeg/webp</div>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="ImagePath" class="form-label fw-bold">Hoặc dán link ảnh (tuỳ chọn)</label>
-                            <input asp-for="ImagePath" class="form-control" placeholder="/uploads/products/..." />
+                            <input asp-for="ImagePath" class="form-control" placeholder="https://... hoặc /uploads/products/..." oninput="previewUrl(this.value)" />
                             <span asp-validation-for="ImagePath" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" asp-for="IsTrending" />
-                            <label class="form-check-label fw-bold" asp-for="IsTrending">Trending</label>
                         </div>
 
                         @* Nếu bạn muốn cho phép chọn Active ngay lúc tạo, mở block này và bỏ dòng model.IsActive=true trong controller *@
@@ -125,6 +170,10 @@
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-save"></i> Lưu sản phẩm
                         </button>
+
+                        <div class="text-muted small mt-2">
+                            Lưu ý: Chỉ chọn 1 trong 2 cách thêm ảnh (upload hoặc link).
+                        </div>
                     </div>
                 </div>
             </form>
@@ -134,4 +183,29 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function previewUrl(url) {
+            const box = document.getElementById('imgPreview');
+            if (!box) return;
+            const clean = (url || '').trim();
+            if (!clean) {
+                box.innerHTML = `<div class="text-muted"><i class="fas fa-image me-2"></i>Preview ảnh</div>`;
+                return;
+            }
+            box.innerHTML = `<img src="${clean}" alt="preview" onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;text-danger small&quot;>Không tải được ảnh từ link.</div>'" />`;
+        }
+
+        function previewFile(input) {
+            const box = document.getElementById('imgPreview');
+            if (!box) return;
+            if (!input.files || input.files.length === 0) {
+                box.innerHTML = `<div class="text-muted"><i class="fas fa-image me-2"></i>Preview ảnh</div>`;
+                return;
+            }
+            const file = input.files[0];
+            const url = URL.createObjectURL(file);
+            box.innerHTML = `<img src="${url}" alt="preview" />`;
+        }
+    </script>
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
 using OnlineSalesManagementSystem.Services.Security;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -87,6 +88,7 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Edit)]
         public async Task<IActionResult> Edit(string id)
         {
@@ -112,58 +114,74 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Edit)]
+        
         public async Task<IActionResult> Edit(AdminEditVm vm)
         {
             ViewBag.Groups = await _db.AdminGroups.AsNoTracking().Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
 
             if (!ModelState.IsValid) return View(vm);
 
-            var user = await _userManager.FindByIdAsync(vm.Id);
-            if (user == null) return NotFound();
-
-            // Only Super Admin can edit the Super Admin account (UI already locks; server must enforce too)
-            var meEmail = User?.FindFirstValue(ClaimTypes.Email);
-            bool currentIsSuper = SuperAdminProtection.IsSuperAdminEmail(meEmail);
-            bool targetIsSuper = SuperAdminProtection.IsSuperAdminEmail(user.Email);
-
-            if (targetIsSuper && !currentIsSuper)
+            try
             {
-                TempData["ToastError"] = "You cannot modify the Super Admin account.";
-                return RedirectToAction(nameof(Index));
-            }
+                var user = await _userManager.FindByIdAsync(vm.Id);
+                if (user == null) return NotFound();
 
-            user.FullName = vm.FullName?.Trim();
-            user.AdminGroupId = vm.AdminGroupId;
+                // Only Super Admin can edit the Super Admin account (UI already locks; server must enforce too)
+                var meEmail = User?.FindFirstValue(ClaimTypes.Email);
+                bool currentIsSuper = SuperAdminProtection.IsSuperAdminEmail(meEmail);
+                bool targetIsSuper = SuperAdminProtection.IsSuperAdminEmail(user.Email);
 
-            // IsActive can be changed only for non-super admin accounts
-            if (!targetIsSuper)
-                user.IsActive = vm.IsActive;
-
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-            {
-                foreach (var e in result.Errors)
-                    ModelState.AddModelError(string.Empty, e.Description);
-                return View(vm);
-            }
-
-                        // Optional password reset (leave blank to keep current password)
-            if (!string.IsNullOrWhiteSpace(vm.NewPassword))
-            {
-                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var resetResult = await _userManager.ResetPasswordAsync(user, resetToken, vm.NewPassword);
-
-                if (!resetResult.Succeeded)
+                if (targetIsSuper && !currentIsSuper)
                 {
-                    foreach (var e in resetResult.Errors)
+                    TempData["ToastError"] = "You cannot modify the Super Admin account.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                user.FullName = vm.FullName?.Trim();
+                user.AdminGroupId = vm.AdminGroupId;
+
+                // IsActive can be changed only for non-super admin accounts
+                if (!targetIsSuper)
+                    user.IsActive = vm.IsActive;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    foreach (var e in result.Errors)
                         ModelState.AddModelError(string.Empty, e.Description);
+
+                    TempData["ToastError"] = "Failed to save changes.";
                     return View(vm);
                 }
-            }
 
-TempData["ToastSuccess"] = "Admin account updated.";
-            return RedirectToAction(nameof(Index));
+                // Optional password reset (leave blank to keep current password)
+                if (!string.IsNullOrWhiteSpace(vm.NewPassword))
+                {
+                    var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var resetResult = await _userManager.ResetPasswordAsync(user, resetToken, vm.NewPassword);
+
+                    if (!resetResult.Succeeded)
+                    {
+                        foreach (var e in resetResult.Errors)
+                            ModelState.AddModelError(string.Empty, e.Description);
+
+                        TempData["ToastError"] = "Failed to update password.";
+                        return View(vm);
+                    }
+                }
+
+                TempData["ToastSuccess"] = "Admin account updated.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // DB/network/identity exceptions
+                TempData["ToastError"] = "Unexpected error while saving changes.";
+                ModelState.AddModelError(string.Empty, $"Save failed: {ex.Message}");
+                return View(vm);
+            }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
