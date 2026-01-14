@@ -339,6 +339,7 @@ namespace OnlineSalesManagementSystem.Migrations
                     ReorderLevel = table.Column<int>(type: "int", nullable: false, defaultValue: 5),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     IsTrending = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },

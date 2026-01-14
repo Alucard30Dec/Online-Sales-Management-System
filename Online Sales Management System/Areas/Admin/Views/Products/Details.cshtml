@@ -70,22 +70,16 @@
 
                     <h6 class="fw-bold text-dark mb-3"><i class="fas fa-info-circle me-2 text-primary"></i>Thông tin chi tiết</h6>
                     <div class="row g-3 mb-4">
-                        <div class="col-12 col-md-4">
+                        <div class="col-6">
                             <div class="p-3 bg-light rounded-3 border">
                                 <div class="small text-muted fw-bold">Danh mục</div>
                                 <div class="fw-bold text-dark">@(p.Category?.Name ?? "—")</div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-4">
+                        <div class="col-6">
                             <div class="p-3 bg-light rounded-3 border">
                                 <div class="small text-muted fw-bold">Đơn vị tính</div>
                                 <div class="fw-bold text-dark">@(p.Unit?.Name ?? "—")</div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <div class="p-3 bg-light rounded-3 border">
-                                <div class="small text-muted fw-bold">Thương hiệu</div>
-                                <div class="fw-bold text-dark">@(p.Brand?.Name ?? "—")</div>
                             </div>
                         </div>
                     </div>
@@ -199,7 +193,7 @@
                                                     <span class="text-muted fst-italic"><i class="fas fa-user-secret me-1"></i>@o.CustomerName</span>
                                                 }
                                             </td>
-                                            <td class="text-muted small">@o.InvoiceDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td class="text-muted small">@AppTime.ToVietnamTime(o.InvoiceDate).ToString("HH:mm dd/MM/yyyy")</td>
                                             <td class="text-center fw-bold text-dark">@o.Qty</td>
                                             <td class="text-end text-secondary">@o.UnitPrice.ToString("N0")</td>
                                             <td class="text-end pe-4 fw-bold text-dark">@o.LineTotal.ToString("N0")</td>

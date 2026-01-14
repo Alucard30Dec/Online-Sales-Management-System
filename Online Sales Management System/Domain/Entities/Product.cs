@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System;
 
 namespace OnlineSalesManagementSystem.Domain.Entities;
 
@@ -38,6 +39,9 @@ public class Product
 
     public bool IsActive { get; set; } = true;
     public bool IsTrending { get; set; } = false;
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     [NotMapped]
     public decimal? DiscountPrice => null;

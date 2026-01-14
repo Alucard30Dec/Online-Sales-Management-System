@@ -15,10 +15,10 @@ public sealed class InvoiceTotalsService : IInvoiceTotalsService
         foreach (var item in invoice.Items)
         {
             // An toàn dữ liệu
-            if (item.Qty < 0) item.Qty = 0;
+            if (item.Quantity < 0) item.Quantity = 0;
             if (item.UnitPrice < 0) item.UnitPrice = 0;
 
-            item.LineTotal = item.UnitPrice * item.Qty;
+            item.LineTotal = item.UnitPrice * item.Quantity;
             subTotal += item.LineTotal;
         }
 

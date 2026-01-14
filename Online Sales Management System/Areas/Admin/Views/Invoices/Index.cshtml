@@ -1,4 +1,4 @@
-@model List<OnlineSalesManagementSystem.Domain.Entities.Invoice>
+﻿@model List<OnlineSalesManagementSystem.Domain.Entities.Invoice>
 @using OnlineSalesManagementSystem.Domain.Entities
 @{
     ViewData["Title"] = "Quản lý Hóa đơn";
@@ -113,11 +113,7 @@
                                     <td>
                                         @if (inv.Customer != null)
                                         {
-                                            <a class="fw-semibold text-primary text-decoration-none"
-                                               href="/Admin/Customers/Details/@inv.Customer.Id"
-                                               title="Xem chi tiết khách hàng">
-                                                @inv.Customer.Name
-                                            </a>
+                                            <span class="fw-semibold text-primary">@inv.Customer.Name</span>
                                         }
                                         else
                                         {
@@ -125,7 +121,7 @@
                                             <span class="text-muted fst-italic">Khách lẻ</span>
                                         }
                                     </td>
-                                    <td>@inv.InvoiceDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@AppTime.ToVietnamTime(inv.InvoiceDate).ToString("HH:mm dd/MM/yyyy")</td>
                                     <td class="fw-bold text-danger">@inv.GrandTotal.ToString("N0") đ</td>
                                     <td class="text-success">@inv.PaidAmount.ToString("N0") đ</td>
                                     <td class="text-center"><span class="badge-status @badgeClass">@inv.Status</span></td>

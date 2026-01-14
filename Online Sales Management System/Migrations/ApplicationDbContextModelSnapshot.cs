@@ -625,6 +625,12 @@ namespace OnlineSalesManagementSystem.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(5);
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
                     b.Property<string>("SKU")
                         .IsRequired()
                         .HasMaxLength(50)

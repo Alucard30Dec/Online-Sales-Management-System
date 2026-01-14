@@ -14,10 +14,12 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers;
 public class InvoicesController : Controller
 {
     private readonly ApplicationDbContext _db;
+    private readonly ILogger<InvoicesController> _logger;
 
-    public InvoicesController(ApplicationDbContext db)
+    public InvoicesController(ApplicationDbContext db, ILogger<InvoicesController> logger)
     {
         _db = db;
+        _logger = logger;
     }
 
     // ========= INDEX =========
@@ -112,110 +114,126 @@ public class InvoicesController : Controller
             return View(vm);
         }
 
-        using var tx = await _db.Database.BeginTransactionAsync();
+        await using var tx = await _db.Database.BeginTransactionAsync();
 
-        var customer = vm.CustomerId.HasValue
-            ? await _db.Customers.FirstOrDefaultAsync(c => c.Id == vm.CustomerId.Value)
-            : null;
-
-        var invoice = new Invoice
+        try
         {
-            InvoiceNo = await GenerateInvoiceNoAsync(),
-            CustomerId = customer?.Id,
-            InvoiceDate = AppTime.VietnamNow(),
-            PaidAmount = vm.PaidAmount
-        };
+            var customer = vm.CustomerId.HasValue
+                ? await _db.Customers.FirstOrDefaultAsync(c => c.Id == vm.CustomerId.Value)
+                : null;
 
-        decimal subTotal = 0m;
-
-        // Always use server-side SalePrice (do NOT trust posted UnitPrice)
-        var productIds = items.Where(x => x.ProductId.HasValue).Select(x => x.ProductId!.Value).Distinct().ToList();
-        var priceMap = await _db.Products
-            .AsNoTracking()
-            .Where(p => p.IsActive && productIds.Contains(p.Id))
-            .Select(p => new { p.Id, p.SalePrice, p.Name })
-            .ToDictionaryAsync(x => x.Id, x => x);
-
-        foreach (var row in items)
-        {
-            var qty = row.Qty;
-            if (!row.ProductId.HasValue || !priceMap.TryGetValue(row.ProductId.Value, out var pinfo))
+            var invoice = new Invoice
             {
-                ModelState.AddModelError("", "Invalid product selected.");
-                await LoadLookupsAsync();
-                return View(vm);
+                InvoiceNo = await GenerateInvoiceNoAsync(),
+                CustomerId = customer?.Id,
+                // Store UTC in DB (display via AppTime.ToVietnamTime)
+                InvoiceDate = AppTime.UtcNow(),
+                PaidAmount = vm.PaidAmount
+            };
+
+            decimal subTotal = 0m;
+
+            // Always use server-side SalePrice (do NOT trust posted UnitPrice)
+            var productIds = items.Where(x => x.ProductId.HasValue).Select(x => x.ProductId!.Value).Distinct().ToList();
+            var priceMap = await _db.Products
+                .AsNoTracking()
+                .Where(p => p.IsActive && productIds.Contains(p.Id))
+                .Select(p => new { p.Id, p.SalePrice, p.Name })
+                .ToDictionaryAsync(x => x.Id, x => x);
+
+            foreach (var row in items)
+            {
+                var qty = row.Qty;
+                if (qty < 1) qty = 1;
+
+                if (!row.ProductId.HasValue || !priceMap.TryGetValue(row.ProductId.Value, out var pinfo))
+                    throw new InvalidOperationException("Invalid product selected.");
+
+                var price = pinfo.SalePrice;
+                var lineTotal = qty * price;
+                subTotal += lineTotal;
+
+                invoice.Items.Add(new InvoiceItem
+                {
+                    ProductId = row.ProductId!.Value,
+                    Quantity = qty,
+                    UnitPrice = price,
+                    LineTotal = lineTotal
+                });
             }
 
-            var price = pinfo.SalePrice;
-            var lineTotal = qty * price;
-            subTotal += lineTotal;
+            invoice.SubTotal = subTotal;
+            invoice.GrandTotal = subTotal;
 
-            invoice.Items.Add(new InvoiceItem
+            // normalize payment + status
+            if (invoice.GrandTotal <= 0)
             {
-                ProductId = row.ProductId!.Value,
-                Quantity = qty,
-                UnitPrice = price,
-                LineTotal = lineTotal
-            });
-        }
+                invoice.PaidAmount = 0;
+                invoice.Status = InvoiceStatus.Paid;
+            }
+            else if (invoice.PaidAmount >= invoice.GrandTotal)
+            {
+                invoice.PaidAmount = invoice.GrandTotal;
+                invoice.Status = InvoiceStatus.Paid;
+            }
+            else if (invoice.PaidAmount > 0)
+            {
+                invoice.Status = InvoiceStatus.PartiallyPaid;
+            }
+            else
+            {
+                invoice.Status = InvoiceStatus.Unpaid;
+            }
 
-        invoice.SubTotal = subTotal;
-        invoice.GrandTotal = subTotal;
+            _db.Invoices.Add(invoice);
+            await _db.SaveChangesAsync();
 
-        // normalize payment + status
-        if (invoice.GrandTotal <= 0)
-        {
-            invoice.PaidAmount = 0;
-            invoice.Status = InvoiceStatus.Paid;
-        }
-        else if (invoice.PaidAmount >= invoice.GrandTotal)
-        {
-            invoice.PaidAmount = invoice.GrandTotal;
-            invoice.Status = InvoiceStatus.Paid;
-        }
-        else if (invoice.PaidAmount > 0)
-        {
-            invoice.Status = InvoiceStatus.PartiallyPaid;
-        }
-        else
-        {
-            invoice.Status = InvoiceStatus.Unpaid;
-        }
+            // Reduce stock atomically to avoid oversell race conditions.
+            // We update: StockOnHand = StockOnHand - qty WHERE StockOnHand >= qty
+            foreach (var it in invoice.Items)
+            {
+                var productName = priceMap.TryGetValue(it.ProductId, out var p) ? p.Name : $"#{it.ProductId}";
 
-        _db.Invoices.Add(invoice);
-        await _db.SaveChangesAsync();
+                var affected = await _db.Database.ExecuteSqlInterpolatedAsync($@"
+UPDATE Products
+SET StockOnHand = StockOnHand - {it.Quantity}
+WHERE Id = {it.ProductId} AND StockOnHand >= {it.Quantity}");
 
-        // reduce stock + StockMovement (Out)
-        foreach (var it in invoice.Items)
+                if (affected <= 0)
+                    throw new InvalidOperationException($"Not enough stock for '{productName}'. Please refresh and try again.");
+
+                _db.StockMovements.Add(new StockMovement
+                {
+                    ProductId = it.ProductId,
+                    MovementDate = AppTime.UtcNow(),
+                    Type = StockMovementType.Out,
+                    Qty = it.Quantity,
+                    RefType = "Invoice",
+                    RefId = invoice.Id,
+                    Note = invoice.InvoiceNo
+                });
+            }
+
+            await _db.SaveChangesAsync();
+            await tx.CommitAsync();
+
+            TempData["ToastSuccess"] = "Invoice created successfully.";
+            return RedirectToAction(nameof(Details), new { id = invoice.Id });
+        }
+        catch (Exception ex)
         {
-            var product = await _db.Products.FirstAsync(p => p.Id == it.ProductId);
-            if (product.StockOnHand < it.Quantity)
+            try
             {
                 await tx.RollbackAsync();
-                TempData["ToastError"] = $"Not enough stock for '{product.Name}'. Current stock: {product.StockOnHand}.";
-                await LoadLookupsAsync();
-                return View(vm);
             }
+            catch { /* ignore rollback failures */ }
 
-            product.StockOnHand -= it.Quantity;
+            _logger.LogError(ex, "Failed to create invoice.");
+            TempData["ToastError"] = "Failed to create invoice. Please check data and try again.";
 
-            _db.StockMovements.Add(new StockMovement
-            {
-                ProductId = it.ProductId,
-                MovementDate = DateTime.UtcNow,
-                Type = StockMovementType.Out,
-                Qty = it.Quantity,
-                RefType = "Invoice",
-                RefId = invoice.Id,
-                Note = invoice.InvoiceNo
-            });
+            await LoadLookupsAsync();
+            return View(vm);
         }
-
-        await _db.SaveChangesAsync();
-        await tx.CommitAsync();
-
-        TempData["ToastSuccess"] = "Invoice created successfully.";
-        return RedirectToAction(nameof(Details), new { id = invoice.Id });
     }
 
     // ========= RECORD PAYMENT =========

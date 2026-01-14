@@ -12,7 +12,7 @@ using OnlineSalesManagementSystem.Data;
 namespace OnlineSalesManagementSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260114071418_Init")]
+    [Migration("20260114090005_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -627,6 +627,12 @@ namespace OnlineSalesManagementSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(5);
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("SKU")
                         .IsRequired()

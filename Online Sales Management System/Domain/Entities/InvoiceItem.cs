@@ -20,9 +20,6 @@ public class InvoiceItem
 
     [Range(1, int.MaxValue)]
     public int Quantity { get; set; } = 1;
-
-    [Range(1, int.MaxValue)]
-    public int Qty { get; set; } = 1;
     public decimal LineTotal { get; set; }
 
 }

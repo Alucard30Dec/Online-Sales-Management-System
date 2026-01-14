@@ -5,7 +5,7 @@
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 
     // --- 1. XỬ LÝ DỮ LIỆU TỪ C# ---
-    var allDates = Model.Invoices.Select(i => i.InvoiceDate.Date)
+    var allDates = Model.Invoices.Select(i => AppTime.ToVietnamTime(i.InvoiceDate).Date)
                     .Union(Model.Purchases.Select(p => p.PurchaseDate.Date))
                     .Union(new[] { Model.From.Date, Model.To.Date })
                     .Where(d => d >= Model.From.Date && d <= Model.To.Date)
@@ -13,7 +13,7 @@
 
     // Chuẩn bị dữ liệu cho Chart
     var labels = allDates.Select(d => d.ToString("dd/MM")).ToArray();
-    var dataSales = allDates.Select(d => Model.Invoices.Where(i => i.InvoiceDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
+    var dataSales = allDates.Select(d => Model.Invoices.Where(i => AppTime.ToVietnamTime(i.InvoiceDate).Date == d).Sum(x => x.GrandTotal)).ToArray();
     var dataPurchases = allDates.Select(d => Model.Purchases.Where(p => p.PurchaseDate.Date == d).Sum(x => x.GrandTotal)).ToArray();
 
     // Serialize data sang JSON

@@ -44,7 +44,7 @@
             <div>
                 <div class="h4 mb-0">INVOICE</div>
                 <div class="text-muted">No: <span class="fw-semibold">@Model.InvoiceNo</span></div>
-                <div class="text-muted">Date: <span class="fw-semibold">@Model.InvoiceDate.ToString("yyyy-MM-dd")</span></div>
+                <div class="text-muted">Date: <span class="fw-semibold">@AppTime.ToVietnamTime(Model.InvoiceDate).ToString("HH:mm dd/MM/yyyy")</span></div>
             </div>
 
             <div class="text-end">
@@ -93,7 +93,7 @@
                             <tr>
                                 <td>@it.Id</td>
                                 <td class="fw-semibold">@it.Product?.Name</td>
-                                <td class="text-end">@it.Qty</td>
+                                <td class="text-end">@it.Quantity</td>
                                 <td class="text-end">@it.UnitPrice.ToString("N0")</td>
                                 <td class="text-end">@it.LineTotal.ToString("N0")</td>
                             </tr>

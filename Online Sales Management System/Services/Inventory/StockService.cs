@@ -23,41 +23,71 @@ public sealed class StockService : IStockService
         => ApplyDeltaAsync(productId, deltaQty, StockMovementType.Adjust, refType, refId, note, ct);
 
     private async Task ApplyDeltaAsync(
-        int productId,
-        int deltaQty,
-        StockMovementType movementType,
-        string refType,
-        int refId,
-        string? note,
-        CancellationToken ct)
+    int productId,
+    int deltaQty,
+    StockMovementType movementType,
+    string refType,
+    int refId,
+    string? note,
+    CancellationToken ct)
     {
         if (productId <= 0) throw new ArgumentOutOfRangeException(nameof(productId));
         if (deltaQty == 0) return;
-        if (string.IsNullOrWhiteSpace(refType)) refType = "System";
 
-        await using var tx = await _db.Database.BeginTransactionAsync(ct);
+        refType = string.IsNullOrWhiteSpace(refType) ? "System" : refType.Trim();
 
-        var product = await _db.Products.FirstOrDefaultAsync(p => p.Id == productId, ct);
-        if (product == null) throw new InvalidOperationException($"Product not found: #{productId}");
-
-        var newStock = product.StockOnHand + deltaQty;
-        if (newStock < 0)
-            throw new InvalidOperationException($"Insufficient stock for Product #{productId}. Current={product.StockOnHand}, Delta={deltaQty}");
-
-        product.StockOnHand = newStock;
-
-        _db.StockMovements.Add(new StockMovement
+        const int maxAttempts = 3;
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
-            ProductId = productId,
-            MovementDate = DateTime.UtcNow,
-            Type = movementType,
-            Qty = Math.Abs(deltaQty),
-            RefType = refType,
-            RefId = refId,
-            Note = note
-        });
+            await using var tx = await _db.Database.BeginTransactionAsync(ct);
 
-        await _db.SaveChangesAsync(ct);
-        await tx.CommitAsync(ct);
+            try
+            {
+                var product = await _db.Products.FirstOrDefaultAsync(p => p.Id == productId, ct);
+                if (product is null) throw new InvalidOperationException("Product not found.");
+
+                // Business rule: prevent oversell
+                var newStock = product.StockOnHand + deltaQty;
+                if (newStock < 0)
+                {
+                    throw new InvalidOperationException("Insufficient stock. Please refresh and try again.");
+                }
+
+                product.StockOnHand = newStock;
+
+                _db.StockMovements.Add(new StockMovement
+                {
+                    ProductId = productId,
+                    MovementDate = DateTime.UtcNow, // store UTC
+                    Type = movementType,
+                    Qty = Math.Abs(deltaQty),
+                    RefType = refType,
+                    RefId = refId,
+                    Note = note
+                });
+
+                await _db.SaveChangesAsync(ct);
+                await tx.CommitAsync(ct);
+                return;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                await tx.RollbackAsync(ct);
+
+                if (attempt == maxAttempts)
+                {
+                    throw new InvalidOperationException("Stock was updated by another user. Please retry.");
+                }
+
+                // Clear tracked entities so next attempt reloads fresh values
+                _db.ChangeTracker.Clear();
+            }
+            catch
+            {
+                await tx.RollbackAsync(ct);
+                throw;
+            }
+        }
     }
 }
+

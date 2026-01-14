@@ -146,7 +146,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.StockOnHand).HasDefaultValue(0);
             e.Property(x => x.ReorderLevel).HasDefaultValue(5);
             e.Property(x => x.IsActive).HasDefaultValue(true);
-            e.Property(x => x.IsTrending).HasDefaultValue(false); // Thm dng ny cho r rng
+            e.Property(x => x.IsTrending).HasDefaultValue(false);
+
+            e.Property(x => x.RowVersion)
+             .IsRowVersion()
+             .IsConcurrencyToken(); // Thm dng ny cho r rng
 
             e.HasOne(x => x.Category)
              .WithMany()
@@ -234,8 +238,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.LineTotal)
              .HasComputedColumnSql("[UnitPrice] * [Quantity]", stored: true)
              .ValueGeneratedOnAddOrUpdate();
-
-            e.Ignore(x => x.Qty);
         });
 
         // Expense
