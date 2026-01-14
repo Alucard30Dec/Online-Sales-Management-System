@@ -65,6 +65,7 @@ public static class PermissionConstants
 
         public const string Categories = "Categories";
         public const string Units = "Units";
+        public const string Brands = "Brands";
         public const string Products = "Products";
 
         public const string Purchases = "Purchases";
@@ -79,7 +80,7 @@ public static class PermissionConstants
         {
             Dashboard, Admin, AdminGroups,
             Suppliers, Customers, Employees, Attendance,
-            Categories, Units, Products,
+            Categories, Units, Brands, Products,
             Purchases, Invoices, Expenses,
             Reports, Stock, Settings
         };

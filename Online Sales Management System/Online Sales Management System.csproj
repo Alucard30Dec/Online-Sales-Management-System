@@ -25,11 +25,12 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Views\AuditLogs\" />
-    <Folder Include="Areas\Admin\Views\Brands\" />
     <Folder Include="Areas\Admin\Views\Promotions\" />
     <Folder Include="Areas\Admin\Views\Returns\" />
     <Folder Include="Areas\Admin\Views\Shipments\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Services\Auditing\" />
+    <Folder Include="Services\Pricing\" />
     <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
 

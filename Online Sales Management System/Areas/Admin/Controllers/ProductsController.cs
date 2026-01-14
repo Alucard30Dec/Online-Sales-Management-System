@@ -38,6 +38,92 @@ public class ProductsController : Controller
         return View();
     }
 
+    // ==========================================================
+    // PRODUCT CRUD
+    // ==========================================================
+
+    [HttpGet]
+    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Create)]
+    public async Task<IActionResult> Create()
+    {
+        ViewBag.Categories = await _db.Categories.AsNoTracking().Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
+        ViewBag.Units = await _db.Units.AsNoTracking().Where(u => u.IsActive).OrderBy(u => u.Name).ToListAsync();
+        ViewBag.Brands = await _db.Brands.AsNoTracking().Where(b => b.IsActive).OrderBy(b => b.Name).ToListAsync();
+
+        return View(new Product { IsActive = true });
+    }
+
+    [HttpPost]
+    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Create)]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Product model, IFormFile? imageFile)
+    {
+        // Normalize
+        model.SKU = (model.SKU ?? string.Empty).Trim();
+        model.Name = (model.Name ?? string.Empty).Trim();
+
+        // Dropdown data (needed when return View)
+        ViewBag.Categories = await _db.Categories.AsNoTracking().Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
+        ViewBag.Units = await _db.Units.AsNoTracking().Where(u => u.IsActive).OrderBy(u => u.Name).ToListAsync();
+        ViewBag.Brands = await _db.Brands.AsNoTracking().Where(b => b.IsActive).OrderBy(b => b.Name).ToListAsync();
+
+        // Fix "0" sentinel from UI
+        if (model.CategoryId.HasValue && model.CategoryId.Value == 0) model.CategoryId = null;
+        if (model.UnitId.HasValue && model.UnitId.Value == 0) model.UnitId = null;
+
+        if (string.IsNullOrWhiteSpace(model.SKU)) ModelState.AddModelError(nameof(model.SKU), "SKU is required.");
+        if (string.IsNullOrWhiteSpace(model.Name)) ModelState.AddModelError(nameof(model.Name), "Name is required.");
+
+        if (!ModelState.IsValid)
+            return View(model);
+
+        var skuExists = await _db.Products.AnyAsync(p => p.SKU == model.SKU && p.IsActive);
+        if (skuExists)
+        {
+            ModelState.AddModelError(nameof(model.SKU), "SKU already exists.");
+            return View(model);
+        }
+
+        try
+        {
+            // Handle upload image (optional)
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+                var allowed = new[] { ".png", ".jpg", ".jpeg", ".webp" };
+                if (!allowed.Contains(ext))
+                {
+                    ModelState.AddModelError(string.Empty, "Image type not supported. Use png/jpg/jpeg/webp.");
+                    return View(model);
+                }
+
+                var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "products");
+                Directory.CreateDirectory(uploadsRoot);
+
+                var fileName = $"{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{ext}";
+                var abs = Path.Combine(uploadsRoot, fileName);
+                using (var fs = new FileStream(abs, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(fs);
+                }
+
+                model.ImagePath = $"/uploads/products/{fileName}";
+            }
+
+            model.IsActive = true;
+            _db.Products.Add(model);
+            await _db.SaveChangesAsync();
+
+            TempData["ToastSuccess"] = "Product created.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, "Cannot create product: " + ex.Message);
+            return View(model);
+        }
+    }
+
     [HttpPost]
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Create)]
     [ValidateAntiForgeryToken]
@@ -527,6 +613,7 @@ public class ProductsController : Controller
             .AsNoTracking()
             .Include(p => p.Category)
             .Include(p => p.Unit)
+            .Include(p => p.Brand)
             .Where(p => p.IsActive)
             .AsQueryable();
 
@@ -561,6 +648,7 @@ public class ProductsController : Controller
             .AsNoTracking()
             .Include(p => p.Category)
             .Include(p => p.Unit)
+            .Include(p => p.Brand)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (product == null) return NotFound();
@@ -611,6 +699,7 @@ public class ProductsController : Controller
         // Lấy danh sách danh mục & đơn vị tính để hiển thị dropdown
         ViewBag.Categories = await _db.Categories.ToListAsync();
         ViewBag.Units = await _db.Units.ToListAsync();
+        ViewBag.Brands = await _db.Brands.AsNoTracking().Where(b => b.IsActive).OrderBy(b => b.Name).ToListAsync();
 
         return View(product);
     }
@@ -631,6 +720,7 @@ public class ProductsController : Controller
         existing.Name = model.Name;
         existing.CategoryId = model.CategoryId;
         existing.UnitId = model.UnitId;
+        existing.BrandId = model.BrandId;
         existing.Description = model.Description;
         existing.SalePrice = model.SalePrice;
         existing.CostPrice = model.CostPrice;

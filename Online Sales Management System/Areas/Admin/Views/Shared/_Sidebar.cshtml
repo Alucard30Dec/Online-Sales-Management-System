@@ -52,12 +52,13 @@
     var canProducts = HasAny(PermissionConstants.Modules.Products);
     var canCategories = HasAny(PermissionConstants.Modules.Categories);
     var canUnits = HasAny(PermissionConstants.Modules.Units);
+    var canBrands = HasAny(PermissionConstants.Modules.Brands);
 
     var canStock = HasAny(PermissionConstants.Modules.Stock);
     var canPurchases = HasAny(PermissionConstants.Modules.Purchases);
     var canSuppliers = HasAny(PermissionConstants.Modules.Suppliers);
 
-    var showCatalogGroup = canCategories || canUnits;
+    var showCatalogGroup = canCategories || canUnits || canBrands;
     var showWarehouseGroup = canStock || canPurchases || canSuppliers;
 
     var showWarehouseSection = canProducts || showCatalogGroup || showWarehouseGroup;
@@ -78,7 +79,7 @@
     // Open groups only if the group exists
     var adminOpen = showAdminPermissionGroup && IsAny("/admin/admins", "/admin/admingroups");
     var stockOpen = showWarehouseGroup && IsAny("/admin/stock", "/admin/purchases", "/admin/suppliers");
-    var catalogOpen = showCatalogGroup && IsAny("/admin/categories", "/admin/units");
+    var catalogOpen = showCatalogGroup && IsAny("/admin/categories", "/admin/units", "/admin/brands");
 }
 
 <nav class="mt-2">
@@ -172,6 +173,15 @@
                                 <a href="/Admin/Units" class="nav-link @(IsActive("/admin/units") ? "active" : "")">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Đơn vị tính</p>
+                                </a>
+                            </li>
+                        }
+                        @if (canBrands)
+                        {
+                            <li class="nav-item">
+                                <a href="/Admin/Brands" class="nav-link @(IsActive("/admin/brands") ? "active" : "")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Thương hiệu</p>
                                 </a>
                             </li>
                         }
