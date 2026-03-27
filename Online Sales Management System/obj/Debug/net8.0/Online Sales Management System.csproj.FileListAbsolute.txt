@@ -140,10 +140,10 @@ E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Deb
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\staticwebassets.build.json.cache
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\staticwebassets.development.json
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\Online S.7C25EDD1.Up2Date
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\Online Sales Management System.dll
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\refint\Online Sales Management System.dll
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\Online Sales Management System.pdb
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\Online Sales Management System.genruntimeconfig.cache
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\ref\Online Sales Management System.dll
+E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\swae.build.ex.cache
