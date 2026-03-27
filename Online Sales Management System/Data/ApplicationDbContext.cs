@@ -81,7 +81,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Email).HasMaxLength(150);
             e.Property(x => x.Address).HasMaxLength(300);
             e.Property(x => x.IsActive).HasDefaultValue(true);
-            e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         });
 
         // Customer
@@ -92,7 +91,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Email).HasMaxLength(150);
             e.Property(x => x.Address).HasMaxLength(300);
             e.Property(x => x.IsActive).HasDefaultValue(true);
-            e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         });
 
         // Employee
@@ -105,7 +103,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.Position).HasMaxLength(120);
             e.Property(x => x.Salary).HasColumnType("decimal(18,2)");
             e.Property(x => x.IsActive).HasDefaultValue(true);
-            e.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
         });
 
         // Category
@@ -147,10 +144,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(x => x.ReorderLevel).HasDefaultValue(5);
             e.Property(x => x.IsActive).HasDefaultValue(true);
             e.Property(x => x.IsTrending).HasDefaultValue(false);
-
-            e.Property(x => x.RowVersion)
-             .IsRowVersion()
-             .IsConcurrencyToken(); // Thm dng ny cho r rng
 
             e.HasOne(x => x.Category)
              .WithMany()
@@ -236,7 +229,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             // C?u hnh c?t tnh ton
             e.Property(x => x.LineTotal)
-             .HasComputedColumnSql("[UnitPrice] * [Quantity]", stored: true)
+             .HasComputedColumnSql("UnitPrice * Quantity", stored: true)
              .ValueGeneratedOnAddOrUpdate();
         });
 

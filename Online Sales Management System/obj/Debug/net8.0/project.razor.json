@@ -17362,6 +17362,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "e:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Views\\Shared\\_DatabaseStatusBadge.cshtml",
+      "TargetPath": "Views\\Shared\\_DatabaseStatusBadge.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "e:\\Project\\Online-Sales-Management-System\\Online Sales Management System\\Areas\\Admin\\Views\\Attendance\\Index.cshtml",
       "TargetPath": "Areas\\Admin\\Views\\Attendance\\Index.cshtml",
       "FileKind": "mvc"

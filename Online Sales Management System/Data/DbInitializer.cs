@@ -14,9 +14,22 @@ public static class DbInitializer
         var db = services.GetRequiredService<ApplicationDbContext>();
         var userManager = services.GetRequiredService<UserManager<AppUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var config = services.GetRequiredService<IConfiguration>();
+        var initMode = config.GetValue<string>("Database:InitializationMode") ?? "EnsureCreated";
 
-        // Apply migrations
-        await db.Database.MigrateAsync();
+        if (initMode.Equals("Migrate", StringComparison.OrdinalIgnoreCase))
+        {
+            await db.Database.MigrateAsync();
+        }
+        else if (initMode.Equals("EnsureCreated", StringComparison.OrdinalIgnoreCase))
+        {
+            await db.Database.EnsureCreatedAsync();
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                $"Unsupported Database:InitializationMode '{initMode}'. Use 'EnsureCreated' or 'Migrate'.");
+        }
 
         // 1) Roles
         const string adminRole = "Admin";

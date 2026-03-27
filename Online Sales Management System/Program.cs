@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using System.Linq;
 using OnlineSalesManagementSystem.Data;
 using OnlineSalesManagementSystem.Domain.Entities;
+using OnlineSalesManagementSystem.Helpers;
 
 // ✅ Resolve ambiguous references if OSMS.PermissionPatch is also in the solution
 using PermissionPolicyProvider = OnlineSalesManagementSystem.Services.Security.PermissionPolicyProvider;
@@ -16,15 +18,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // EF Core
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+
+var tidbPassword = builder.Configuration["TiDB:Password"];
+if (!string.IsNullOrWhiteSpace(tidbPassword))
+{
+    connectionString = connectionString.Replace("<TIDB_PASSWORD>", tidbPassword, StringComparison.Ordinal);
+}
+
+if (connectionString.Contains("<TIDB_PASSWORD>", StringComparison.Ordinal))
+{
+    throw new InvalidOperationException(
+        "TiDB password is missing. Set 'TiDB:Password' (User Secrets / Environment / appsettings.Development.json).");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sql =>
-        {
-            // An toàn nếu sau này bạn tách DbContext sang project khác
-            sql.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
-        });
+    options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(8, 0, 11)),
+        mysql => mysql.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null));
 });
 
 // Identity (cookie auth)
@@ -65,7 +79,7 @@ builder.Services.AddScoped<OnlineSalesManagementSystem.Services.Sales.IInvoiceTo
 
 var app = builder.Build();
 
-// Auto-migrate + seed (FAIL FAST)
+// Auto-initialize database + seed (FAIL FAST)
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var sp = scope.ServiceProvider;
@@ -76,22 +90,88 @@ await using (var scope = app.Services.CreateAsyncScope())
         var db = sp.GetRequiredService<ApplicationDbContext>();
         var userManager = sp.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
+        var initMode = builder.Configuration.GetValue<string>("Database:InitializationMode") ?? "EnsureCreatedOnce";
+        var autoResetOnMissingTables = builder.Configuration.GetValue("Database:AutoResetOnMissingTables", true);
+        var shouldSeed = false;
+        var dbTarget = DatabaseConnectionDisplay.FromConnectionString(connectionString);
 
-        logger.LogInformation("Applying EF Core migrations...");
-        await db.Database.MigrateAsync();
+        logger.LogInformation(
+            "Current database target => {Engine} | {Database} | {Host}",
+            dbTarget.Engine,
+            dbTarget.Database,
+            dbTarget.Host);
 
-        // Sanity check: nếu bảng Identity thiếu, nổ ngay tại đây cho dễ debug
-        _ = await db.Users.AsNoTracking().Select(x => x.Id).Take(1).ToListAsync();
+        if (initMode.Equals("Migrate", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.LogInformation("Applying EF Core migrations...");
+            await db.Database.MigrateAsync();
+            shouldSeed = true;
+        }
+        else if (initMode.Equals("EnsureCreated", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.LogInformation("Ensuring database is created from current model (Code First)...");
+            await db.Database.EnsureCreatedAsync();
+            shouldSeed = true;
+        }
+        else if (initMode.Equals("EnsureCreatedOnce", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.LogInformation("Ensuring database is created once from current model (Code First)...");
+            var createdNow = await db.Database.EnsureCreatedAsync();
+            shouldSeed = createdNow;
 
-        logger.LogInformation("Seeding database...");
+            // If a previous EnsureCreated failed halfway, EF sees "database has tables"
+            // and won't create missing tables on next runs. Recover automatically once.
+            try
+            {
+                _ = await db.Users.AsNoTracking().AnyAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1146 && autoResetOnMissingTables)
+            {
+                logger.LogWarning(ex,
+                    "Detected partially created TiDB schema (missing table). Recreating schema once...");
 
-        // Optional: reseed dữ liệu demo mà không cần drop DB
-        // Bật bằng appsettings.Development.json:
-        //   "Seed": { "ResetDemoData": true }
-        var resetDemoData = builder.Configuration.GetValue<bool>("Seed:ResetDemoData");
-        await DbSeeder.SeedAsync(db, userManager, roleManager, resetDemoData);
+                await db.Database.EnsureDeletedAsync();
+                await db.Database.EnsureCreatedAsync();
+                shouldSeed = true;
+            }
+            catch (MySqlException ex) when (ex.Number == 1146 && !autoResetOnMissingTables)
+            {
+                throw new InvalidOperationException(
+                    "Database schema is partial (missing AspNetUsers). " +
+                    "Enable Database:AutoResetOnMissingTables or reset DB manually.", ex);
+            }
 
-        logger.LogInformation("Database migration + seeding done.");
+            if (!shouldSeed)
+            {
+                logger.LogInformation("Schema already exists. Skipping Code First initialization + seeding.");
+            }
+        }
+        else if (initMode.Equals("None", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.LogInformation("Database initialization is disabled (InitializationMode=None).");
+            shouldSeed = false;
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                $"Unsupported Database:InitializationMode '{initMode}'. Use 'EnsureCreatedOnce', 'EnsureCreated', 'Migrate', or 'None'.");
+        }
+
+        if (shouldSeed)
+        {
+            // Sanity check: nếu bảng Identity thiếu, nổ ngay tại đây cho dễ debug
+            _ = await db.Users.AsNoTracking().AnyAsync();
+
+            logger.LogInformation("Seeding database...");
+
+            // Optional: reseed dữ liệu demo mà không cần drop DB
+            // Bật bằng appsettings.Development.json:
+            //   "Seed": { "ResetDemoData": true }
+            var resetDemoData = builder.Configuration.GetValue<bool>("Seed:ResetDemoData");
+            await DbSeeder.SeedAsync(db, userManager, roleManager, resetDemoData);
+
+            logger.LogInformation("Database initialization + seeding done.");
+        }
     }
     catch (Exception ex)
     {

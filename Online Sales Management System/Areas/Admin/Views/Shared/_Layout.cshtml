@@ -48,6 +48,10 @@
             </ul>
 
             <ul class="navbar-nav ml-auto align-items-center">
+                <li class="nav-item d-none d-lg-flex align-items-center mr-2">
+                    @await Html.PartialAsync("~/Views/Shared/_DatabaseStatusBadge.cshtml")
+                </li>
+
                 <li class="nav-item d-none d-md-block">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button" title="Toàn màn hình">
                         <i class="fas fa-expand-arrows-alt"></i>

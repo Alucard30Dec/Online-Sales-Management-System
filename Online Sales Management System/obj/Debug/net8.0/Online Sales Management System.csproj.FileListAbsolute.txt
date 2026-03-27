@@ -147,3 +147,5 @@ E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Deb
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\Online Sales Management System.genruntimeconfig.cache
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\ref\Online Sales Management System.dll
 E:\Project\Online-Sales-Management-System\Online Sales Management System\obj\Debug\net8.0\swae.build.ex.cache
+E:\Project\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\MySqlConnector.dll
+E:\Project\Online-Sales-Management-System\Online Sales Management System\bin\Debug\net8.0\Pomelo.EntityFrameworkCore.MySql.dll

@@ -40,7 +40,6 @@ public class Product
     public bool IsActive { get; set; } = true;
     public bool IsTrending { get; set; } = false;
 
-    [Timestamp]
     public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     [NotMapped]
