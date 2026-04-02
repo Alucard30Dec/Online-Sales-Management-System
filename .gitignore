@@ -1,5 +1,19 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+# Build outputs
+bin/
+obj/
 
-Online Sales Management System/appsettings.json
+# IDE folders
+.vs/
+
+# User-specific files
+*.user
+*.suo
+
+# Local configuration and secrets
+appsettings.Development.json
+Properties/serviceDependencies.local.json
+Properties/serviceDependencies.local.json.user
+
+# Logs and temp files
+*.log
+*.tmp

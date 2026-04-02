@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "tidb1": {
-      "type": "mysql.local",
-      "connectionId": "ConnectionStrings:DefaultConnection"
-    }
-  }
-}

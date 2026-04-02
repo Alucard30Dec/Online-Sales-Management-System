@@ -18,8 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // EF Core
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+var connectionString = builder.Configuration.GetConnectionString("MySqlConnection")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Connection string 'MySqlConnection' or 'DefaultConnection' was not found.");
 
 var tidbPassword = builder.Configuration["TiDB:Password"];
 if (!string.IsNullOrWhiteSpace(tidbPassword))
@@ -92,6 +94,8 @@ await using (var scope = app.Services.CreateAsyncScope())
         var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
         var initMode = builder.Configuration.GetValue<string>("Database:InitializationMode") ?? "EnsureCreatedOnce";
         var autoResetOnMissingTables = builder.Configuration.GetValue("Database:AutoResetOnMissingTables", true);
+        var forceSeed = builder.Configuration.GetValue("Seed:Force", false);
+        var resetDemoData = builder.Configuration.GetValue("Seed:ResetDemoData", false);
         var shouldSeed = false;
         var dbTarget = DatabaseConnectionDisplay.FromConnectionString(connectionString);
 
@@ -143,7 +147,18 @@ await using (var scope = app.Services.CreateAsyncScope())
 
             if (!shouldSeed)
             {
-                logger.LogInformation("Schema already exists. Skipping Code First initialization + seeding.");
+                if (forceSeed || resetDemoData)
+                {
+                    shouldSeed = true;
+                    logger.LogInformation(
+                        "Schema already exists. Running seeding because Seed:Force={ForceSeed} or Seed:ResetDemoData={ResetDemoData}.",
+                        forceSeed,
+                        resetDemoData);
+                }
+                else
+                {
+                    logger.LogInformation("Schema already exists. Skipping Code First initialization + seeding.");
+                }
             }
         }
         else if (initMode.Equals("None", StringComparison.OrdinalIgnoreCase))
@@ -167,7 +182,6 @@ await using (var scope = app.Services.CreateAsyncScope())
             // Optional: reseed dữ liệu demo mà không cần drop DB
             // Bật bằng appsettings.Development.json:
             //   "Seed": { "ResetDemoData": true }
-            var resetDemoData = builder.Configuration.GetValue<bool>("Seed:ResetDemoData");
             await DbSeeder.SeedAsync(db, userManager, roleManager, resetDemoData);
 
             logger.LogInformation("Database initialization + seeding done.");

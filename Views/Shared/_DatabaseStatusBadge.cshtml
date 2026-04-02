@@ -1,7 +1,8 @@
 @using OnlineSalesManagementSystem.Helpers
 @inject IConfiguration Configuration
 @{
-    var connectionString = Configuration.GetConnectionString("DefaultConnection");
+    var connectionString = Configuration.GetConnectionString("MySqlConnection")
+        ?? Configuration.GetConnectionString("DefaultConnection");
     var tidbPassword = Configuration["TiDB:Password"];
 
     if (!string.IsNullOrWhiteSpace(connectionString) && !string.IsNullOrWhiteSpace(tidbPassword))
