@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Net.Http.Headers;
 using MySqlConnector;
 using System.Linq;
 using OnlineSalesManagementSystem.Data;
@@ -16,6 +18,21 @@ using PermissionService = OnlineSalesManagementSystem.Services.Security.Permissi
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
 
 // EF Core
 var connectionString = builder.Configuration.GetConnectionString("MySqlConnection")
@@ -201,13 +218,37 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseResponseCompression();
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = context =>
+    {
+        var ext = Path.GetExtension(context.File.Name);
+        if (string.IsNullOrWhiteSpace(ext))
+        {
+            return;
+        }
+
+        var longCacheExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".css", ".js", ".jpg", ".jpeg", ".png", ".webp", ".svg", ".ico", ".woff", ".woff2", ".ttf"
+        };
+
+        if (longCacheExtensions.Contains(ext))
+        {
+            context.Context.Response.Headers[HeaderNames.CacheControl] = "public,max-age=2592000,immutable";
+        }
+    }
+});
 
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/", () => Results.Redirect("/Admin/Auth/Login", permanent: false))
+    .AllowAnonymous();
 
 // Areas first (Admin)
 app.MapControllerRoute(
