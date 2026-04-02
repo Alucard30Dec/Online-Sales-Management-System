@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: online-sales-management-system
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__MySqlConnection
+        sync: false
+      - key: Database__InitializationMode
+        value: EnsureCreatedOnce
+      - key: Database__AutoResetOnMissingTables
+        value: "true"
+      - key: Seed__Force
+        value: "false"
+      - key: Seed__ResetDemoData
+        value: "false"
