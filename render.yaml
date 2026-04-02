@@ -2,6 +2,7 @@ services:
   - type: web
     name: online-sales-management-system
     runtime: docker
+    plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /
     envVars:
