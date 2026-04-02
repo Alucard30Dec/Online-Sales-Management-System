@@ -92,9 +92,12 @@
                                         <a href="/Admin/Categories/Edit/@item.Id" class="btn btn-icon edit me-2" title="Chỉnh sửa">
                                             <i class="fas fa-pen fa-xs"></i>
                                         </a>
-                                        <a href="/Admin/Categories/Delete/@item.Id" class="btn btn-icon delete" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
-                                            <i class="fas fa-trash fa-xs"></i>
-                                        </a>
+                                        <form method="post" action="/Admin/Categories/Delete/@item.Id" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-icon delete" title="Xóa">
+                                                <i class="fas fa-trash fa-xs"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             }
@@ -157,18 +160,22 @@
 @section Scripts {
     <script>
         function toggleTrending(id, el) {
-            // Logic call API để toggle trending
-            fetch('/Admin/Categories/ToggleTrending/' + id, { method: 'POST' })
-                .then(r => r.json())
-                .then(data => {
-                    if (!data.success) {
-                         alert('Cập nhật thất bại');
-                         el.checked = !el.checked;
+            el.disabled = true;
+
+            fetch('/Admin/Categories/ToggleTrending/' + id, window.osms.postOptions())
+                .then(async r => {
+                    const data = await r.json().catch(() => ({ success: false }));
+                    if (!r.ok || !data.success) {
+                        throw new Error(data.message || 'Cập nhật thất bại');
                     }
                 })
                 .catch(e => {
                     console.error(e);
                     el.checked = !el.checked;
+                    alert('Cập nhật thất bại');
+                })
+                .finally(() => {
+                    el.disabled = false;
                 });
         }
     </script>

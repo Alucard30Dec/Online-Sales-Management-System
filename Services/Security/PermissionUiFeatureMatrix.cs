@@ -88,7 +88,7 @@ namespace OnlineSalesManagementSystem.Services.Security
                     if (actions.Contains("Approve"))
                         supported.Add(PermissionConstants.Actions.Approve);
 
-                    if (actions.Contains("Export"))
+                    if (actions.Any(a => a.StartsWith("Export", StringComparison.OrdinalIgnoreCase)))
                         supported.Add(PermissionConstants.Actions.Export);
                     // Fallback: if controller exists but doesn't follow naming, still let it be visible.
                     if (supported.Count == 0 && actions.Count > 0)

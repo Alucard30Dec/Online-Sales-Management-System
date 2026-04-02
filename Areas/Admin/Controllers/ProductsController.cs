@@ -16,14 +16,22 @@ public class ProductsController : Controller
     private readonly ApplicationDbContext _db;
     private readonly IWebHostEnvironment _env;
     private readonly IMemoryCache _cache;
+    private readonly ILogger<ProductsController> _logger;
 
     private const string ExcelImportCachePrefix = "ProductsExcelImport:";
+    private const long MaxImageUploadBytes = 2 * 1024 * 1024;
+    private const long MaxExcelUploadBytes = 10 * 1024 * 1024;
+    private static readonly HashSet<string> AllowedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png", ".jpg", ".jpeg", ".webp"
+    };
 
-    public ProductsController(ApplicationDbContext db, IWebHostEnvironment env, IMemoryCache cache)
+    public ProductsController(ApplicationDbContext db, IWebHostEnvironment env, IMemoryCache cache, ILogger<ProductsController> logger)
     {
         _db = db;
         _env = env;
         _cache = cache;
+        _logger = logger;
     }
 
     // ==========================================================
@@ -61,6 +69,8 @@ public class ProductsController : Controller
         // Normalize
         model.SKU = (model.SKU ?? string.Empty).Trim();
         model.Name = (model.Name ?? string.Empty).Trim();
+        model.Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim();
+        model.ImagePath = string.IsNullOrWhiteSpace(model.ImagePath) ? null : model.ImagePath.Trim();
 
         // Dropdown data (needed when return View)
         ViewBag.Categories = await _db.Categories.AsNoTracking().Where(c => c.IsActive).OrderBy(c => c.Name).ToListAsync();
@@ -70,19 +80,13 @@ public class ProductsController : Controller
         // Fix "0" sentinel from UI
         if (model.CategoryId.HasValue && model.CategoryId.Value == 0) model.CategoryId = null;
         if (model.UnitId.HasValue && model.UnitId.Value == 0) model.UnitId = null;
+        if (model.BrandId.HasValue && model.BrandId.Value == 0) model.BrandId = null;
 
-        if (string.IsNullOrWhiteSpace(model.SKU)) ModelState.AddModelError(nameof(model.SKU), "SKU is required.");
-        if (string.IsNullOrWhiteSpace(model.Name)) ModelState.AddModelError(nameof(model.Name), "Name is required.");
+        await ValidateProductForWriteAsync(model, isCreate: true);
+        TryValidateImageUpload(imageFile);
 
         if (!ModelState.IsValid)
             return View(model);
-
-        var skuExists = await _db.Products.AnyAsync(p => p.SKU == model.SKU && p.IsActive);
-        if (skuExists)
-        {
-            ModelState.AddModelError(nameof(model.SKU), "SKU already exists.");
-            return View(model);
-        }
 
         try
         {
@@ -90,19 +94,13 @@ public class ProductsController : Controller
             if (imageFile != null && imageFile.Length > 0)
             {
                 var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
-                var allowed = new[] { ".png", ".jpg", ".jpeg", ".webp" };
-                if (!allowed.Contains(ext))
-                {
-                    ModelState.AddModelError(string.Empty, "Image type not supported. Use png/jpg/jpeg/webp.");
-                    return View(model);
-                }
 
                 var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "products");
                 Directory.CreateDirectory(uploadsRoot);
 
                 var fileName = $"{DateTime.UtcNow:yyyyMMddHHmmss}_{Guid.NewGuid():N}{ext}";
                 var abs = Path.Combine(uploadsRoot, fileName);
-                using (var fs = new FileStream(abs, FileMode.Create))
+                await using (var fs = new FileStream(abs, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                 {
                     await imageFile.CopyToAsync(fs);
                 }
@@ -119,7 +117,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, "Cannot create product: " + ex.Message);
+            _logger.LogError(ex, "Failed to create product with SKU {Sku}.", model.SKU);
+            ModelState.AddModelError(string.Empty, "Cannot create product right now. Please try again.");
             return View(model);
         }
     }
@@ -142,7 +141,7 @@ public class ProductsController : Controller
             return RedirectToAction(nameof(ImportExcel));
         }
 
-        if (file.Length > 10 * 1024 * 1024)
+        if (file.Length > MaxExcelUploadBytes)
         {
             TempData["ToastError"] = "File quá lớn (tối đa 10MB).";
             return RedirectToAction(nameof(ImportExcel));
@@ -180,7 +179,8 @@ public class ProductsController : Controller
         }
         catch (Exception ex)
         {
-            TempData["ToastError"] = "Không đọc được file Excel: " + ex.Message;
+            _logger.LogError(ex, "Failed to preview product Excel import for file {FileName}.", file.FileName);
+            TempData["ToastError"] = "Không đọc được file Excel. Vui lòng kiểm tra lại file.";
             return RedirectToAction(nameof(ImportExcel));
         }
     }
@@ -250,7 +250,8 @@ public class ProductsController : Controller
         catch (Exception ex)
         {
             await tx.RollbackAsync();
-            TempData["ToastError"] = "Import thất bại: " + ex.Message;
+            _logger.LogError(ex, "Failed to import product Excel with cache key {CacheKey}.", cacheKey);
+            TempData["ToastError"] = "Import thất bại. Vui lòng thử lại.";
             return RedirectToAction(nameof(ImportExcel));
         }
     }
@@ -704,47 +705,13 @@ public class ProductsController : Controller
         return View(product);
     }
 
-    // 2. POST: Xử lý lưu thay đổi
-    // Lưu ý: Route("Edit/{id?}") giúp chấp nhận cả URL có ID (Edit/10) và không ID (Edit)
-    [HttpPost("Edit/{id?}")]
-    [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit)]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Product model)
-    {
-        // Tìm sản phẩm cũ trong database
-        var existing = await _db.Products.FindAsync(model.Id);
-        if (existing == null) return NotFound();
-
-        // Cập nhật thông tin mới
-        existing.SKU = model.SKU;
-        existing.Name = model.Name;
-        existing.CategoryId = model.CategoryId;
-        existing.UnitId = model.UnitId;
-        existing.BrandId = model.BrandId;
-        existing.Description = model.Description;
-        existing.SalePrice = model.SalePrice;
-        existing.CostPrice = model.CostPrice;
-        existing.ReorderLevel = model.ReorderLevel;
-        existing.ImagePath = model.ImagePath;
-        existing.IsTrending = model.IsTrending;
-        existing.IsActive = model.IsActive;
-
-        // Lưu xuống database
-        _db.Products.Update(existing);
-        await _db.SaveChangesAsync();
-
-        // Quay về trang danh sách
-        return RedirectToAction(nameof(Index));
-    }
-
-    // ==========================================================
-
     // ====== TOGGLE TRENDING ======
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Products + "." + PermissionConstants.Actions.Edit)]
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ToggleTrending(int id)
     {
-        var entity = await _db.Products.FirstOrDefaultAsync(p => p.Id == id);
+        var entity = await _db.Products.FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
         if (entity == null) return Json(new { success = false, message = "Not found" });
 
         entity.IsTrending = !entity.IsTrending;
@@ -773,5 +740,61 @@ public class ProductsController : Controller
         public decimal UnitPrice { get; set; }
         public decimal LineTotal { get; set; }
         public InvoiceStatus Status { get; set; }
+    }
+
+    private async Task ValidateProductForWriteAsync(Product model, bool isCreate)
+    {
+        if (string.IsNullOrWhiteSpace(model.SKU)) ModelState.AddModelError(nameof(model.SKU), "SKU is required.");
+        if (string.IsNullOrWhiteSpace(model.Name)) ModelState.AddModelError(nameof(model.Name), "Name is required.");
+        if (model.CostPrice < 0) ModelState.AddModelError(nameof(model.CostPrice), "Cost price cannot be negative.");
+        if (model.SalePrice < 0) ModelState.AddModelError(nameof(model.SalePrice), "Sale price cannot be negative.");
+        if (model.ReorderLevel < 0) ModelState.AddModelError(nameof(model.ReorderLevel), "Reorder level cannot be negative.");
+
+        if (model.CategoryId.HasValue &&
+            !await _db.Categories.AsNoTracking().AnyAsync(c => c.Id == model.CategoryId.Value && c.IsActive))
+        {
+            ModelState.AddModelError(nameof(model.CategoryId), "Selected category is invalid.");
+        }
+
+        if (model.UnitId.HasValue &&
+            !await _db.Units.AsNoTracking().AnyAsync(u => u.Id == model.UnitId.Value && u.IsActive))
+        {
+            ModelState.AddModelError(nameof(model.UnitId), "Selected unit is invalid.");
+        }
+
+        if (model.BrandId.HasValue &&
+            !await _db.Brands.AsNoTracking().AnyAsync(b => b.Id == model.BrandId.Value && b.IsActive))
+        {
+            ModelState.AddModelError(nameof(model.BrandId), "Selected brand is invalid.");
+        }
+
+        var skuExists = await _db.Products.AsNoTracking().AnyAsync(p =>
+            p.SKU == model.SKU &&
+            p.IsActive &&
+            (isCreate || p.Id != model.Id));
+
+        if (skuExists)
+        {
+            ModelState.AddModelError(nameof(model.SKU), "SKU already exists.");
+        }
+    }
+
+    private void TryValidateImageUpload(IFormFile? imageFile)
+    {
+        if (imageFile == null || imageFile.Length == 0)
+        {
+            return;
+        }
+
+        if (imageFile.Length > MaxImageUploadBytes)
+        {
+            ModelState.AddModelError(string.Empty, "Image is too large. Maximum size is 2 MB.");
+        }
+
+        var ext = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+        if (!AllowedImageExtensions.Contains(ext))
+        {
+            ModelState.AddModelError(string.Empty, "Image type not supported. Use png/jpg/jpeg/webp.");
+        }
     }
 }

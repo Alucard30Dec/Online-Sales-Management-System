@@ -16,11 +16,13 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<AdminsController> _logger;
 
-        public AdminsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
+        public AdminsController(ApplicationDbContext db, UserManager<ApplicationUser> userManager, ILogger<AdminsController> logger)
         {
             _db = db;
             _userManager = userManager;
+            _logger = logger;
         }
 
         [PermissionAuthorize(PermissionConstants.Modules.Admin, PermissionConstants.Actions.Show)]
@@ -58,6 +60,15 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         public async Task<IActionResult> Create(AdminCreateVm vm)
         {
             ViewBag.Groups = await _db.AdminGroups.AsNoTracking().Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
+
+            vm.Email = (vm.Email ?? string.Empty).Trim();
+            vm.FullName = string.IsNullOrWhiteSpace(vm.FullName) ? null : vm.FullName.Trim();
+
+            if (vm.AdminGroupId.HasValue &&
+                !await _db.AdminGroups.AsNoTracking().AnyAsync(g => g.Id == vm.AdminGroupId.Value && g.IsActive))
+            {
+                ModelState.AddModelError(nameof(vm.AdminGroupId), "Selected group is invalid.");
+            }
 
             if (!ModelState.IsValid) return View(vm);
 
@@ -119,6 +130,15 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
         {
             ViewBag.Groups = await _db.AdminGroups.AsNoTracking().Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
 
+            vm.Email = (vm.Email ?? string.Empty).Trim();
+            vm.FullName = string.IsNullOrWhiteSpace(vm.FullName) ? null : vm.FullName.Trim();
+
+            if (vm.AdminGroupId.HasValue &&
+                !await _db.AdminGroups.AsNoTracking().AnyAsync(g => g.Id == vm.AdminGroupId.Value && g.IsActive))
+            {
+                ModelState.AddModelError(nameof(vm.AdminGroupId), "Selected group is invalid.");
+            }
+
             if (!ModelState.IsValid) return View(vm);
 
             try
@@ -175,9 +195,9 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                // DB/network/identity exceptions
+                _logger.LogError(ex, "Unexpected error while updating admin account {AdminId}.", vm.Id);
                 TempData["ToastError"] = "Unexpected error while saving changes.";
-                ModelState.AddModelError(string.Empty, $"Save failed: {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Save failed. Please try again.");
                 return View(vm);
             }
         }
@@ -191,6 +211,13 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
+            var myId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrWhiteSpace(myId) && string.Equals(myId, user.Id, StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["ToastError"] = "You cannot change your own active status.";
+                return RedirectToAction(nameof(Index));
+            }
+
             // Block super admin
             if (SuperAdminProtection.IsSuperAdminEmail(user.Email))
             {
@@ -199,7 +226,13 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             }
 
             user.IsActive = true;
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                TempData["ToastError"] = "Account activation failed.";
+                return RedirectToAction(nameof(Index));
+            }
 
             TempData["ToastSuccess"] = "Account activated.";
             return RedirectToAction(nameof(Index));
@@ -213,6 +246,13 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
+            var myId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrWhiteSpace(myId) && string.Equals(myId, user.Id, StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["ToastError"] = "You cannot deactivate your own account.";
+                return RedirectToAction(nameof(Index));
+            }
+
             // Block super admin
             if (SuperAdminProtection.IsSuperAdminEmail(user.Email))
             {
@@ -221,7 +261,13 @@ namespace OnlineSalesManagementSystem.Areas.Admin.Controllers
             }
 
             user.IsActive = false;
-            await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                TempData["ToastError"] = "Account deactivation failed.";
+                return RedirectToAction(nameof(Index));
+            }
 
             TempData["ToastSuccess"] = "Account deactivated.";
             return RedirectToAction(nameof(Index));

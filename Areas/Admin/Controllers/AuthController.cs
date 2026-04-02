@@ -43,9 +43,10 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return View(vm);
 
-        var email = vm.Email.Trim();
+        var credential = (vm.Email ?? string.Empty).Trim();
 
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByEmailAsync(credential)
+            ?? await _userManager.FindByNameAsync(credential);
         if (user == null)
         {
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");

@@ -132,9 +132,10 @@ public class CategoriesController : Controller
     // --- MỚI THÊM: Action Toggle nhanh ---
     [Authorize(Policy = PermissionConstants.PolicyPrefix + PermissionConstants.Modules.Categories + "." + PermissionConstants.Actions.Edit)]
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ToggleTrending(int id)
     {
-        var entity = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        var entity = await _db.Categories.FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
         if (entity == null) return Json(new { success = false, message = "Not found" });
 
         entity.IsTrending = !entity.IsTrending;

@@ -28,6 +28,7 @@ public class InvoicesController : Controller
         q ??= "";
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
 
         var query = _db.Invoices
             .AsNoTracking()
@@ -108,6 +109,12 @@ public class InvoicesController : Controller
             ModelState.AddModelError("", "Please select product for all items.");
         }
 
+        if (vm.CustomerId.HasValue &&
+            !await _db.Customers.AsNoTracking().AnyAsync(c => c.Id == vm.CustomerId.Value && c.IsActive))
+        {
+            ModelState.AddModelError(nameof(vm.CustomerId), "Selected customer is invalid.");
+        }
+
         if (!ModelState.IsValid)
         {
             await LoadLookupsAsync();
@@ -126,8 +133,8 @@ public class InvoicesController : Controller
             {
                 InvoiceNo = await GenerateInvoiceNoAsync(),
                 CustomerId = customer?.Id,
-                // Store UTC in DB (display via AppTime.ToVietnamTime)
-                InvoiceDate = AppTime.UtcNow(),
+                // Store UTC in DB but respect the Vietnam-local time shown on the form.
+                InvoiceDate = vm.InvoiceDate == default ? AppTime.UtcNow() : AppTime.VietnamToUtc(vm.InvoiceDate),
                 PaidAmount = vm.PaidAmount
             };
 
@@ -226,7 +233,10 @@ WHERE Id = {it.ProductId} AND StockOnHand >= {it.Quantity}");
             {
                 await tx.RollbackAsync();
             }
-            catch { /* ignore rollback failures */ }
+            catch (Exception rollbackEx)
+            {
+                _logger.LogWarning(rollbackEx, "Rollback failed while creating invoice.");
+            }
 
             _logger.LogError(ex, "Failed to create invoice.");
             TempData["ToastError"] = "Failed to create invoice. Please check data and try again.";
@@ -299,32 +309,49 @@ WHERE Id = {it.ProductId} AND StockOnHand >= {it.Quantity}");
         }
 
         using var tx = await _db.Database.BeginTransactionAsync();
-
-        // return stock + StockMovement (In)
-        foreach (var it in invoice.Items)
+        try
         {
-            var product = await _db.Products.FirstAsync(p => p.Id == it.ProductId);
-            product.StockOnHand += it.Quantity;
+            var productIds = invoice.Items.Select(i => i.ProductId).Distinct().ToList();
+            var products = await _db.Products
+                .Where(p => productIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id);
 
-            _db.StockMovements.Add(new StockMovement
+            foreach (var it in invoice.Items)
             {
-                ProductId = it.ProductId,
-                MovementDate = DateTime.UtcNow,
-                Type = StockMovementType.In,
-                Qty = it.Quantity,
-                RefType = "InvoiceCancel",
-                RefId = invoice.Id,
-                Note = invoice.InvoiceNo
-            });
+                if (!products.TryGetValue(it.ProductId, out var product))
+                {
+                    throw new InvalidOperationException($"Product #{it.ProductId} not found.");
+                }
+
+                product.StockOnHand += it.Quantity;
+
+                _db.StockMovements.Add(new StockMovement
+                {
+                    ProductId = it.ProductId,
+                    MovementDate = AppTime.UtcNow(),
+                    Type = StockMovementType.In,
+                    Qty = it.Quantity,
+                    RefType = "InvoiceCancel",
+                    RefId = invoice.Id,
+                    Note = invoice.InvoiceNo
+                });
+            }
+
+            invoice.Status = InvoiceStatus.Cancelled;
+
+            await _db.SaveChangesAsync();
+            await tx.CommitAsync();
+
+            TempData["ToastSuccess"] = "Invoice cancelled and stock returned.";
+            return RedirectToAction(nameof(Details), new { id });
         }
-
-        invoice.Status = InvoiceStatus.Cancelled;
-
-        await _db.SaveChangesAsync();
-        await tx.CommitAsync();
-
-        TempData["ToastSuccess"] = "Invoice cancelled and stock returned.";
-        return RedirectToAction(nameof(Details), new { id });
+        catch (Exception ex)
+        {
+            await tx.RollbackAsync();
+            _logger.LogError(ex, "Failed to cancel invoice {InvoiceId}.", id);
+            TempData["ToastError"] = "Failed to cancel invoice. Please try again.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
     }
 
     // ========= HELPERS =========

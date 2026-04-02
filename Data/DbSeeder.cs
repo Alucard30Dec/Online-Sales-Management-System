@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OnlineSalesManagementSystem.Domain.Entities;
 using OnlineSalesManagementSystem.Services.Security;
@@ -22,94 +22,59 @@ namespace OnlineSalesManagementSystem.Data
             {
                 await ResetBusinessDataAsync(db);
             }
-            // =========================================================================
-            // 1. SEED BASIC DATA (Units, Categories)
-            // =========================================================================
 
-            // Seed Units (Đơn vị tính)
+            await SeedMasterDataAsync(db);
+            var (superGroup, warehouseGroup, salesGroup) = await SeedGroupsAndPermissionsAsync(db);
+            await SeedUsersAsync(userManager, superGroup.Id, warehouseGroup.Id, salesGroup.Id);
+            await SeedBusinessDataAsync(db);
+        }
+
+        private static async Task SeedMasterDataAsync(ApplicationDbContext db)
+        {
             if (!await db.Units.AnyAsync())
             {
-                var units = new List<Unit>
-                {
+                db.Units.AddRange(
                     new Unit { Name = "Cái", ShortName = "cái", IsActive = true },
                     new Unit { Name = "Hộp", ShortName = "hộp", IsActive = true },
                     new Unit { Name = "Bộ", ShortName = "bộ", IsActive = true },
                     new Unit { Name = "Chiếc", ShortName = "chiếc", IsActive = true },
                     new Unit { Name = "Kg", ShortName = "kg", IsActive = true },
                     new Unit { Name = "Thùng", ShortName = "thùng", IsActive = true },
-                    new Unit { Name = "Chai", ShortName = "chai", IsActive = true }
-                };
-                db.Units.AddRange(units);
+                    new Unit { Name = "Chai", ShortName = "chai", IsActive = true });
                 await db.SaveChangesAsync();
             }
 
-            // Seed Categories (Danh mục)
             if (!await db.Categories.AnyAsync())
             {
-                var cats = new List<Category>
-                {
+                db.Categories.AddRange(
                     new Category { Name = "Điện thoại", Description = "Smartphone các loại", IsActive = true, IsTrending = true },
-                    new Category { Name = "Laptop", Description = "Máy tính xách tay & Macbook", IsActive = true, IsTrending = true },
+                    new Category { Name = "Laptop", Description = "Máy tính xách tay và MacBook", IsActive = true, IsTrending = true },
                     new Category { Name = "Phụ kiện", Description = "Tai nghe, sạc, cáp, ốp lưng", IsActive = true, IsTrending = false },
                     new Category { Name = "Đồ gia dụng", Description = "Nồi cơm, quạt, máy lọc không khí", IsActive = true, IsTrending = false },
-                    new Category { Name = "Thời trang", Description = "Quần áo, giày dép", IsActive = true, IsTrending = true }
-                };
-                db.Categories.AddRange(cats);
+                    new Category { Name = "Thời trang", Description = "Quần áo, giày dép", IsActive = true, IsTrending = true });
                 await db.SaveChangesAsync();
             }
 
-            // Seed Brands (Thương hiệu)
             if (!await db.Brands.AnyAsync())
             {
-                var brands = new List<Brand>
+                var brands = new[]
                 {
-                    new Brand { Name = "Apple", IsActive = true },
-                    new Brand { Name = "Samsung", IsActive = true },
-                    new Brand { Name = "Xiaomi", IsActive = true },
-                    new Brand { Name = "OPPO", IsActive = true },
-                    new Brand { Name = "Vivo", IsActive = true },
-                    new Brand { Name = "Dell", IsActive = true },
-                    new Brand { Name = "HP", IsActive = true },
-                    new Brand { Name = "Asus", IsActive = true },
-                    new Brand { Name = "Acer", IsActive = true },
-                    new Brand { Name = "Lenovo", IsActive = true },
-                    new Brand { Name = "Logitech", IsActive = true },
-                    new Brand { Name = "DareU", IsActive = true },
-                    new Brand { Name = "Anker", IsActive = true },
-                    new Brand { Name = "Sony", IsActive = true },
-                    new Brand { Name = "Philips", IsActive = true },
+                    "Apple", "Samsung", "Xiaomi", "OPPO", "Vivo", "Dell", "HP", "Asus", "Acer", "Lenovo",
+                    "Logitech", "DareU", "Anker", "Sony", "Philips"
                 };
 
-                // chống trùng do seed chạy lại
-                brands = brands
-                    .GroupBy(x => x.Name.Trim().ToUpperInvariant())
-                    .Select(g => g.First())
-                    .ToList();
-
-                db.Brands.AddRange(brands);
+                db.Brands.AddRange(brands.Select(name => new Brand { Name = name, IsActive = true }));
                 await db.SaveChangesAsync();
             }
+        }
 
-            // =========================================================================
-            // 2. SEED ADMIN GROUPS (ROLES) & PERMISSIONS
-            // =========================================================================
+        private static async Task<(AdminGroup Super, AdminGroup Warehouse, AdminGroup Sales)> SeedGroupsAndPermissionsAsync(ApplicationDbContext db)
+        {
+            var superGroup = await EnsureGroupAsync(db, "Super Admin", "Full System Access");
+            var warehouseGroup = await EnsureGroupAsync(db, "Warehouse Staff", "Quản lý kho, nhập hàng, sản phẩm");
+            var salesGroup = await EnsureGroupAsync(db, "Sales Staff", "Nhân viên kinh doanh");
 
-            // --- A. SUPER ADMIN ---
-            var superGroup = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Super Admin");
-            if (superGroup == null)
-            {
-                superGroup = new AdminGroup { Name = "Super Admin", Description = "Full System Access", IsActive = true };
-                db.AdminGroups.Add(superGroup);
-                await db.SaveChangesAsync();
-            }
-            else if (!superGroup.IsActive)
-            {
-                superGroup.IsActive = true;
-                await db.SaveChangesAsync();
-            }
-
-            // Cấp quyền Wildcard (*.*) cho Super Admin nếu chưa có
-            if (!await db.GroupPermissions.AnyAsync(p => p.AdminGroupId == superGroup.Id && p.Module == PermissionConstants.Wildcard))
+            if (!await db.GroupPermissions.AnyAsync(p => p.AdminGroupId == superGroup.Id && p.Module == PermissionConstants.Wildcard && p.Action == PermissionConstants.Wildcard))
             {
                 db.GroupPermissions.Add(new GroupPermission
                 {
@@ -119,94 +84,144 @@ namespace OnlineSalesManagementSystem.Data
                 });
             }
 
-            // --- B. WAREHOUSE STAFF (YÊU CẦU CỦA BẠN) ---
-            var warehouseGroup = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Warehouse Staff");
-            if (warehouseGroup == null)
-            {
-                warehouseGroup = new AdminGroup { Name = "Warehouse Staff", Description = "Quản lý kho, nhập hàng, sản phẩm", IsActive = true };
-                db.AdminGroups.Add(warehouseGroup);
-                await db.SaveChangesAsync();
-            }
-            else if (!warehouseGroup.IsActive)
-            {
-                warehouseGroup.IsActive = true;
-                await db.SaveChangesAsync();
-            }
+            var warehousePerms = await db.GroupPermissions.Where(p => p.AdminGroupId == warehouseGroup.Id).ToListAsync();
+            db.GroupPermissions.RemoveRange(warehousePerms);
+            GrantPermissions(
+                db,
+                warehouseGroup.Id,
+                new Dictionary<string, string[]>
+                {
+                    [PermissionConstants.Modules.Dashboard] = new[] { PermissionConstants.Actions.Show },
+                    [PermissionConstants.Modules.Products] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Stock] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Purchases] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Suppliers] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Units] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Categories] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Brands] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit }
+                });
 
-            // Xóa quyền cũ của Warehouse (nếu có) để seed lại cho chuẩn
-            var whExistingPerms = await db.GroupPermissions.Where(p => p.AdminGroupId == warehouseGroup.Id).ToListAsync();
-            db.GroupPermissions.RemoveRange(whExistingPerms);
-
-            // Danh sách các Module mà Kho được phép truy cập
-            var whModules = new[]
-            {
-                PermissionConstants.Modules.Products,
-                PermissionConstants.Modules.Stock,
-                PermissionConstants.Modules.Purchases,
-                PermissionConstants.Modules.Suppliers,
-                PermissionConstants.Modules.Units,
-                PermissionConstants.Modules.Categories
-            };
-
-            foreach (var mod in whModules)
-            {
-                // Cấp các quyền cơ bản: Xem, Thêm, Sửa, Xuất excel
-                db.GroupPermissions.Add(new GroupPermission { AdminGroupId = warehouseGroup.Id, Module = mod, Action = PermissionConstants.Actions.Show });
-                db.GroupPermissions.Add(new GroupPermission { AdminGroupId = warehouseGroup.Id, Module = mod, Action = PermissionConstants.Actions.Create });
-                db.GroupPermissions.Add(new GroupPermission { AdminGroupId = warehouseGroup.Id, Module = mod, Action = PermissionConstants.Actions.Edit });
-                db.GroupPermissions.Add(new GroupPermission { AdminGroupId = warehouseGroup.Id, Module = mod, Action = PermissionConstants.Actions.Export });
-            }
-            // Cho phép xem Dashboard để login không bị lỗi, nhưng không cho thao tác gì khác
-            db.GroupPermissions.Add(new GroupPermission { AdminGroupId = warehouseGroup.Id, Module = PermissionConstants.Modules.Dashboard, Action = PermissionConstants.Actions.Show });
-
-
-            // --- C. SALES STAFF ---
-            var salesGroup = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == "Sales Staff");
-            if (salesGroup == null)
-            {
-                salesGroup = new AdminGroup { Name = "Sales Staff", Description = "Nhân viên kinh doanh", IsActive = true };
-                db.AdminGroups.Add(salesGroup);
-                await db.SaveChangesAsync();
-            }
-            else if (!salesGroup.IsActive)
-            {
-                salesGroup.IsActive = true;
-                await db.SaveChangesAsync();
-            }
-            // Seed quyền Sales nếu cần (Logic tương tự Warehouse nhưng đổi Module thành Customers, Invoices...)
+            var salesPerms = await db.GroupPermissions.Where(p => p.AdminGroupId == salesGroup.Id).ToListAsync();
+            db.GroupPermissions.RemoveRange(salesPerms);
+            GrantPermissions(
+                db,
+                salesGroup.Id,
+                new Dictionary<string, string[]>
+                {
+                    [PermissionConstants.Modules.Dashboard] = new[] { PermissionConstants.Actions.Show },
+                    [PermissionConstants.Modules.Customers] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Delete, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Invoices] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Create, PermissionConstants.Actions.Edit, PermissionConstants.Actions.Delete, PermissionConstants.Actions.Export },
+                    [PermissionConstants.Modules.Products] = new[] { PermissionConstants.Actions.Show },
+                    [PermissionConstants.Modules.Stock] = new[] { PermissionConstants.Actions.Show },
+                    [PermissionConstants.Modules.Reports] = new[] { PermissionConstants.Actions.Show, PermissionConstants.Actions.Export }
+                });
 
             await db.SaveChangesAsync();
+            return (superGroup, warehouseGroup, salesGroup);
+        }
 
-            // =========================================================================
-            // 3. SEED USERS
-            // =========================================================================
-            async Task CreateUser(string email, string pass, string name, int? groupId)
+        private static async Task<AdminGroup> EnsureGroupAsync(ApplicationDbContext db, string name, string description)
+        {
+            var group = await db.AdminGroups.FirstOrDefaultAsync(g => g.Name == name);
+            if (group == null)
             {
-                if (await userManager.FindByEmailAsync(email) == null)
-                {
-                    var user = new ApplicationUser
-                    {
-                        UserName = email,
-                        Email = email,
-                        FullName = name,
-                        IsActive = true,
-                        EmailConfirmed = true,
-                        AdminGroupId = groupId
-                    };
-                    await userManager.CreateAsync(user, pass);
-                }
+                group = new AdminGroup { Name = name, Description = description, IsActive = true };
+                db.AdminGroups.Add(group);
+                await db.SaveChangesAsync();
+            }
+            else if (!group.IsActive)
+            {
+                group.IsActive = true;
+                group.Description = description;
+                await db.SaveChangesAsync();
             }
 
-            await CreateUser("admin@osms.local", "Admin@12345", "Super Administrator", superGroup.Id);
-            await CreateUser("warehouse@osms.local", "Warehouse@12345", "Trưởng Kho", warehouseGroup.Id);
-            await CreateUser("sales@osms.local", "Sales@12345", "Nhân viên Sales", salesGroup.Id);
+            return group;
+        }
 
+        private static void GrantPermissions(ApplicationDbContext db, int adminGroupId, IDictionary<string, string[]> permissionMap)
+        {
+            foreach (var entry in permissionMap)
+            {
+                foreach (var action in entry.Value.Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    db.GroupPermissions.Add(new GroupPermission
+                    {
+                        AdminGroupId = adminGroupId,
+                        Module = entry.Key,
+                        Action = action
+                    });
+                }
+            }
+        }
 
-            // =========================================================================
-            // 4. SEED BUSINESS DATA (RICH DATA FOR TESTING)
-            // =========================================================================
+        private static async Task SeedUsersAsync(UserManager<ApplicationUser> userManager, int superGroupId, int warehouseGroupId, int salesGroupId)
+        {
+            await EnsureUserAsync(userManager, "admin@osms.local", "Admin@12345", "Super Administrator", superGroupId);
+            await EnsureUserAsync(userManager, "warehouse@osms.local", "Warehouse@12345", "Trưởng Kho", warehouseGroupId);
+            await EnsureUserAsync(userManager, "sales@osms.local", "Sales@12345", "Nhân viên Sales", salesGroupId);
+        }
 
-            // Settings (Cài đặt hệ thống)
+        private static async Task EnsureUserAsync(UserManager<ApplicationUser> userManager, string email, string password, string fullName, int adminGroupId)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FullName = fullName,
+                    IsActive = true,
+                    EmailConfirmed = true,
+                    AdminGroupId = adminGroupId
+                };
+
+                var result = await userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join("; ", result.Errors.Select(x => x.Description));
+                    throw new InvalidOperationException($"Cannot create seed user '{email}': {errors}");
+                }
+            }
+            else
+            {
+                var changed = false;
+                if (!user.IsActive)
+                {
+                    user.IsActive = true;
+                    changed = true;
+                }
+                if (!user.EmailConfirmed)
+                {
+                    user.EmailConfirmed = true;
+                    changed = true;
+                }
+                if (user.AdminGroupId != adminGroupId)
+                {
+                    user.AdminGroupId = adminGroupId;
+                    changed = true;
+                }
+                if (!string.Equals(user.FullName, fullName, StringComparison.Ordinal))
+                {
+                    user.FullName = fullName;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    var result = await userManager.UpdateAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        var errors = string.Join("; ", result.Errors.Select(x => x.Description));
+                        throw new InvalidOperationException($"Cannot update seed user '{email}': {errors}");
+                    }
+                }
+            }
+        }
+
+        private static async Task SeedBusinessDataAsync(ApplicationDbContext db)
+        {
             if (!await db.Settings.AnyAsync())
             {
                 db.Settings.Add(new Setting
@@ -218,115 +233,101 @@ namespace OnlineSalesManagementSystem.Data
                 await db.SaveChangesAsync();
             }
 
-            // A. Suppliers (Nhà cung cấp)
             if (!await db.Suppliers.AnyAsync())
             {
-                var suppliers = new List<Supplier>();
-                for (int i = 1; i <= 5; i++)
-                {
-                    suppliers.Add(new Supplier
+                var suppliers = Enumerable.Range(1, 6)
+                    .Select(i => new Supplier
                     {
                         Name = $"Nhà cung cấp {i}",
                         Phone = $"098877766{i}",
                         Email = $"supplier{i}@partner.com",
-                        Address = $"KCN Số {i}, Hà Nội",
-                        IsActive = true,
-                        CreatedAt = DateTime.UtcNow
-                    });
-                }
+                        Address = i <= 3 ? $"KCN Số {i}, Hà Nội" : $"Khu logistics số {i}, TP.HCM",
+                        IsActive = i != 6,
+                        CreatedAt = DateTime.UtcNow.AddDays(-i * 7)
+                    })
+                    .ToList();
+
                 db.Suppliers.AddRange(suppliers);
                 await db.SaveChangesAsync();
             }
 
-            // B. Customers (Khách hàng)
             if (!await db.Customers.AnyAsync())
             {
-                var customers = new List<Customer>();
-                for (int i = 1; i <= 10; i++)
-                {
-                    customers.Add(new Customer
+                var customers = Enumerable.Range(1, 15)
+                    .Select(i => new Customer
                     {
                         Name = $"Khách hàng {i}",
                         Phone = $"090512345{i}",
                         Email = $"customer{i}@gmail.com",
-                        Address = $"Số {i} đường ABC, TP.HCM",
-                        IsActive = true,
-                        CreatedAt = DateTime.UtcNow.AddDays(-Random.Shared.Next(1, 100))
-                    });
-                }
+                        Address = i % 3 == 0 ? $"Số {i} đường ABC, Hà Nội" : $"Số {i} đường ABC, TP.HCM",
+                        IsActive = i != 15,
+                        CreatedAt = DateTime.UtcNow.AddDays(-Random.Shared.Next(5, 120))
+                    })
+                    .ToList();
+
                 db.Customers.AddRange(customers);
                 await db.SaveChangesAsync();
             }
 
-            // C. Products (Sản phẩm - tạo nhiều để test phân trang)
             if (!await db.Products.AnyAsync())
             {
-                var catIds = await db.Categories.Select(c => c.Id).ToListAsync();
-                var unitIds = await db.Units.Where(u => u.IsActive).Select(u => u.Id).ToListAsync();
-                var brandIds = await db.Brands.Where(b => b.IsActive).Select(b => b.Id).ToListAsync();
+                var categoryIds = await db.Categories.Select(x => x.Id).ToListAsync();
+                var unitIds = await db.Units.Where(x => x.IsActive).Select(x => x.Id).ToListAsync();
+                var brandIds = await db.Brands.Where(x => x.IsActive).Select(x => x.Id).ToListAsync();
+                var random = new Random();
+                var products = new List<Product>();
 
-                if (catIds.Any() && unitIds.Any())
+                for (int i = 1; i <= 36; i++)
                 {
-                    var products = new List<Product>();
-                    var random = new Random();
-
-                    for (int i = 1; i <= 30; i++)
+                    var cost = random.Next(10, 500) * 10000m;
+                    var sale = cost + cost * random.Next(10, 40) / 100m;
+                    products.Add(new Product
                     {
-                        var cost = random.Next(10, 500) * 10000; // 100k -> 5M
-                        var sale = cost + (cost * random.Next(10, 40) / 100); // Lãi 10-40%
-
-                        products.Add(new Product
-                        {
-                            SKU = $"SP{i:000}",
-                            Name = $"Sản phẩm Test {i}",
-                            Description = $"Mô tả chi tiết cho sản phẩm {i}. Hàng chất lượng cao.",
-                            CostPrice = cost,
-                            SalePrice = sale,
-                            StockOnHand = 0, // Sẽ được cập nhật khi seed Purchase
-                            ReorderLevel = 10,
-                            IsActive = true,
-                            IsTrending = i % 5 == 0,
-                            CategoryId = catIds[random.Next(catIds.Count)],
-                            UnitId = unitIds[random.Next(unitIds.Count)],
-                            BrandId = brandIds.Any() ? brandIds[random.Next(brandIds.Count)] : null,
-                            ImagePath = null // Để null hoặc đường dẫn ảnh dummy
-                        });
-                    }
-                    db.Products.AddRange(products);
-                    await db.SaveChangesAsync();
+                        SKU = $"SP{i:000}",
+                        Name = $"Sản phẩm Test {i}",
+                        Description = $"Mô tả chi tiết cho sản phẩm {i}. Hàng chất lượng cao.",
+                        Content = $"<p>Mô tả HTML cho sản phẩm {i} dùng để demo phần chi tiết sản phẩm và kiểm thử nội dung hiển thị.</p>",
+                        CostPrice = cost,
+                        SalePrice = sale,
+                        StockOnHand = 0,
+                        ReorderLevel = i % 4 == 0 ? 5 : (i % 3 == 0 ? 15 : 10),
+                        IsActive = i % 18 != 0,
+                        IsTrending = i % 4 == 0,
+                        CategoryId = categoryIds[random.Next(categoryIds.Count)],
+                        UnitId = unitIds[random.Next(unitIds.Count)],
+                        BrandId = brandIds.Count == 0 ? null : brandIds[random.Next(brandIds.Count)],
+                        ImagePath = null
+                    });
                 }
+
+                db.Products.AddRange(products);
+                await db.SaveChangesAsync();
             }
 
-            // D0. Employees (Nhân viên)
             if (!await db.Employees.AnyAsync())
             {
-                var employees = new List<Employee>
-                {
+                db.Employees.AddRange(
                     new Employee { Name = "Nguyễn Văn An", Phone = "0903000001", Email = "an@company.local", Address = "TP.HCM", Position = "Sales", Salary = 9000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-120) },
                     new Employee { Name = "Trần Thị Bình", Phone = "0903000002", Email = "binh@company.local", Address = "TP.HCM", Position = "Sales", Salary = 9500000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-110) },
                     new Employee { Name = "Lê Minh Châu", Phone = "0903000003", Email = "chau@company.local", Address = "Hà Nội", Position = "Warehouse", Salary = 10000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-200) },
                     new Employee { Name = "Phạm Quốc Dũng", Phone = "0903000004", Email = "dung@company.local", Address = "Đà Nẵng", Position = "Warehouse", Salary = 10500000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-180) },
                     new Employee { Name = "Võ Thị Em", Phone = "0903000005", Email = "em@company.local", Address = "TP.HCM", Position = "Accountant", Salary = 12000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-250) },
-                    new Employee { Name = "Đặng Hữu Phước", Phone = "0903000006", Email = "phuoc@company.local", Address = "TP.HCM", Position = "Manager", Salary = 18000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-365) },
-                };
-
-                db.Employees.AddRange(employees);
+                    new Employee { Name = "Đặng Hữu Phước", Phone = "0903000006", Email = "phuoc@company.local", Address = "TP.HCM", Position = "Manager", Salary = 18000000, IsActive = true, CreatedAt = DateTime.UtcNow.AddDays(-365) });
                 await db.SaveChangesAsync();
             }
 
-            // D1. Attendance (Chấm công) - 30 ngày gần nhất
             if (!await db.Attendances.AnyAsync())
             {
-                var employees = await db.Employees.Where(e => e.IsActive).Select(e => e.Id).ToListAsync();
                 var random = new Random();
+                var employeeIds = await db.Employees.Where(x => x.IsActive).Select(x => x.Id).ToListAsync();
                 var today = DateTime.UtcNow.Date;
-
                 var attendances = new List<Attendance>();
-                foreach (var empId in employees)
+
+                foreach (var employeeId in employeeIds)
                 {
-                    for (int d = 0; d < 30; d++)
+                    for (int day = 0; day < 30; day++)
                     {
-                        var date = today.AddDays(-d);
+                        var date = today.AddDays(-day);
                         var roll = random.Next(0, 100);
                         var status = roll switch
                         {
@@ -338,7 +339,7 @@ namespace OnlineSalesManagementSystem.Data
 
                         attendances.Add(new Attendance
                         {
-                            EmployeeId = empId,
+                            EmployeeId = employeeId,
                             Date = date,
                             Status = status,
                             Note = status == AttendanceStatus.Late ? "Đi trễ" : null
@@ -350,42 +351,31 @@ namespace OnlineSalesManagementSystem.Data
                 await db.SaveChangesAsync();
             }
 
-            // D2. Expenses (Chi phí) - để module Chi phí + báo cáo có dữ liệu
             if (!await db.Expenses.AnyAsync())
             {
                 var random = new Random();
-                var expenses = new List<Expense>();
                 var now = DateTime.UtcNow;
+                var expenses = new List<Expense>();
+                var totalSalary = await db.Employees.Where(x => x.IsActive).SumAsync(x => x.Salary);
 
-                // Lương tháng gần nhất (tổng lương nhân viên)
-                var totalSalary = await db.Employees.Where(e => e.IsActive).SumAsync(e => e.Salary);
                 expenses.Add(new Expense
                 {
                     Title = "Tổng lương nhân viên tháng này",
                     Amount = totalSalary,
                     ExpenseDate = now.AddDays(-3),
-                    Note = "Chi phí vận hành: lương"
+                    Note = "Chi phí vận hành: lương",
+                    IsActive = true
                 });
 
-                // Một số chi phí phát sinh
-                var titles = new[]
+                foreach (var title in new[]
                 {
-                    "Tiền điện",
-                    "Tiền nước",
-                    "Internet & dịch vụ",
-                    "Thuê mặt bằng",
-                    "Vận chuyển",
-                    "Marketing",
-                    "Văn phòng phẩm",
-                    "Bảo trì thiết bị",
-                    "Chi phí khác"
-                };
-
-                for (int i = 0; i < titles.Length; i++)
+                    "Tiền điện", "Tiền nước", "Internet & dịch vụ", "Thuê mặt bằng", "Vận chuyển",
+                    "Marketing", "Văn phòng phẩm", "Bảo trì thiết bị", "Chi phí khác"
+                })
                 {
                     expenses.Add(new Expense
                     {
-                        Title = titles[i],
+                        Title = title,
                         Amount = random.Next(2, 50) * 100000,
                         ExpenseDate = now.AddDays(-random.Next(1, 30)),
                         Note = "Seed demo",
@@ -397,53 +387,57 @@ namespace OnlineSalesManagementSystem.Data
                 await db.SaveChangesAsync();
             }
 
-            // E. Purchases (Lịch sử nhập kho - quan trọng cho Warehouse)
-            if (!await db.Purchases.AnyAsync())
+            await SeedPurchaseHistoryAsync(db);
+            await SeedInvoiceHistoryAsync(db);
+            await SeedStockAlertSamplesAsync(db);
+        }
+
+        private static async Task SeedPurchaseHistoryAsync(ApplicationDbContext db)
+        {
+            if (await db.Purchases.AnyAsync())
             {
-                var products = await db.Products.ToListAsync();
-                var suppliers = await db.Suppliers.ToListAsync();
-                var random = new Random();
+                return;
+            }
 
-                // Tạo 20 đơn nhập hàng trong quá khứ
-                for (int i = 0; i < 20; i++)
+            var products = await db.Products.Where(x => x.IsActive).ToListAsync();
+            var suppliers = await db.Suppliers.Where(x => x.IsActive).ToListAsync();
+            var random = new Random();
+
+            for (int i = 0; i < 24; i++)
+            {
+                var date = DateTime.UtcNow.AddDays(-random.Next(1, 60));
+                var supplier = suppliers[random.Next(suppliers.Count)];
+                var status = i < 18 ? PurchaseStatus.Received : (i < 21 ? PurchaseStatus.Draft : PurchaseStatus.Cancelled);
+
+                var purchase = new Purchase
                 {
-                    var date = DateTime.UtcNow.AddDays(-random.Next(1, 60)); // Trong vòng 60 ngày
-                    var supplier = suppliers[random.Next(suppliers.Count)];
+                    PurchaseNo = $"PO-{date:yyyyMMdd}-{random.Next(1000, 9999)}",
+                    SupplierId = supplier.Id,
+                    PurchaseDate = date,
+                    Status = status,
+                    Items = new List<PurchaseItem>()
+                };
 
-                    var purchase = new Purchase
+                decimal subTotal = 0;
+                foreach (var product in products.OrderBy(_ => random.Next()).Take(random.Next(3, 6)))
+                {
+                    var qty = random.Next(10, 100);
+                    var lineTotal = qty * product.CostPrice;
+                    purchase.Items.Add(new PurchaseItem
                     {
-                        PurchaseNo = $"PO-{date:yyyyMMdd}-{random.Next(1000, 9999)}",
-                        SupplierId = supplier.Id,
-                        PurchaseDate = date,
-                        Status = PurchaseStatus.Received, // Đã nhập kho
-                        Items = new List<PurchaseItem>()
-                    };
+                        ProductId = product.Id,
+                        Qty = qty,
+                        UnitCost = product.CostPrice,
+                        LineTotal = lineTotal
+                    });
+                    subTotal += lineTotal;
 
-                    decimal subTotal = 0;
-                    // Mỗi đơn nhập 3-5 loại sản phẩm
-                    for (int j = 0; j < random.Next(3, 6); j++)
+                    if (status == PurchaseStatus.Received)
                     {
-                        var prod = products[random.Next(products.Count)];
-                        var qty = random.Next(10, 100);
-                        var cost = prod.CostPrice;
-
-                        purchase.Items.Add(new PurchaseItem
-                        {
-                            ProductId = prod.Id,
-                            Qty = qty,
-                            UnitCost = cost,
-                            LineTotal = qty * cost
-                        });
-
-                        subTotal += qty * cost;
-
-                        // CẬP NHẬT TỒN KHO THẬT
-                        prod.StockOnHand += qty;
-
-                        // TẠO STOCK MOVEMENT (Lịch sử kho)
+                        product.StockOnHand += qty;
                         db.StockMovements.Add(new StockMovement
                         {
-                            ProductId = prod.Id,
+                            ProductId = product.Id,
                             MovementDate = date,
                             Type = StockMovementType.In,
                             Qty = qty,
@@ -451,67 +445,76 @@ namespace OnlineSalesManagementSystem.Data
                             Note = $"Nhập hàng theo đơn {purchase.PurchaseNo}"
                         });
                     }
-                    purchase.SubTotal = subTotal;
-                    purchase.GrandTotal = subTotal;
-
-                    db.Purchases.Add(purchase);
                 }
-                await db.SaveChangesAsync();
+
+                purchase.SubTotal = subTotal;
+                purchase.GrandTotal = subTotal;
+                db.Purchases.Add(purchase);
             }
 
-            // F. Invoices (Lịch sử bán hàng - Tạo doanh thu để Dashboard đẹp)
-            if (!await db.Invoices.AnyAsync())
+            await db.SaveChangesAsync();
+        }
+
+        private static async Task SeedInvoiceHistoryAsync(ApplicationDbContext db)
+        {
+            if (await db.Invoices.AnyAsync())
             {
-                var products = await db.Products.Where(p => p.StockOnHand > 0).ToListAsync();
-                var customers = await db.Customers.ToListAsync();
-                var random = new Random();
+                return;
+            }
 
-                // Tạo 50 đơn hàng bán ra
-                for (int i = 0; i < 50; i++)
+            var products = await db.Products.Where(x => x.IsActive && x.StockOnHand > 0).ToListAsync();
+            var customers = await db.Customers.Where(x => x.IsActive).ToListAsync();
+            var random = new Random();
+
+            for (int i = 0; i < 60; i++)
+            {
+                var date = DateTime.UtcNow.AddDays(-random.Next(0, 30));
+                var status = i < 24
+                    ? InvoiceStatus.Paid
+                    : (i < 40 ? InvoiceStatus.PartiallyPaid
+                    : (i < 52 ? InvoiceStatus.Unpaid
+                    : (i < 56 ? InvoiceStatus.Draft : InvoiceStatus.Cancelled)));
+
+                var invoice = new Invoice
                 {
-                    var date = DateTime.UtcNow.AddDays(-random.Next(0, 30));
-                    var cust = customers[random.Next(customers.Count)];
+                    InvoiceNo = $"INV-{date:yyyyMMdd}-{random.Next(1000, 9999)}",
+                    CustomerId = i % 10 == 0 ? null : customers[random.Next(customers.Count)].Id,
+                    InvoiceDate = date,
+                    Status = status,
+                    Items = new List<InvoiceItem>()
+                };
 
-                    var invoice = new Invoice
+                decimal subTotal = 0;
+                var pickedProducts = products.OrderBy(_ => random.Next()).Take(random.Next(1, 4)).ToList();
+                foreach (var product in pickedProducts)
+                {
+                    if (product.StockOnHand <= 0)
                     {
-                        InvoiceNo = $"INV-{date:yyyyMMdd}-{random.Next(1000, 9999)}",
-                        CustomerId = cust.Id,
-                        InvoiceDate = date,
-                        Status = InvoiceStatus.Paid,
-                        Items = new List<InvoiceItem>()
-                    };
+                        continue;
+                    }
 
-                    decimal subTotal = 0;
-                    // Khách mua 1-3 món
-                    for (int j = 0; j < random.Next(1, 4); j++)
+                    var qty = Math.Min(random.Next(1, 5), product.StockOnHand);
+                    if (qty <= 0)
                     {
-                        if (!products.Any()) break;
-                        var prod = products[random.Next(products.Count)];
+                        continue;
+                    }
 
-                        if (prod.StockOnHand <= 0) continue; // Hết hàng thì bỏ qua
+                    var lineTotal = qty * product.SalePrice;
+                    invoice.Items.Add(new InvoiceItem
+                    {
+                        ProductId = product.Id,
+                        Quantity = qty,
+                        UnitPrice = product.SalePrice,
+                        LineTotal = lineTotal
+                    });
+                    subTotal += lineTotal;
 
-                        var qty = random.Next(1, 5);
-                        if (qty > prod.StockOnHand) qty = prod.StockOnHand; // Không bán quá tồn kho
-
-                        var price = prod.SalePrice;
-
-                        invoice.Items.Add(new InvoiceItem
-                        {
-                            ProductId = prod.Id,
-                            Quantity = qty,
-                            UnitPrice = price,
-                            LineTotal = qty * price
-                        });
-
-                        subTotal += qty * price;
-
-                        // TRỪ TỒN KHO
-                        prod.StockOnHand -= qty;
-
-                        // GHI LỊCH SỬ KHO
+                    if (status is InvoiceStatus.Paid or InvoiceStatus.PartiallyPaid or InvoiceStatus.Unpaid)
+                    {
+                        product.StockOnHand -= qty;
                         db.StockMovements.Add(new StockMovement
                         {
-                            ProductId = prod.Id,
+                            ProductId = product.Id,
                             MovementDate = date,
                             Type = StockMovementType.Out,
                             Qty = qty,
@@ -519,41 +522,86 @@ namespace OnlineSalesManagementSystem.Data
                             Note = $"Xuất bán đơn {invoice.InvoiceNo}"
                         });
                     }
-
-                    if (invoice.Items.Count > 0)
-                    {
-                        invoice.SubTotal = subTotal;
-                        invoice.GrandTotal = subTotal;
-                        invoice.PaidAmount = subTotal;
-                        db.Invoices.Add(invoice);
-                    }
                 }
-                await db.SaveChangesAsync();
+
+                if (invoice.Items.Count == 0)
+                {
+                    continue;
+                }
+
+                invoice.SubTotal = subTotal;
+                invoice.GrandTotal = subTotal;
+                invoice.PaidAmount = status switch
+                {
+                    InvoiceStatus.Paid => subTotal,
+                    InvoiceStatus.PartiallyPaid => Math.Round(subTotal * random.Next(30, 80) / 100m, 2),
+                    _ => 0m
+                };
+                db.Invoices.Add(invoice);
             }
+
+            await db.SaveChangesAsync();
+        }
+
+        private static async Task SeedStockAlertSamplesAsync(ApplicationDbContext db)
+        {
+            if (await db.StockMovements.AnyAsync(x => x.Type == StockMovementType.Adjust && x.RefType == "SeedAdjustment"))
+            {
+                return;
+            }
+
+            var alertProducts = await db.Products
+                .Where(x => x.IsActive)
+                .OrderBy(x => x.Id)
+                .Take(5)
+                .ToListAsync();
+
+            for (int i = 0; i < alertProducts.Count; i++)
+            {
+                var product = alertProducts[i];
+                var targetStock = i switch
+                {
+                    0 => 0,
+                    1 => Math.Max(1, product.ReorderLevel - 1),
+                    2 => product.ReorderLevel,
+                    _ => Math.Max(2, product.ReorderLevel - 2)
+                };
+
+                var delta = targetStock - product.StockOnHand;
+                if (delta == 0)
+                {
+                    continue;
+                }
+
+                product.StockOnHand = targetStock;
+                db.StockMovements.Add(new StockMovement
+                {
+                    ProductId = product.Id,
+                    MovementDate = DateTime.UtcNow.AddHours(-(i + 1)),
+                    Type = StockMovementType.Adjust,
+                    Qty = delta,
+                    RefType = "SeedAdjustment",
+                    Note = $"Điều chỉnh tồn kho mẫu cho test ngưỡng tồn: {product.SKU}"
+                });
+            }
+
+            await db.SaveChangesAsync();
         }
 
         private static async Task ResetBusinessDataAsync(ApplicationDbContext db)
         {
-            // Xóa dữ liệu nghiệp vụ theo thứ tự phụ thuộc FK
-            // (giữ nguyên Identity + nhóm quyền, tránh mất tài khoản login)
-
-            // Stock
             db.StockMovements.RemoveRange(await db.StockMovements.ToListAsync());
 
-            // Sales
             db.InvoiceItems.RemoveRange(await db.InvoiceItems.ToListAsync());
             db.Invoices.RemoveRange(await db.Invoices.ToListAsync());
 
-            // Purchases
             db.PurchaseItems.RemoveRange(await db.PurchaseItems.ToListAsync());
             db.Purchases.RemoveRange(await db.Purchases.ToListAsync());
 
-            // HR/Finance
             db.Attendances.RemoveRange(await db.Attendances.ToListAsync());
             db.Employees.RemoveRange(await db.Employees.ToListAsync());
             db.Expenses.RemoveRange(await db.Expenses.ToListAsync());
 
-            // Masters
             db.Products.RemoveRange(await db.Products.ToListAsync());
             db.Brands.RemoveRange(await db.Brands.ToListAsync());
             db.Categories.RemoveRange(await db.Categories.ToListAsync());
@@ -566,4 +614,3 @@ namespace OnlineSalesManagementSystem.Data
         }
     }
 }
- 

@@ -149,7 +149,7 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" onchange="toggleTrending(@item.Id)" @(item.IsTrending ? "checked" : "")>
+                                            <input class="form-check-input" type="checkbox" onchange="toggleTrending(@item.Id, this)" @(item.IsTrending ? "checked" : "")>
                                         </div>
                                     </td>
                                     <td class="text-center">
@@ -235,13 +235,23 @@
 
 @section Scripts {
     <script>
-        function toggleTrending(id) {
-            fetch('/Admin/Products/ToggleTrending/' + id, { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) alert('Lỗi cập nhật!');
-                })
-                .catch(err => console.error(err));
+        async function toggleTrending(id, el) {
+            const previous = !!el?.checked;
+            if (el) el.disabled = true;
+
+            try {
+                const res = await fetch('/Admin/Products/ToggleTrending/' + id, window.osms.postOptions());
+                const data = await res.json().catch(() => ({ success: false }));
+                if (!res.ok || !data.success) {
+                    if (el) el.checked = !previous;
+                    alert('Lỗi cập nhật!');
+                }
+            } catch (err) {
+                if (el) el.checked = !previous;
+                console.error(err);
+            } finally {
+                if (el) el.disabled = false;
+            }
         }
     </script>
 }

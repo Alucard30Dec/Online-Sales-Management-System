@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
+@using OnlineSalesManagementSystem.Domain.Entities
 @using OnlineSalesManagementSystem.Services.Security
 @inject IAuthorizationService AuthorizationService
 
@@ -49,9 +50,7 @@
                 @foreach (var u in Model)
                 {
                     var isSuper = IsSuperAdminEmail(u.Email);
-                    // Nếu dự án bạn dùng custom user có IsActive, razor runtime vẫn render được nếu property tồn tại.
-                    bool isActive = true;
-                    try { isActive = (bool)((dynamic)u).IsActive; } catch { }
+                    bool isActive = (u as ApplicationUser)?.IsActive ?? true;
 
                     <tr>
                         <td>
