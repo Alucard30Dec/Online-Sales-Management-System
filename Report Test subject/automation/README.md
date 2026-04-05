@@ -1,36 +1,40 @@
 # Automation Workspace
 
-This folder contains the planned automation deliverables for the OSMS coursework submission.
+This folder contains the implemented automation artifacts for the OSMS coursework submission.
 
-## Chosen stacks
+## Implemented stacks
 
 - UI automation: `.NET 8 + xUnit + Selenium WebDriver`
-- API automation: `Postman + Newman`
+- API automation: `Postman Collection + Newman`
 
-## Why this stack
+## Current scope
 
-- The main application is ASP.NET Core, so `.NET` keeps the UI automation close to the project stack.
-- `dotnet`, `node`, and `npm` are available locally.
-- `mvn` is not available, so Java Selenium would create avoidable setup work.
-- `Google Chrome` is installed, making Chrome the safest primary automation browser.
+### UI automated flows
 
-## Planned structure
+- `TC-UI-AUTH-001`: admin login smoke
+- `TC-UI-AUTH-003`: sales access denied to Purchases
+- `TC-UI-PUR-001`, `TC-UI-PUR-007`: create draft purchase and verify details
+- `TC-UI-INV-001`: create walk-in invoice successfully
+- `TC-UI-IMP-002`: preview product import workbook and verify valid/invalid counts
 
-```text
-automation/
-  ui/
-    README.md
-    OSMS.UITests/
-      Pages/
-      Support/
-      TestData/
-      Tests/
-  api/
-    README.md
-    postman/
-      collections/
-      environments/
-    newman/
+### API automated groups
+
+- health smoke
+- catalog happy path queries
+- catalog validation and negative queries
+- product detail valid / invalid / not found
+- trending and filters lookup
+
+## Quick commands
+
+### UI automation
+
+```powershell
+pwsh "Report Test subject/automation/ui/run-ui-tests.ps1"
 ```
 
-Phase 7 defines the structure and scope. Phase 8 will add the real scripts, project files, run commands, and evidence hooks.
+### API automation
+
+```powershell
+pwsh "Report Test subject/automation/api/newman/run-api-tests.ps1"
+```
