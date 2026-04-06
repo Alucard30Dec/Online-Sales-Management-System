@@ -1,5 +1,20 @@
 # BUG-20260406-001 Manual GitHub Issue Checklist
 
+## Completion status
+
+- Issue created on `2026-04-06`
+- GitHub issue number: `#1`
+- GitHub URL: `https://github.com/Alucard30Dec/Online-Sales-Management-System/issues/1`
+- Labels applied:
+  - `severity:high`
+  - `priority:high`
+  - `status:open`
+  - `module:invoices`
+  - `interface:web-ui`
+  - `type:defect`
+- Screenshot saved:
+  - `evidence/defects/BUG-20260406-001-github-issue.png`
+
 ## Issue title
 
 - `Invoice creation fails for valid walk-in invoice with in-stock item`

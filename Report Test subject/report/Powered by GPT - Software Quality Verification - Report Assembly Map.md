@@ -88,10 +88,9 @@ Use this file while converting the Markdown report source into the final Word an
 ### Mandatory figures for Section IV
 
 - insert now:
-  - screenshot of `metrics/OSMS-Test-Metrics.xlsx` summary sheet
+  - `evidence/report/OSMS-Test-Metrics-Summary.png`
   - `evidence/defects/BUG-20260406-001-invoice-create-log.txt`
-- insert later when available:
-  - GitHub Issue screenshot showing severity and priority
+  - `evidence/defects/BUG-20260406-001-github-issue.png`
 
 ### V. Conclusion And Future Work
 
@@ -120,7 +119,6 @@ Use this file while converting the Markdown report source into the final Word an
 
 ## High-Risk Missing Items Before Final Export
 
-- `PENDING REAL EXECUTION`: GitHub Issue screenshot if a confirmed defect is found
 - `PENDING REAL EXECUTION`: additional execution screenshots for `Stock`, `Reports`, `Products`, and `Public Catalog`
 
 ## Final Export Checklist

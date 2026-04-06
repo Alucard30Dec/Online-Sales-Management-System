@@ -101,13 +101,15 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
 ### Screenshots that already exist
 
 - login success screenshot for `TC-UI-AUTH-001`
-- automation failure screenshot for `TC-UI-AUTH-003`
-- automation failure screenshot for `TC-UI-IMP-002`
+- permission-denial screenshot for `TC-UI-AUTH-003`
+- import preview screenshot for `TC-UI-IMP-002`
+- purchase details screenshot for `TC-UI-PUR-001` and `TC-UI-PUR-007`
+- invoice failure screenshot for `TC-UI-INV-001`
+- GitHub Issue screenshot for `BUG-20260406-001`
+- metrics summary screenshot for the final report and slide deck
 
 ### Screenshots still missing
 
-- `PENDING REAL EXECUTION`: GitHub Issue screenshot for `BUG-20260406-001`
-- `PENDING REAL EXECUTION`: results workbook or metrics screenshot prepared for the final Word and PPTX exports
 - `PENDING REAL EXECUTION`: additional business-flow evidence for `Stock`, `Reports`, `Products`, and `Public Catalog`
 
 ## Bug evidence checklist
@@ -152,14 +154,12 @@ Use these status values consistently:
 
 ## Immediate next evidence priority
 
-1. Open the external GitHub Issue for `BUG-20260406-001` and capture the issue screenshot with severity and priority labels.
-2. Fix and retest invoice creation, then capture the post-fix details-page evidence if the defect is resolved.
-3. Execute and capture the remaining high-value UI modules: `Stock`, `Reports`, `Products`, and `Public Catalog`.
-4. Verify the generated automation demo video and include it in the submission appendix.
-5. Export the final report PDF and final PPTX after inserting the evidence figures.
+1. Fix and retest invoice creation, then capture the post-fix details-page evidence if the defect is resolved.
+2. Execute and capture the remaining high-value UI modules: `Stock`, `Reports`, `Products`, and `Public Catalog`.
+3. Keep the metrics summary screenshot, GitHub issue, and automation video linked consistently across the report, slides, and appendix.
 
 ## Known limitations after this phase
 
-- A real GitHub Issue has not been opened yet because GitHub CLI is unavailable in the current local environment.
 - UI execution depth is still partial even though the API surface is now fully executed.
 - Full business confidence still depends on retesting invoice creation and running additional UI modules.
+- Cross-browser evidence is still not available.

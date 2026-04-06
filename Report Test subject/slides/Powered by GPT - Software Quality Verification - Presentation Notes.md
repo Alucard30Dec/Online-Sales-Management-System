@@ -88,10 +88,9 @@ Use these notes while building the slide deck and during oral defense. The notes
 ### Slide 10. Next Steps And Submission Package
 
 - Explain the immediate next actions:
-  - open the GitHub Issue externally
-  - fix and retest invoice creation
-  - commit the generated PDF and PPTX
-  - commit the generated automation video
+  - fix and retest invoice creation through GitHub Issue `#1`
+  - execute the remaining highest-value UI modules
+  - optionally add cross-browser evidence
 - End by pointing to the GitHub appendix link containing the deliverables.
 
 ### Slide 11. Q&A Backup

@@ -53,7 +53,7 @@ This rule was applied so the summary can satisfy the required `pass / fail / blo
 - `TC-UI-INV-001`
   - status: `Fail`
   - evidence: UI failure screenshot + rerun TRX + server log excerpt
-  - defect link: `BUG-20260406-001`
+  - defect link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/issues/1`
 
 ## Interface-wise metrics
 
@@ -150,4 +150,4 @@ The repository does not contain a separate formal requirement specification or s
 
 ## Submission caution
 
-These files are materially stronger after the 2026-04-06 reruns, but the package still needs final binary submission artifacts such as the PPTX, PDF, and automation video before it can be called submission-ready.
+These files are materially stronger after the 2026-04-06 reruns, and the final PDF, PPTX, automation video, and GitHub issue screenshot now exist. The remaining weakness is execution depth in unrun UI modules, not packaging completeness.

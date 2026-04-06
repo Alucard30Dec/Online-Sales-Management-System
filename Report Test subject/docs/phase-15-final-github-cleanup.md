@@ -44,7 +44,6 @@ Perform the final repository audit for the `Report Test subject` package, verify
 
 ### Mandatory artifact families still incomplete
 
-- GitHub Issue screenshots with severity and priority if a confirmed defect is opened
 - additional execution screenshots for `Stock`, `Reports`, `Products`, and `Public Catalog`
 
 ## Broken link and path check
@@ -67,11 +66,11 @@ These links are already used consistently across the README and report source co
 - `defects/exports/OSMS-Defect-Log.xlsx`
 - `report/Powered by GPT - Software Quality Verification - Final Report.docx`
 
-### Still intentionally unresolved
+### Defect evidence now resolved
 
 - `evidence/defects/BUG-20260406-001-github-issue.png`
 
-This is a true submission blocker for defect-tracker completeness, not a broken reference caused by a wrong path.
+This issue screenshot now exists and can be referenced directly from the report, slides, and defect register.
 
 ## File naming check
 
@@ -90,7 +89,7 @@ This is a true submission blocker for defect-tracker completeness, not a broken 
 - API test cases:
   - `OSMS-API-Test-Cases.xlsx`
 
-### Naming still missing final binary deliverables
+### Naming now completed for final binary deliverables
 
 - presentation:
   - `Powered by GPT - Software Quality Verification - Presentation.pptx`
@@ -137,11 +136,10 @@ The `.gitignore` already excludes these categories.
 
 ### Why it is not ready yet
 
-- GitHub Issue screenshot for `BUG-20260406-001` does not exist yet
 - several remaining UI modules are still not executed
-- the repository still contains uncommitted evidence and cleanup files from recent phases
+- final visual review of the generated PDF and PPTX should still be done manually before upload
 
-The `PDF` report, `PPTX` slide deck, and automation video now exist in the canonical submission paths. The remaining work is limited to external GitHub issue evidence and additional optional execution depth.
+The `PDF` report, `PPTX` slide deck, automation video, and GitHub issue screenshot now exist in the canonical submission paths. The remaining work is limited to optional additional execution depth and one last manual visual check of the exported binaries.
 
 ### What is already strong enough
 
@@ -170,7 +168,7 @@ The `PDF` report, `PPTX` slide deck, and automation video now exist in the canon
    - reports execution
    - products execution
    - public catalog execution
-6. For the already confirmed defect, add:
-   - GitHub Issue screenshot with severity and priority labels
+6. Verify the GitHub issue screenshot is included in the defect appendix:
+   - `evidence/defects/BUG-20260406-001-github-issue.png`
 7. Commit all untracked phase artifacts before final push.
 8. Verify that the appendix link in the report still points to the same GitHub folder.

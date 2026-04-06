@@ -4,6 +4,12 @@
 
 - `video/OSMS-Automation-Demo.mp4`
 
+## Completion status
+
+- Recording created on `2026-04-06`
+- Verified duration: `130 seconds`
+- Verified file size: approximately `32.3 MB`
+
 ## Exact recording order
 
 1. Show the repository root and open `Report Test subject/automation`.

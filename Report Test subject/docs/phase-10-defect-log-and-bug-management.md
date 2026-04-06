@@ -177,14 +177,17 @@ Recommended movement:
 - module: `Invoices`
 - classification: `Confirmed Defect`
 - current status: `Open - Confirmed`
+- GitHub Issue: `#1`
+- GitHub URL: `https://github.com/Alucard30Dec/Online-Sales-Management-System/issues/1`
 - reason:
   - UI rerun returned to the Create page with the toast `Failed to create invoice. Please check data and try again.`
   - server log excerpt proves `InvalidOperationException` caused by using a user-initiated transaction with `MySqlRetryingExecutionStrategy`
   - the issue is reproducible with valid walk-in invoice data in the current environment
+- issue evidence:
+  - `evidence/defects/BUG-20260406-001-github-issue.png`
 
 ## Immediate bug-management actions
 
-1. Create the corresponding GitHub Issue externally for `BUG-20260406-001` because `gh` CLI is unavailable in the current local environment.
-2. Export the GitHub Issue screenshot into `evidence/defects/` after the issue is opened.
-3. Keep `defects/exports/OSMS-Defect-Register.csv` updated after every triage or retest decision.
-4. Retest invoice creation after any fix and capture the post-fix details-page evidence.
+1. Keep `defects/exports/OSMS-Defect-Register.csv` and `results/execution-evidence-mapping.csv` aligned with GitHub Issue `#1`.
+2. Retest invoice creation after any fix and capture the post-fix details-page evidence.
+3. Update the issue status labels when development work begins or a retest becomes available.

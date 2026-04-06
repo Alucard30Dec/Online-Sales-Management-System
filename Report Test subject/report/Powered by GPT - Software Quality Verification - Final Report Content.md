@@ -289,12 +289,29 @@ The current evidence set proves that both UI and API automation are functioning 
 - server-log evidence
   - extracted defect log exists for `BUG-20260406-001`
 
-[INSERT FIGURE E-1: `evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png`]
-[INSERT FIGURE E-2: screenshot or text capture of `results/automation-api/newman-full-run.txt`]
-[INSERT FIGURE E-3: `evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`]
-[INSERT FIGURE E-4: `evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png`]
-[INSERT FIGURE E-5: `evidence/ui/automation/20260406_054245_TC-UI-AUTH-003-access-denied.png`]
-[INSERT FIGURE E-6: `evidence/ui/automation/20260406_054115_TC-UI-IMP-002-preview.png`]
+Figure E-1. Admin login success evidence.
+
+![Figure E-1 - Admin login success](../evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png)
+
+Figure E-2. Newman full-run summary snippet.
+
+![Figure E-2 - Newman full run summary](../evidence/report/OSMS-Newman-Full-Run-Snippet.png)
+
+Figure E-3. Draft purchase creation success evidence.
+
+![Figure E-3 - Draft purchase created](../evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png)
+
+Figure E-4. Invoice creation failure evidence.
+
+![Figure E-4 - Invoice creation failure](../evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png)
+
+Figure E-5. Permission-denial redirect evidence for sales user.
+
+![Figure E-5 - Permission denial](../evidence/ui/automation/20260406_054245_TC-UI-AUTH-003-access-denied.png)
+
+Figure E-6. Product import preview-count evidence.
+
+![Figure E-6 - Product import preview](../evidence/ui/automation/20260406_054115_TC-UI-IMP-002-preview.png)
 
 # IV. Defect Report And Metrics
 
@@ -309,15 +326,19 @@ Current confirmed defect record:
   - module: `Invoices`
   - severity / priority: `High / High`
   - current state: `Open - Confirmed`
+  - GitHub Issue: `#1`
+  - GitHub URL: `https://github.com/Alucard30Dec/Online-Sales-Management-System/issues/1`
   - evidence:
     - UI failure screenshot
     - focused rerun TRX
     - extracted server log excerpt showing `InvalidOperationException` in `InvoicesController.Create`
-
-GitHub Issue creation for this defect remains `PENDING REAL EXECUTION` because GitHub CLI is not available in the current local environment.
+    - GitHub Issue screenshot with labels
 
 [INSERT TABLE B-1: `defects/exports/OSMS-Defect-Register.csv`]
-[INSERT FIGURE B-1: `PENDING REAL EXECUTION` GitHub Issue screenshot if a confirmed defect is opened]
+
+Figure B-1. GitHub Issue evidence for the confirmed invoice defect.
+
+![Figure B-1 - GitHub issue screenshot](../evidence/defects/BUG-20260406-001-github-issue.png)
 
 ## 4.2 Defect Management Workflow
 
@@ -376,7 +397,10 @@ Module-wise view shows that the public API surface is fully executed, `Purchases
 [INSERT TABLE M-1: `metrics/OSMS-Interface-Results.csv`]
 [INSERT TABLE M-2: `metrics/OSMS-Module-Wise-Results.csv`]
 [INSERT TABLE M-3: `metrics/OSMS-Scenario-Coverage.csv`]
-[INSERT FIGURE M-1: `PENDING REAL EXECUTION` screenshot of `metrics/OSMS-Test-Metrics.xlsx` summary sheet]
+
+Figure M-1. Metrics summary exported from the workbook.
+
+![Figure M-1 - Metrics summary](../evidence/report/OSMS-Test-Metrics-Summary.png)
 
 # V. Conclusion And Future Work
 
@@ -395,19 +419,18 @@ This submission achieved the following:
 
 The main limitation of the current package is no longer only execution depth. While `25` of `63` test cases now have real evidence, the system still contains one confirmed high-severity defect in invoice creation, and several business UI areas remain unexecuted. Because of this, the report cannot responsibly claim that the full system is stable.
 
-The report also still lacks some high-value evidence:
+The report still lacks some high-value execution depth:
 
-- GitHub Issue screenshot for `BUG-20260406-001`
+- additional business-flow evidence for `Stock`, `Reports`, `Products`, and `Public Catalog`
 
 ## 5.3 Future Enhancements
 
 The highest-priority next actions are:
 
-1. create the external GitHub Issue for `BUG-20260406-001` and capture the issue screenshot
-2. fix and retest invoice creation, then capture the post-fix details-page evidence
-3. execute the remaining high-value UI areas: `Stock`, `Reports`, `Products`, and `Public Catalog`
-4. commit the generated PDF and PPTX artifacts together with the refreshed evidence pack
-5. commit the generated automation demo video together with the refreshed evidence pack
+1. fix and retest invoice creation, then add post-fix evidence to GitHub Issue `#1`
+2. execute the remaining high-value UI areas: `Stock`, `Reports`, `Products`, and `Public Catalog`
+3. optionally add cross-browser evidence if Edge is available
+4. keep the final PDF, PPTX, issue screenshot, and automation video aligned with any future retest update
 
 ## 5.4 Final Conclusion
 
@@ -448,5 +471,4 @@ Based on the current execution evidence, the `Online Sales Management System` ha
 
 ## Appendix C. Mandatory Pending Items Before Strong Final Submission
 
-- `PENDING REAL EXECUTION`: GitHub Issue screenshot if a confirmed defect is opened
 - `PENDING REAL EXECUTION`: additional execution evidence for `Stock`, `Reports`, `Products`, and `Public Catalog`

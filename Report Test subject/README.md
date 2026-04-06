@@ -52,6 +52,8 @@ This folder is organized for grading, defense, and traceability. Every deliverab
 - Final results workbook: `results/OSMS-Final-Test-Results.xlsx`
 - Metrics workbook: `metrics/OSMS-Test-Metrics.xlsx`
 - Defect log workbook: `defects/exports/OSMS-Defect-Log.xlsx`
+- GitHub issue screenshot: `evidence/defects/BUG-20260406-001-github-issue.png`
+- Automation video: `video/OSMS-Automation-Demo.mp4`
 
 The working report draft remains at the root of `Report Test subject` for editing stability. The canonical final report path for submission packaging is `report/Powered by GPT - Software Quality Verification - Final Report.docx`.
 
@@ -100,10 +102,10 @@ Use the GitHub path to this folder as the appendix link source after all require
   - reusable test data
   - Selenium and Newman automation assets
   - real UI and API execution evidence
+  - real GitHub issue evidence for the confirmed invoice defect
   - final results and metrics workbooks
   - defect workflow and defect log workbook
 - Current blockers before a strong final submission:
-  - GitHub Issue screenshot for `BUG-20260406-001` is still `PENDING REAL EXECUTION`
   - additional execution evidence for `Stock`, `Reports`, `Products`, and `Public Catalog` is still `PENDING REAL EXECUTION`
 
 See `docs/phase-15-final-github-cleanup.md` for the final readiness verdict and submission checklist.

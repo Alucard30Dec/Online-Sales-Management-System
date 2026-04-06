@@ -179,7 +179,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 ### Visual to show
 
-- one summary chart from `metrics/OSMS-Test-Metrics.xlsx`
+- `evidence/report/OSMS-Test-Metrics-Summary.png`
 
 ## Slide 8. Defect And Risk Analysis
 
@@ -189,6 +189,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 - `1` confirmed defect
   - `BUG-20260406-001` in invoice creation
+  - tracked in GitHub Issue `#1`
 
 **Closed Observations**
 
@@ -208,6 +209,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
   - `Verified`
   - `Confirmed Defect`
   - `Unverified`
+- `evidence/defects/BUG-20260406-001-github-issue.png`
 
 ## Slide 9. Key Insights
 
@@ -237,12 +239,10 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Highest-Value Next Steps**
 
-1. open the GitHub Issue for `BUG-20260406-001`
-2. fix and retest invoice creation
-3. execute stock, reports, products, and public-catalog UI flows
-4. commit the generated final PDF and PPTX artifacts
-5. commit the generated automation video artifact
-6. add optional cross-browser evidence if Edge is available
+1. fix and retest invoice creation through GitHub Issue `#1`
+2. execute stock, reports, products, and public-catalog UI flows
+3. add optional cross-browser evidence if Edge is available
+4. refresh the report, slides, and metrics only if new execution evidence is added
 
 **Submission Package**
 

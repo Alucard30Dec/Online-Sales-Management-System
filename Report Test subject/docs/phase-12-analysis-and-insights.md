@@ -46,11 +46,10 @@ This indicates that the currently exposed public API surface is in a much strong
 
 This is a strong quality signal: the package is no longer mixing automation flakiness with product defects. The reruns separated those two categories clearly.
 
-### 3. Financial and inventory-heavy modules remain the highest unverified business area
+### 3. Financial and inventory-heavy modules remain the highest partially verified business area
 
-The following modules still have `0%` execution progress:
+The following modules still have limited or zero execution depth:
 
-- `Purchases`
 - `Invoices`
 - `Stock`
 - `Products`
@@ -58,6 +57,7 @@ The following modules still have `0%` execution progress:
 - `Customers`
 - `Suppliers`
 - `Public Catalog`
+- `Purchases` is no longer unexecuted, but only the draft-create and details path is currently verified
 - all core catalog API scenarios are now covered by real execution
 
 These still-unexecuted UI modules represent important business value, so confidence for stock reporting, CRUD screens, and public-catalog UX is still lower than confidence for the exposed API surface.
@@ -140,12 +140,12 @@ In other words, the current system now has a stronger operational baseline than 
 - `39.68%` of total test cases have been executed
 - `26.19%` of documented scenarios have execution evidence
 - no cross-browser evidence has been collected yet
-- no automation video has been recorded yet
+- the automation video now exists, but it only demonstrates one stable UI flow plus the API batch run rather than a full UI regression pack
 
 ### Defect-analysis limitations
 
 - there is only `1` confirmed defect so far
-- no GitHub Issue URL exists yet because GitHub CLI is unavailable in the current local environment
+- the defect sample is still shallow even though GitHub Issue `#1` now exists for the invoice defect
 - severity distribution is still shallow because the sample of confirmed defects remains small
 
 ### Documentation limitations
@@ -157,7 +157,7 @@ In other words, the current system now has a stronger operational baseline than 
 
 ### Recommendation 1
 
-Open a real GitHub Issue externally for `BUG-20260406-001` and attach the existing UI screenshot plus the extracted server log. This is now the highest-value bug-management action.
+Keep GitHub Issue `#1` updated for `BUG-20260406-001` and attach any retest or fix evidence there. This is now the highest-value bug-management action.
 
 ### Recommendation 2
 
@@ -180,7 +180,7 @@ Use the full Newman run already captured as the canonical API evidence file in t
 
 ### Recommendation 5
 
-Record one automation video only after at least one UI happy path and one API batch run are stable. Recording too early would lock weak evidence into the final package.
+Keep `video/OSMS-Automation-Demo.mp4` as the canonical automation demo artifact and only replace it if a cleaner rerun or broader demo scope is captured.
 
 ## Report-ready conclusion paragraph
 
