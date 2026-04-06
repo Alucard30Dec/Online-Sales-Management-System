@@ -6,9 +6,9 @@
 
 ## Completion status
 
-- Recording created on `2026-04-06`
+- Recording re-created on `2026-04-06`
 - Verified duration: `130 seconds`
-- Verified file size: approximately `32.3 MB`
+- Verified file size: approximately `9.58 MB`
 
 ## Exact recording order
 
