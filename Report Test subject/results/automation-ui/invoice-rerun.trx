@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3828ac4d-a5cb-433a-81f0-b028d9a6212b" name="Alucard30Dec@ALUCARD 2026-04-06 12:37:32" runUser="ALUCARD\Alucard30Dec" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-06T12:37:32.4475422+07:00" queuing="2026-04-06T12:37:32.4475426+07:00" start="2026-04-06T12:37:07.5832884+07:00" finish="2026-04-06T12:37:32.4532334+07:00" />
+  <TestSettings name="default" id="6d671934-0476-4649-917e-4931a96e6871">
+    <Deployment runDeploymentRoot="Alucard30Dec_ALUCARD_2026-04-06_12_37_32" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="dd2b0fb9-920d-4c04-8190-e8fcc62b92e4" testId="215efd62-1043-e191-8d79-eafeeeba5c9a" testName="OSMS.UITests.Tests.InvoiceFlowTests.PrivilegedUserCanCreateWalkInInvoice" computerName="ALUCARD" duration="00:00:24.0405100" startTime="2026-04-06T12:37:32.3587394+07:00" endTime="2026-04-06T12:37:32.3587637+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dd2b0fb9-920d-4c04-8190-e8fcc62b92e4">
+      <Output>
+        <ErrorInfo>
+          <Message>OpenQA.Selenium.WebDriverTimeoutException : Timed out after 15 seconds</Message>
+          <StackTrace>   at OpenQA.Selenium.Support.UI.DefaultWait`1.ThrowTimeoutException(String exceptionMessage, Exception lastException)&#xD;
+   at OpenQA.Selenium.Support.UI.DefaultWait`1.Until[TResult](Func`2 condition, CancellationToken token)&#xD;
+   at OpenQA.Selenium.Support.UI.DefaultWait`1.Until[TResult](Func`2 condition)&#xD;
+   at OSMS.UITests.Support.WaitHelper.UrlContains(String fragment) in E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Support\WaitHelper.cs:line 46&#xD;
+   at OSMS.UITests.Pages.InvoiceDetailsPage.WaitUntilLoaded() in E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Pages\InvoiceDetailsPage.cs:line 18&#xD;
+   at OSMS.UITests.Tests.InvoiceFlowTests.&lt;PrivilegedUserCanCreateWalkInInvoice&gt;b__0_0() in E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Tests\InvoiceFlowTests.cs:line 28&#xD;
+   at OSMS.UITests.Support.UiTestBase.ExecuteWithFailureCapture(String name, Action action) in E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Support\UiTestBase.cs:line 36&#xD;
+   at OSMS.UITests.Tests.InvoiceFlowTests.PrivilegedUserCanCreateWalkInInvoice() in E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Tests\InvoiceFlowTests.cs:line 13&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="OSMS.UITests.Tests.InvoiceFlowTests.PrivilegedUserCanCreateWalkInInvoice" storage="e:\project\online-sales-management-system\report test subject\automation\ui\osms.uitests\bin\debug\net8.0\osms.uitests.dll" id="215efd62-1043-e191-8d79-eafeeeba5c9a">
+      <Execution id="dd2b0fb9-920d-4c04-8190-e8fcc62b92e4" />
+      <TestMethod codeBase="E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\bin\Debug\net8.0\OSMS.UITests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="OSMS.UITests.Tests.InvoiceFlowTests" name="PrivilegedUserCanCreateWalkInInvoice" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="215efd62-1043-e191-8d79-eafeeeba5c9a" executionId="dd2b0fb9-920d-4c04-8190-e8fcc62b92e4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.10]   Discovering: OSMS.UITests&#xD;
+[xUnit.net 00:00:00.15]   Discovered:  OSMS.UITests&#xD;
+[xUnit.net 00:00:00.16]   Starting:    OSMS.UITests&#xD;
+[xUnit.net 00:00:24.25]       OpenQA.Selenium.WebDriverTimeoutException : Timed out after 15 seconds&#xD;
+[xUnit.net 00:00:24.26]       Stack Trace:&#xD;
+[xUnit.net 00:00:24.26]            at OpenQA.Selenium.Support.UI.DefaultWait`1.ThrowTimeoutException(String exceptionMessage, Exception lastException)&#xD;
+[xUnit.net 00:00:24.26]            at OpenQA.Selenium.Support.UI.DefaultWait`1.Until[TResult](Func`2 condition, CancellationToken token)&#xD;
+[xUnit.net 00:00:24.26]            at OpenQA.Selenium.Support.UI.DefaultWait`1.Until[TResult](Func`2 condition)&#xD;
+[xUnit.net 00:00:24.26]         E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Support\WaitHelper.cs(46,0): at OSMS.UITests.Support.WaitHelper.UrlContains(String fragment)&#xD;
+[xUnit.net 00:00:24.26]         E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Pages\InvoiceDetailsPage.cs(18,0): at OSMS.UITests.Pages.InvoiceDetailsPage.WaitUntilLoaded()&#xD;
+[xUnit.net 00:00:24.26]         E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Tests\InvoiceFlowTests.cs(28,0): at OSMS.UITests.Tests.InvoiceFlowTests.&lt;PrivilegedUserCanCreateWalkInInvoice&gt;b__0_0()&#xD;
+[xUnit.net 00:00:24.26]         E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Support\UiTestBase.cs(36,0): at OSMS.UITests.Support.UiTestBase.ExecuteWithFailureCapture(String name, Action action)&#xD;
+[xUnit.net 00:00:24.26]         E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\Tests\InvoiceFlowTests.cs(13,0): at OSMS.UITests.Tests.InvoiceFlowTests.PrivilegedUserCanCreateWalkInInvoice()&#xD;
+[xUnit.net 00:00:24.26]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:24.26]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:24.26]   Finished:    OSMS.UITests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="ALUCARD" outcome="Error" timestamp="2026-04-06T12:37:32.3555202+07:00">
+        <Text>[xUnit.net 00:00:24.25]     OSMS.UITests.Tests.InvoiceFlowTests.PrivilegedUserCanCreateWalkInInvoice [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
