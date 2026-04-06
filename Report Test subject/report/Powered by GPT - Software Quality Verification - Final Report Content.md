@@ -63,13 +63,13 @@ The project was completed by a three-member QA team. Work allocation was designe
 
 - `Hoang Van Thien`
   - led project audit and final integration
-  - owned `15` UI test cases
+  - owned `17` UI test cases
   - main modules: `Authentication`, `Permissions`, `Admin Users`, `Admin Groups`, `Invoices`, `Reports`, partial `Public Catalog`
 - `Nguyen Thanh Dat`
-  - owned `12` UI test cases
+  - owned `13` UI test cases
   - main modules: `Customers`, `Suppliers`, `Purchases`, partial `Stock`
 - `Le Quang Duy`
-  - owned `13` UI test cases
+  - owned `14` UI test cases
   - main modules: `Products`, `Product Import`, partial `Stock`, partial `Public Catalog`
 
 This allocation satisfies the requirement that each member contributes at least ten test cases while keeping role ownership visible for defense and review.
@@ -135,20 +135,13 @@ The test data environment relied on seeded demo data from `Data/DbSeeder.cs`, in
 
 The scenario design phase identified `42` documented scenarios across UI and API surfaces. These scenarios were grouped by module and risk type, including positive flows, negative flows, validation flows, permission checks, and business-rule edge cases. The design intentionally emphasized critical modules such as authentication, permissions, purchases, invoices, stock, reports, and product import.
 
-At the current stage, `38` of the `42` documented scenarios are represented in the current test-case files, which gives a scenario design coverage of `90.48%`. The remaining gaps are:
+At the current stage, all `42` documented scenarios are represented in the current test-case files, which gives a scenario design coverage of `100%`. This closes the earlier traceability gap and strengthens the design section against rubric checks for completeness and coverage.
 
-- `SCN-AUTH-003`
-- `SCN-GOV-003`
-- `SCN-INV-003`
-- `SCN-PUB-003`
-
-These gaps are important because they reduce full scenario-to-test-case traceability and should be closed before final submission if time allows.
-
-[INSERT TABLE D-1: scenario summary from `docs/test-scenarios.md` or `metrics/OSMS-Scenario-Coverage.xlsx`]
+[INSERT TABLE D-1: scenario summary from `docs/test-scenarios.md` or `metrics/OSMS-Scenario-Coverage.csv`]
 
 ## 3.2 UI Test Case Design
 
-The UI test suite contains `40` test cases covering:
+The UI test suite contains `44` test cases covering:
 
 - authentication
 - permissions
@@ -238,8 +231,8 @@ The selected UI automation flows were:
 
 - admin login smoke
 - sales access-denied navigation
-- warehouse draft purchase creation
-- sales invoice creation
+- privileged-user draft purchase creation
+- privileged-user invoice creation
 - product import preview
 
 The selected API automation groups were:
@@ -254,66 +247,74 @@ The selected API automation groups were:
 
 ## 3.6 Execution Summary
 
-As of `2026-04-05`, the real execution set is still limited and must be interpreted conservatively:
+As of `2026-04-06`, the real execution set is materially stronger than the initial partial run, but it still must be interpreted conservatively:
 
-- total test cases: `59`
-- executed: `4`
-- pass: `2`
-- fail: `0`
-- blocked: `2`
-- not run: `55`
-- execution progress: `6.78%`
+- total test cases: `63`
+- executed: `25`
+- pass: `24`
+- fail: `1`
+- blocked: `0`
+- not run: `38`
+- execution progress: `39.68%`
 
-The two current pass results are:
+The strongest confirmed pass results now include:
 
 - `TC-UI-AUTH-001` - admin login smoke
-- `TC-API-HLT-001` - health API smoke
+- `TC-UI-AUTH-003` - denied navigation to purchases is enforced by redirect away from the protected route
+- `TC-UI-IMP-002` - product import preview counts are displayed correctly
+- `TC-UI-PUR-001` and `TC-UI-PUR-007` - draft purchase creation and details verification
+- all `19` API cases - full Newman collection pass
 
-The two blocked results are currently automation-instability observations, not confirmed product defects:
+The current confirmed fail result is:
 
-- `TC-UI-AUTH-003`
-- `TC-UI-IMP-002`
+- `TC-UI-INV-001`
+  - linked defect: `BUG-20260406-001`
+  - root cause confirmed by UI evidence and ASP.NET Core server log excerpt
 
-[INSERT TABLE E-1: final result summary from `results/OSMS-Final-Results.xlsx`]
+[INSERT TABLE E-1: final result summary from `results/OSMS-Final-Test-Results.xlsx`]
 [INSERT TABLE E-2: metrics summary from `metrics/OSMS-Test-Metrics.xlsx`, sheet `Summary`]
 
 ## 3.7 Execution Evidence
 
-The current evidence set proves that both UI and API automation are functioning at a baseline level:
+The current evidence set proves that both UI and API automation are functioning beyond a smoke-only baseline:
 
 - UI evidence
   - login success screenshot exists for `TC-UI-AUTH-001`
-  - TRX runner output exists for the partial UI run
+  - permission-denial behavior screenshot exists for `TC-UI-AUTH-003`
+  - import preview-count screenshot exists for `TC-UI-IMP-002`
+  - purchase details screenshot exists for `TC-UI-PUR-001` and `TC-UI-PUR-007`
+  - invoice failure screenshot exists for `TC-UI-INV-001`
 - API evidence
-  - Newman output exists for `TC-API-HLT-001`
-- observation evidence
-  - screenshots exist for the two automation failures currently under triage
+  - full Newman collection output exists for all `19` API requests
+- server-log evidence
+  - extracted defect log exists for `BUG-20260406-001`
 
-[INSERT FIGURE E-1: `evidence/ui/automation/20260405_115322_TC-UI-AUTH-001-success.png`]
-[INSERT FIGURE E-2: screenshot or text capture of `results/automation-api/newman-health-smoke.txt`]
-[INSERT FIGURE E-3: `PENDING REAL EXECUTION` purchase success screenshot]
-[INSERT FIGURE E-4: `PENDING REAL EXECUTION` invoice success screenshot]
-[INSERT FIGURE E-5: `PENDING REAL EXECUTION` manual permission-denied screenshot if manually confirmed]
-[INSERT FIGURE E-6: `PENDING REAL EXECUTION` product import preview-count screenshot]
+[INSERT FIGURE E-1: `evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png`]
+[INSERT FIGURE E-2: screenshot or text capture of `results/automation-api/newman-full-run.txt`]
+[INSERT FIGURE E-3: `evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`]
+[INSERT FIGURE E-4: `evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png`]
+[INSERT FIGURE E-5: `evidence/ui/automation/20260406_054245_TC-UI-AUTH-003-access-denied.png`]
+[INSERT FIGURE E-6: `evidence/ui/automation/20260406_054115_TC-UI-IMP-002-preview.png`]
 
 # IV. Defect Report And Metrics
 
 ## 4.1 Defect Log
 
-At the current reporting date, the repository contains `0` confirmed product defects and `2` observations pending manual confirmation. This distinction is important because the current failed executions do not yet prove application defects. Both observations were caused during automation runs and still require manual retest before being promoted into real defects in `GitHub Issues`.
+At the current reporting date, the repository contains `1` confirmed product defect and `0` open observations pending manual confirmation. The two older automation observations were closed after focused reruns proved that they were automation or expectation issues rather than product defects.
 
-Current observation records:
+Current confirmed defect record:
 
-- `OBS-20260405-001`
-  - related to `TC-UI-AUTH-003`
-  - possible area: authorization / purchases access
-  - current state: `Pending Manual Confirmation`
-- `OBS-20260405-002`
-  - related to `TC-UI-IMP-002`
-  - possible area: product import preview interaction
-  - current state: `Pending Manual Confirmation`
+- `BUG-20260406-001`
+  - related to `TC-UI-INV-001`
+  - module: `Invoices`
+  - severity / priority: `High / High`
+  - current state: `Open - Confirmed`
+  - evidence:
+    - UI failure screenshot
+    - focused rerun TRX
+    - extracted server log excerpt showing `InvalidOperationException` in `InvoicesController.Create`
 
-This report therefore does not claim any confirmed defect unless additional real evidence is collected after manual retest.
+GitHub Issue creation for this defect remains `PENDING REAL EXECUTION` because GitHub CLI is not available in the current local environment.
 
 [INSERT TABLE B-1: `defects/exports/OSMS-Defect-Register.csv`]
 [INSERT FIGURE B-1: `PENDING REAL EXECUTION` GitHub Issue screenshot if a confirmed defect is opened]
@@ -345,27 +346,32 @@ The current metrics show that the submission is structurally strong in planning 
 
 Key metrics:
 
-- executed test cases: `4 / 59`
-- pass rate on executed cases: `50%`
-- blocked rate on executed cases: `50%`
-- confirmed fail rate: `0%`
+- executed test cases: `25 / 63`
+- pass rate on executed cases: `96%`
+- fail rate on executed cases: `4%`
+- blocked rate on executed cases: `0%`
 - documented scenarios: `42`
-- mapped scenarios: `38`
-- scenario execution coverage: `9.52%`
+- mapped scenarios: `42`
+- scenario execution coverage: `26.19%`
 
 Interface-wise view:
 
-- `UI`
-  - total: `40`
-  - executed: `3`
-  - pass: `1`
-  - blocked: `2`
+- `Admin UI`
+  - total: `41`
+  - executed: `6`
+  - pass: `5`
+  - fail: `1`
+- `Public UI`
+  - total: `3`
+  - executed: `0`
+  - pass: `0`
+  - fail: `0`
 - `API`
   - total: `19`
-  - executed: `1`
-  - pass: `1`
+  - executed: `19`
+  - pass: `19`
 
-Module-wise view shows that `Authentication` and `Health API` have baseline evidence, while core business modules such as `Purchases`, `Invoices`, and `Stock` remain largely unexecuted.
+Module-wise view shows that the public API surface is fully executed, `Purchases` and `Product Import` now have positive evidence, and `Invoices` contains the current confirmed defect. `Stock`, `Reports`, `Products`, and `Public Catalog` remain largely unexecuted.
 
 [INSERT TABLE M-1: `metrics/OSMS-Interface-Results.csv`]
 [INSERT TABLE M-2: `metrics/OSMS-Module-Wise-Results.csv`]
@@ -387,29 +393,25 @@ This submission achieved the following:
 
 ## 5.2 Challenges And Limitations
 
-The main limitation of the current package is execution depth. Only `4` of `59` test cases have been executed with real evidence so far. Because of this, the current report cannot responsibly claim that the full system is stable. Another limitation is that the current failed automation results are not yet strong enough to be treated as confirmed product defects, which reduces the strength of the bug-management section until manual confirmation is completed.
+The main limitation of the current package is no longer only execution depth. While `25` of `63` test cases now have real evidence, the system still contains one confirmed high-severity defect in invoice creation, and several business UI areas remain unexecuted. Because of this, the report cannot responsibly claim that the full system is stable.
 
 The report also still lacks some high-value evidence:
 
-- full purchase and invoice execution screenshots
-- manual confirmation screenshots for the two observations
-- a full catalog API regression run
-- an automation demo video in `mp4` or `avi`
-- a GitHub Issue screenshot with severity and priority labels if a confirmed defect is found
+- GitHub Issue screenshot for `BUG-20260406-001`
 
 ## 5.3 Future Enhancements
 
 The highest-priority next actions are:
 
-1. manually retest the two current observations and confirm whether they are product defects or automation issues
-2. execute the core purchase, invoice, stock, and report flows with full screenshots
-3. run the remaining catalog API folders in Newman and store the outputs
-4. close the four uncovered scenario-to-test-case gaps
-5. record the final automation demo video only after a stable UI flow and stable API batch run are available
+1. create the external GitHub Issue for `BUG-20260406-001` and capture the issue screenshot
+2. fix and retest invoice creation, then capture the post-fix details-page evidence
+3. execute the remaining high-value UI areas: `Stock`, `Reports`, `Products`, and `Public Catalog`
+4. commit the generated PDF and PPTX artifacts together with the refreshed evidence pack
+5. commit the generated automation demo video together with the refreshed evidence pack
 
 ## 5.4 Final Conclusion
 
-Based on the current execution evidence, the `Online Sales Management System` has a verified startup and smoke baseline for admin login and health API availability, but it does not yet have enough executed coverage to support a broad claim of operational stability. The most defensible conclusion is that the project is partially verified, strongly prepared in design and traceability, and ready for a stronger final submission if the remaining business-critical executions and evidence gaps are completed before submission.
+Based on the current execution evidence, the `Online Sales Management System` has a verified baseline for admin login, permission enforcement, product import preview, draft purchase creation, and the full public API surface. However, it does not yet have enough executed UI coverage to support a broad claim of operational stability, and invoice creation currently contains one confirmed high-severity defect. The most defensible conclusion is that the project is partially verified, strong in design and traceability, and close to a stronger final submission once the remaining UI executions, GitHub issue evidence, and automation video are completed.
 
 # References
 
@@ -437,19 +439,14 @@ Based on the current execution evidence, the `Online Sales Management System` ha
 - UI test data: `test-data/ui/OSMS-UI-Test-Data.xlsx`
 - API test data: `test-data/api/OSMS-API-Test-Data.json`
 - Automation scripts: `automation/`
-- Final results: `results/OSMS-Final-Results.xlsx`
+- Final results: `results/OSMS-Final-Test-Results.xlsx`
 - Metrics: `metrics/OSMS-Test-Metrics.xlsx`
-- Defect register: `defects/exports/OSMS-Defect-Register.csv`
+- Defect log: `defects/exports/OSMS-Defect-Log.xlsx`
 - UI evidence: `evidence/ui/automation/`
 - API evidence: `results/automation-api/`
-- Video: `video/OSMS-Automation-Demo.mp4` - `PENDING REAL EXECUTION`
+- Video: `video/OSMS-Automation-Demo.mp4`
 
 ## Appendix C. Mandatory Pending Items Before Strong Final Submission
 
-- `PENDING REAL EXECUTION`: purchase happy-path evidence
-- `PENDING REAL EXECUTION`: invoice happy-path evidence
-- `PENDING REAL EXECUTION`: manual confirmation for `OBS-20260405-001`
-- `PENDING REAL EXECUTION`: manual confirmation for `OBS-20260405-002`
-- `PENDING REAL EXECUTION`: full catalog API regression outputs
 - `PENDING REAL EXECUTION`: GitHub Issue screenshot if a confirmed defect is opened
-- `PENDING REAL EXECUTION`: automation demo video
+- `PENDING REAL EXECUTION`: additional execution evidence for `Stock`, `Reports`, `Products`, and `Public Catalog`

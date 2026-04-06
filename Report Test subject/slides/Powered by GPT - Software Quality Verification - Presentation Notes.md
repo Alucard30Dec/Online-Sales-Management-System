@@ -42,7 +42,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 
 ### Slide 4. Coverage And Team Allocation
 
-- State that the team produced `42` scenarios and `59` total test cases.
+- State that the team produced `42` scenarios and `63` total test cases.
 - Mention that each member had at least `10` UI test cases.
 - If asked about non-overlap, explain module ownership split:
   - HVT focused more on auth, permissions, admin, invoices, reports
@@ -61,20 +61,20 @@ Use these notes while building the slide deck and during oral defense. The notes
 
 - This is one of the strongest slides.
 - Show that UI and API both have real pass evidence.
-- Explicitly say that blocked results were not converted into fake defects.
+- Explicitly say that only the invoice failure was promoted into a confirmed defect because the server log proved the root cause.
 - This makes the submission more credible.
 
 ### Slide 7. Current Metrics
 
-- Explain that `59` cases exist but only `4` have real execution evidence so far.
-- Say clearly that the current package proves a verified baseline, not full regression stability.
+- Explain that `63` cases exist and `25` now have real execution evidence.
+- Say clearly that the package is materially stronger than a smoke-only baseline, but it is still not full regression stability.
 - This answer is stronger than pretending the whole project is already fully verified.
 
 ### Slide 8. Defect And Risk Analysis
 
-- Explain that `0` confirmed defects does not mean the system is defect-free.
-- It means the current failed evidence is not yet strong enough to justify defect logging.
-- Mention that the biggest unresolved business risks are still purchases, invoices, stock, and product import.
+- Explain that `1` confirmed defect now exists because the invoice failure has both UI proof and server-log proof.
+- Mention that the biggest unresolved execution gaps are now stock, reports, products, and public-catalog UI.
+- Also mention that the earlier authorization and import observations were closed by focused reruns, so they should not be presented as product bugs.
 
 ### Slide 9. Key Insights
 
@@ -88,9 +88,10 @@ Use these notes while building the slide deck and during oral defense. The notes
 ### Slide 10. Next Steps And Submission Package
 
 - Explain the immediate next actions:
-  - retest observations manually
-  - run more critical flows
-  - finish video and final evidence
+  - open the GitHub Issue externally
+  - fix and retest invoice creation
+  - commit the generated PDF and PPTX
+  - commit the generated automation video
 - End by pointing to the GitHub appendix link containing the deliverables.
 
 ### Slide 11. Q&A Backup
@@ -105,8 +106,8 @@ If the examiner allows a short live demo or asks for concrete proof, use this or
 2. show `test-cases/ui/OSMS-UI-Test-Cases.xlsx`
 3. show `automation/ui/OSMS.UITests`
 4. show login success screenshot
-5. show Newman health smoke output
-6. show `results/OSMS-Final-Results.xlsx`
+5. show Newman full-collection output
+6. show `results/OSMS-Final-Test-Results.xlsx`
 7. show `metrics/OSMS-Test-Metrics.xlsx`
 
 This order starts from structure, then evidence, then summary, which is easier to defend than starting from theory.
@@ -115,28 +116,33 @@ This order starts from structure, then evidence, then summary, which is easier t
 
 ### Strongest evidence already available
 
-- `evidence/ui/automation/20260405_115322_TC-UI-AUTH-001-success.png`
-- `results/automation-api/newman-health-smoke.txt`
-- `results/automation-ui/ui-tests.trx`
-- `results/OSMS-Final-Results.xlsx`
+- `evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png`
+- `evidence/ui/automation/20260406_054245_TC-UI-AUTH-003-access-denied.png`
+- `evidence/ui/automation/20260406_054115_TC-UI-IMP-002-preview.png`
+- `evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
+- `results/automation-api/newman-full-run.txt`
+- `results/automation-ui/auth-permission-rerun.trx`
+- `results/automation-ui/import-preview-rerun.trx`
+- `results/automation-ui/purchase-rerun.trx`
+- `results/OSMS-Final-Test-Results.xlsx`
 - `metrics/OSMS-Test-Metrics.xlsx`
 
-### Do not overuse as bug proof
+### Strongest defect proof
 
-- `evidence/ui/automation/20260405_115343_TC-UI-AUTH-003-failure.png`
-- `evidence/ui/automation/20260405_115405_TC-UI-IMP-002-failure.png`
+- `evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png`
+- `evidence/defects/BUG-20260406-001-invoice-create-log.txt`
 
-These two files are useful to explain automation instability, but they are not strong enough to present as confirmed application defects.
+These two files should be presented together because the screenshot shows the user-facing failure and the log proves the root cause.
 
 ## Likely Q&A And Recommended Answers
 
-### Why do you have 0 confirmed defects?
+### Why do you have 1 confirmed defect?
 
-Because the current failed automation evidence is not yet enough to prove a reproducible application bug. We kept those records as observations instead of forcing them into false defect reports.
+Because invoice creation now has both a reproducible UI failure and a matching server-side exception trace. That is strong enough to justify a real defect log.
 
-### Why is execution progress only 6.78%?
+### Why is execution progress 39.68% instead of 100%?
 
-Because the current package prioritizes correctness and traceability over fake completion. We executed the flows that could produce credible evidence first, then measured the real current baseline.
+Because the package still avoids fake completion. We expanded execution where evidence could be collected credibly, especially the full API surface and several high-value UI flows, but we did not mark the remaining UI areas as executed without proof.
 
 ### Why did you choose Selenium and Newman?
 
@@ -144,15 +150,19 @@ The project stack is `.NET 8`, so Selenium with `.NET + xUnit` is practical and 
 
 ### Which module is riskiest right now?
 
-The highest current business risk is in modules that affect money and stock: purchases, invoices, stock, and product import, because those areas are still largely unexecuted.
+The highest current business risk is invoice creation because it has one confirmed defect, followed by still-unexecuted areas such as stock, reports, and public-catalog UI.
 
 ### How do you distinguish automation failure from product defect?
 
-A product defect must have a reproducible expected-versus-actual mismatch. If the runner times out or the script expectation is unstable, we classify it as an automation script issue or observation until manual confirmation is completed.
+A product defect must have a reproducible expected-versus-actual mismatch. If the runner times out or the script expectation is unstable, we keep it as an observation. Only the invoice failure crossed that threshold because the server log confirmed the backend root cause.
 
 ### What is the strongest part of your submission?
 
 The strongest part is the traceable structure: source-based audit, real test cases, real automation assets, real evidence files, and metrics that do not overstate the result.
+
+### Why were the earlier authorization and import failures not logged as bugs?
+
+Because focused reruns showed that the authorization case was a valid redirect-based denial and the import case was an automation locator issue. The team only promoted the invoice case into a confirmed defect after the UI failure and server log matched.
 
 ## Slide Design Guidance
 

@@ -43,8 +43,10 @@ This folder is organized for grading, defense, and traceability. Every deliverab
 - Exam brief: `UEF - Final.pdf`
 - Working report draft: `Powered by GPT - Software Quality Verification.docx`
 - Canonical report snapshot: `report/Powered by GPT - Software Quality Verification - Final Report.docx`
+- Final report PDF: `report/Powered by GPT - Software Quality Verification - Final Report.pdf`
 - Report source content: `report/Powered by GPT - Software Quality Verification - Final Report Content.md`
 - Presentation source content: `slides/Powered by GPT - Software Quality Verification - Presentation Content.md`
+- Final presentation deck: `slides/Powered by GPT - Software Quality Verification - Presentation.pptx`
 - UI test cases workbook: `test-cases/ui/OSMS-UI-Test-Cases.xlsx`
 - API test cases workbook: `test-cases/api/OSMS-API-Test-Cases.xlsx`
 - Final results workbook: `results/OSMS-Final-Test-Results.xlsx`
@@ -101,10 +103,7 @@ Use the GitHub path to this folder as the appendix link source after all require
   - final results and metrics workbooks
   - defect workflow and defect log workbook
 - Current blockers before a strong final submission:
-  - final `PPTX` file is still `PENDING REAL EXECUTION`
-  - final report `PDF` export is still `PENDING REAL EXECUTION`
-  - automation video in `mp4` or `avi` is still `PENDING REAL EXECUTION`
-  - purchase and invoice evidence screenshots are still `PENDING REAL EXECUTION`
-  - manual confirmation for the two current observations is still `PENDING REAL EXECUTION`
+  - GitHub Issue screenshot for `BUG-20260406-001` is still `PENDING REAL EXECUTION`
+  - additional execution evidence for `Stock`, `Reports`, `Products`, and `Public Catalog` is still `PENDING REAL EXECUTION`
 
 See `docs/phase-15-final-github-cleanup.md` for the final readiness verdict and submission checklist.

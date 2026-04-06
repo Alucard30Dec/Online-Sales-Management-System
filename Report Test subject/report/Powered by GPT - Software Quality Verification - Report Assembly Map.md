@@ -30,9 +30,9 @@ Use this file while converting the Markdown report source into the final Word an
 - optional supporting table:
   - `test-cases/ui/OSMS-UI-Test-Cases.xlsx`
   - summarize owner counts:
-    - `Hoang Van Thien = 15`
-    - `Nguyen Thanh Dat = 12`
-    - `Le Quang Duy = 13`
+    - `Hoang Van Thien = 17`
+    - `Nguyen Thanh Dat = 13`
+    - `Le Quang Duy = 14`
 
 ### II. Test Plan
 
@@ -59,19 +59,18 @@ Use this file while converting the Markdown report source into the final Word an
   - `docs/phase-7-automation-design.md`
   - `automation/README.md`
 - execution tables:
-  - `results/OSMS-Final-Results.xlsx`
+  - `results/OSMS-Final-Test-Results.xlsx`
   - `metrics/OSMS-Test-Metrics.xlsx`
 
 ### Mandatory figures for Section III
 
 - insert now:
-  - `evidence/ui/automation/20260405_115322_TC-UI-AUTH-001-success.png`
-  - screenshot or clipped output from `results/automation-api/newman-health-smoke.txt`
-- insert later when available:
-  - purchase success screenshot
-  - invoice success screenshot
-  - manual permission-denied screenshot
-  - import preview-count screenshot
+  - `evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png`
+  - `evidence/ui/automation/20260406_054245_TC-UI-AUTH-003-access-denied.png`
+  - `evidence/ui/automation/20260406_054115_TC-UI-IMP-002-preview.png`
+  - `evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
+  - `evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png`
+  - screenshot or clipped output from `results/automation-api/newman-full-run.txt`
 
 ### IV. Defect Report And Metrics
 
@@ -88,9 +87,11 @@ Use this file while converting the Markdown report source into the final Word an
 
 ### Mandatory figures for Section IV
 
+- insert now:
+  - screenshot of `metrics/OSMS-Test-Metrics.xlsx` summary sheet
+  - `evidence/defects/BUG-20260406-001-invoice-create-log.txt`
 - insert later when available:
   - GitHub Issue screenshot showing severity and priority
-  - metrics workbook summary screenshot
 
 ### V. Conclusion And Future Work
 
@@ -119,11 +120,8 @@ Use this file while converting the Markdown report source into the final Word an
 
 ## High-Risk Missing Items Before Final Export
 
-- `PENDING REAL EXECUTION`: automation demo video in `video/OSMS-Automation-Demo.mp4`
-- `PENDING REAL EXECUTION`: purchase and invoice success screenshots
-- `PENDING REAL EXECUTION`: manual confirmation screenshots for the two observations
 - `PENDING REAL EXECUTION`: GitHub Issue screenshot if a confirmed defect is found
-- `PENDING REAL EXECUTION`: full catalog API execution outputs
+- `PENDING REAL EXECUTION`: additional execution screenshots for `Stock`, `Reports`, `Products`, and `Public Catalog`
 
 ## Final Export Checklist
 

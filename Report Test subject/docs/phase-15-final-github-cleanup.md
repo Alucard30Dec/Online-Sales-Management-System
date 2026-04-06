@@ -44,11 +44,8 @@ Perform the final repository audit for the `Report Test subject` package, verify
 
 ### Mandatory artifact families still incomplete
 
-- final slide deck in `pptx`
-- final report export in `pdf`
-- automation video in `mp4` or `avi`
 - GitHub Issue screenshots with severity and priority if a confirmed defect is opened
-- additional execution screenshots for purchase and invoice happy paths
+- additional execution screenshots for `Stock`, `Reports`, `Products`, and `Public Catalog`
 
 ## Broken link and path check
 
@@ -72,11 +69,9 @@ These links are already used consistently across the README and report source co
 
 ### Still intentionally unresolved
 
-- `slides/Powered by GPT - Software Quality Verification - Presentation.pptx`
-- `report/Powered by GPT - Software Quality Verification - Final Report.pdf`
-- `video/OSMS-Automation-Demo.mp4`
+- `evidence/defects/BUG-20260406-001-github-issue.png`
 
-These are true submission blockers, not broken references caused by wrong paths.
+This is a true submission blocker for defect-tracker completeness, not a broken reference caused by a wrong path.
 
 ## File naming check
 
@@ -138,16 +133,15 @@ The `.gitignore` already excludes these categories.
 
 ### Current verdict
 
-`NOT READY FOR FINAL SUBMISSION`
+`READY WITH MINOR FIXES`
 
 ### Why it is not ready yet
 
-- final `PPTX` file does not exist yet
-- final report `PDF` does not exist yet
-- automation video does not exist yet
-- purchase and invoice evidence screenshots are still missing
-- the two current observations are not manually confirmed yet
+- GitHub Issue screenshot for `BUG-20260406-001` does not exist yet
+- several remaining UI modules are still not executed
 - the repository still contains uncommitted evidence and cleanup files from recent phases
+
+The `PDF` report, `PPTX` slide deck, and automation video now exist in the canonical submission paths. The remaining work is limited to external GitHub issue evidence and additional optional execution depth.
 
 ### What is already strong enough
 
@@ -163,19 +157,20 @@ The `.gitignore` already excludes these categories.
 
 ## Final pre-submission checklist
 
-1. Paste the final report content into the working Word report and save the final version in:
+1. Review the generated report in:
    - `report/Powered by GPT - Software Quality Verification - Final Report.docx`
-2. Export the final report to:
+2. Review the generated PDF in:
    - `report/Powered by GPT - Software Quality Verification - Final Report.pdf`
-3. Build the final slide deck and save it as:
+3. Review the generated slide deck in:
    - `slides/Powered by GPT - Software Quality Verification - Presentation.pptx`
-4. Record and save the automation video as:
+4. Review the generated automation video in:
    - `video/OSMS-Automation-Demo.mp4`
 5. Add remaining real screenshots for:
-   - purchase success
-   - invoice success
-   - manual confirmation of the two observations if available
-6. If a defect becomes confirmed, add:
+   - stock execution
+   - reports execution
+   - products execution
+   - public catalog execution
+6. For the already confirmed defect, add:
    - GitHub Issue screenshot with severity and priority labels
 7. Commit all untracked phase artifacts before final push.
 8. Verify that the appendix link in the report still points to the same GitHub folder.

@@ -81,22 +81,22 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 **Design Coverage**
 
 - `42` documented scenarios
-- `59` total test cases
-  - `40` UI
+- `63` total test cases
+  - `44` UI
   - `19` API
-- `90.48%` scenario design coverage
+- `100%` scenario design coverage
 
 **Team Allocation**
 
-- Hoang Van Thien: `15` UI cases
-- Nguyen Thanh Dat: `12` UI cases
-- Le Quang Duy: `13` UI cases
+- Hoang Van Thien: `17` UI cases
+- Nguyen Thanh Dat: `13` UI cases
+- Le Quang Duy: `14` UI cases
 
 ### Visual to show
 
 - bar chart or simple table for case ownership
 - small note:
-  - `4` scenario gaps remain: `SCN-AUTH-003`, `SCN-GOV-003`, `SCN-INV-003`, `SCN-PUB-003`
+  - `42 / 42` scenarios are now mapped to test cases
 
 ## Slide 5. Automation Implementation
 
@@ -133,43 +133,49 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 **Confirmed Pass Evidence**
 
 - `TC-UI-AUTH-001` passed
-- `TC-API-HLT-001` passed
+- `TC-UI-AUTH-003` passed
+- `TC-UI-IMP-002` passed
+- `TC-UI-PUR-001` and `TC-UI-PUR-007` passed
+- full API collection passed (`19 / 19`)
 
-**Current Observation Evidence**
+**Confirmed Fail Evidence**
 
-- `TC-UI-AUTH-003` blocked by automation instability
-- `TC-UI-IMP-002` blocked by automation instability
+- `TC-UI-INV-001` failed with UI and server-log proof
 
 **Important Rule**
 
 - no unexecuted test was marked as pass
-- no observation was promoted into a confirmed defect
+- only one issue was promoted into a confirmed defect because the root cause was proven by server log evidence
 
 ### Visual to show
 
 - login success screenshot:
-  - `evidence/ui/automation/20260405_115322_TC-UI-AUTH-001-success.png`
-- Newman output snippet for health smoke:
-  - `results/automation-api/newman-health-smoke.txt`
+  - `evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png`
+- purchase success screenshot:
+  - `evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
+- invoice defect screenshot:
+  - `evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png`
+- Newman output snippet for full collection:
+  - `results/automation-api/newman-full-run.txt`
 
 ## Slide 7. Current Metrics
 
 ### Slide content
 
-**Execution Summary As Of 2026-04-05**
+**Execution Summary As Of 2026-04-06**
 
-- total cases: `59`
-- executed: `4`
-- pass: `2`
-- blocked: `2`
-- fail: `0`
-- not run: `55`
-- execution progress: `6.78%`
+- total cases: `63`
+- executed: `25`
+- pass: `24`
+- fail: `1`
+- blocked: `0`
+- not run: `38`
+- execution progress: `39.68%`
 
 **Interface View**
 
-- UI: `3` executed, `1` pass, `2` blocked
-- API: `1` executed, `1` pass
+- Admin UI: `6` executed, `5` pass, `1` fail
+- API: `19` executed, `19` pass
 
 ### Visual to show
 
@@ -181,27 +187,27 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Confirmed Defects**
 
-- `0` at current evidence state
+- `1` confirmed defect
+  - `BUG-20260406-001` in invoice creation
 
-**Observations Under Triage**
+**Closed Observations**
 
-- authorization / purchases navigation
-- product import preview flow
+- authorization redirect behavior
+- product import preview locator issue
 
 **Highest Business Risks Still Unverified**
 
-- Purchases
-- Invoices
 - Stock
+- Products
 - Reports
-- Product Import
+- Public Catalog UI
 
 ### Visual to show
 
 - one risk heat-style table:
-  - `Verified Baseline`
-  - `Observed Instability`
-  - `Unverified Critical Area`
+  - `Verified`
+  - `Confirmed Defect`
+  - `Unverified`
 
 ## Slide 9. Key Insights
 
@@ -211,13 +217,13 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 - project is testable and automation-capable
 - source-based test design is strong
-- traceability from scenario -> test case -> result -> evidence is in place
+- traceability from scenario -> test case -> result -> evidence -> defect is in place
 
 **What We Do Not Overclaim**
 
-- current evidence does not prove full system stability
-- current observations are not yet confirmed product defects
-- more execution is still required for high-confidence quality claims
+- current evidence still does not prove full system stability
+- one core business defect is currently confirmed
+- more UI execution is still required for high-confidence quality claims
 
 ### Visual to show
 
@@ -231,11 +237,12 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Highest-Value Next Steps**
 
-1. manually retest the two observations
-2. execute purchase and invoice happy paths
-3. run full catalog API regression
-4. close the four scenario gaps
-5. record automation video
+1. open the GitHub Issue for `BUG-20260406-001`
+2. fix and retest invoice creation
+3. execute stock, reports, products, and public-catalog UI flows
+4. commit the generated final PDF and PPTX artifacts
+5. commit the generated automation video artifact
+6. add optional cross-browser evidence if Edge is available
 
 **Submission Package**
 
