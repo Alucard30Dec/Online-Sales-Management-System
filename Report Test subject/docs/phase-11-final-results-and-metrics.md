@@ -15,76 +15,97 @@ Consolidate the current OSMS execution results into a report-ready result set an
 
 This rule was applied so the summary can satisfy the required `pass / fail / blocked / not run` format while still keeping the original raw execution evidence intact.
 
-## Real result baseline as of 2026-04-05
+## Real result baseline as of 2026-04-06
 
 ### Overall execution summary
 
-- total test cases: `59`
-- executed: `4`
-- pass: `2`
-- fail: `0`
-- blocked: `2`
-- not run: `55`
-- execution progress: `6.78%`
+- total test cases: `63`
+- executed: `25`
+- pass: `24`
+- fail: `1`
+- blocked: `0`
+- not run: `38`
+- execution progress: `39.68%`
 
 ### Pass results with real evidence
 
 - `TC-UI-AUTH-001`
   - status: `Pass`
-  - evidence: UI screenshot and TRX
-- `TC-API-HLT-001`
-  - status: `Pass`
-  - evidence: Newman output text artifact
-
-### Blocked results
-
+  - evidence: UI screenshot + TRX
 - `TC-UI-AUTH-003`
-  - raw execution status: `Automation Script Failure`
-  - normalized summary status: `Blocked`
+  - status: `Pass`
+  - evidence: UI screenshot + focused rerun TRX
 - `TC-UI-IMP-002`
-  - raw execution status: `Automation Script Failure`
-  - normalized summary status: `Blocked`
+  - status: `Pass`
+  - evidence: preview screenshot + focused rerun TRX
+- `TC-UI-PUR-001`
+  - status: `Pass`
+  - evidence: purchase details screenshot + focused rerun TRX
+- `TC-UI-PUR-007`
+  - status: `Pass`
+  - evidence: same purchase-details rerun because assertions were executed on the details page
+- all `19` API cases
+  - status: `Pass`
+  - evidence: full Newman collection run text + JUnit output
 
 ### Confirmed fail results
 
-- none at this time
-
-No confirmed product defect has enough evidence yet to be counted as `Fail`.
+- `TC-UI-INV-001`
+  - status: `Fail`
+  - evidence: UI failure screenshot + rerun TRX + server log excerpt
+  - defect link: `BUG-20260406-001`
 
 ## Interface-wise metrics
 
-- `UI`
-  - total: `40`
-  - executed: `3`
-  - pass: `1`
-  - fail: `0`
-  - blocked: `2`
-  - not run: `37`
-  - progress: `7.50%`
-- `API`
-  - total: `19`
-  - executed: `1`
-  - pass: `1`
+- `Admin UI`
+  - total: `41`
+  - executed: `6`
+  - pass: `5`
+  - fail: `1`
+  - blocked: `0`
+  - not run: `35`
+  - progress: `14.63%`
+- `Public UI`
+  - total: `3`
+  - executed: `0`
+  - pass: `0`
   - fail: `0`
   - blocked: `0`
-  - not run: `18`
-  - progress: `5.26%`
+  - not run: `3`
+  - progress: `0%`
+- `API`
+  - total: `19`
+  - executed: `19`
+  - pass: `19`
+  - fail: `0`
+  - blocked: `0`
+  - not run: `0`
+  - progress: `100%`
 
 ## Module-wise highlights
 
 - `Authentication`
-  - execution progress: `50%`
-  - one pass and one not-run case
+  - execution progress: `33.33%`
+  - one pass and two not-run cases
+- `Permissions`
+  - execution progress: `33.33%`
+  - one pass and two not-run cases
+- `Purchases`
+  - execution progress: `28.57%`
+  - two pass results now exist for draft creation and details verification
+- `Invoices`
+  - execution progress: `16.67%`
+  - one confirmed fail now exists for invoice creation
+- `Product Import`
+  - execution progress: `25%`
+  - one pass and three not-run cases
+- `Catalog API`
+  - execution progress: `100%`
+  - all `18` catalog API cases passed in the full Newman run
 - `Health API`
   - execution progress: `100%`
   - one pass
-- `Permissions`
-  - execution progress: `50%`
-  - one blocked case and one not-run case
-- `Product Import`
-  - execution progress: `25%`
-  - one blocked case and three not-run cases
-- All remaining modules currently have `0%` execution progress.
+- Remaining large unexecuted areas are still `Products`, `Customers`, `Suppliers`, `Stock`, `Reports`, and `Public Catalog`.
 
 ## Requirement and scenario coverage note
 
@@ -93,44 +114,33 @@ The repository does not contain a separate formal requirement specification or s
 ### Scenario coverage metrics
 
 - documented scenarios in Phase 3: `42`
-- scenarios mapped to current test cases: `38`
-- scenario design coverage: `90.48%`
-- executed scenarios: `4`
-- scenario execution coverage: `9.52%`
-
-### Current scenario mapping gaps
-
-The following documented scenarios exist in `docs/test-scenarios.md` but are not yet represented in the current UI/API test-case files:
-
-- `SCN-AUTH-003`
-- `SCN-GOV-003`
-- `SCN-INV-003`
-- `SCN-PUB-003`
-
-This is a real completeness risk for the rubric because it reduces scenario-to-test-case traceability.
+- scenarios mapped to current test cases: `42`
+- scenario design coverage: `100%`
+- executed scenarios: `11`
+- scenario execution coverage: `26.19%`
 
 ## Defect metrics
 
-- confirmed defects: `0`
-- observations pending manual confirmation: `2`
+- confirmed defects: `1`
+- open observations pending manual confirmation: `0`
 - rejected defects: `0`
 - severity distribution for confirmed defects:
   - critical: `0`
-  - high: `0`
+  - high: `1`
   - medium: `0`
   - low: `0`
 
 ## Metrics insights for the report
 
-- The current evidence proves the automation framework can produce real pass artifacts for both UI and API, but the run depth is still too low to claim broad system stability.
-- The highest current execution risk is not a proven application bug yet; it is unstable automation execution around `Permissions` and `Product Import`.
-- The absence of confirmed defects does not mean the system is defect-free. It only means the current real execution set is still too limited to justify defect logging.
-- Scenario mapping completeness is below ideal because only `38 / 42` documented scenarios are tied to test cases right now.
+- The current evidence now proves stable execution for login, permission denial, product import preview, purchase draft creation, purchase detail verification, and the full exposed API surface.
+- The most important product issue found so far is `BUG-20260406-001`, where invoice creation fails because `InvoicesController.Create` opens a user-initiated transaction under `MySqlRetryingExecutionStrategy`.
+- The strongest remaining evidence gap is no longer the public API. It is the still-unexecuted business UI around products, stock, reports, and public catalog.
+- Scenario mapping completeness is now closed at `42 / 42`, which removes the earlier traceability gap from the design package.
 
 ## Files generated in this phase
 
 - `results/OSMS-Final-Results.csv`
-- `results/OSMS-Final-Results.xlsx`
+- `results/OSMS-Final-Test-Results.xlsx`
 - `metrics/OSMS-Test-Metrics-Summary.csv`
 - `metrics/OSMS-Interface-Results.csv`
 - `metrics/OSMS-Module-Wise-Results.csv`
@@ -140,4 +150,4 @@ This is a real completeness risk for the rubric because it reduces scenario-to-t
 
 ## Submission caution
 
-These files are report-ready for the current evidence state, but they are not final-submission-strong yet because more real execution, more screenshots, and at least one manually confirmed defect or a larger regression run would significantly improve credibility and score potential.
+These files are materially stronger after the 2026-04-06 reruns, but the package still needs final binary submission artifacts such as the PPTX, PDF, and automation video before it can be called submission-ready.

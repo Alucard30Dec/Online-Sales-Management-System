@@ -4,13 +4,14 @@
 
 Define a professional defect-management process for the current OSMS submission and prepare a traceable defect register that stays fully aligned with real evidence collected so far.
 
-## Current defect state as of 2026-04-05
+## Current defect state as of 2026-04-06
 
-- Confirmed product defects: `0`
-- Pending observations from automation execution: `2`
+- Confirmed product defects: `1`
+- Open observations from automation execution: `0`
+- Closed observations: `2`
 - Rejected or duplicate defects: `0`
 
-At this point, the repository does not contain enough real evidence to open a confirmed product defect. The two existing failure records from Phase 9 remain observations because both failures originated in the automation layer and have not yet been reproduced manually as application bugs.
+The repository now contains one confirmed product defect with both UI and server-log evidence. The two older automation observations were reclassified as closed observations after focused reruns proved that they were not product bugs.
 
 ## Real record classification used in this project
 
@@ -147,34 +148,43 @@ Recommended movement:
 - failure-state screenshot from the application or API client
 - retest screenshot after fix if the issue is closed before submission
 
-## Current observations that are not defects yet
+## Current record summary
 
 ### OBS-20260405-001
 
 - related testcase: `TC-UI-AUTH-003`
 - module: `Authorization / Purchases`
 - classification: `Observation`
-- current status: `Pending Manual Confirmation`
+- current status: `Closed - Behavior Confirmed`
 - reason:
-  - Selenium timed out while waiting for the access-denied state
-  - screenshot shows `sales@osms.local` on the dashboard
-  - no confirmed product defect yet
+  - focused rerun confirmed the real application behavior is a redirect away from `/Admin/Purchases`
+  - this satisfies the intended denial rule for the testcase
+  - the original failure came from an automation expectation mismatch, not a product bug
 
 ### OBS-20260405-002
 
 - related testcase: `TC-UI-IMP-002`
 - module: `Products Import`
 - classification: `Observation`
-- current status: `Pending Manual Confirmation`
+- current status: `Closed - Automation Fixed`
 - reason:
-  - Selenium timed out before preview interaction completed
-  - screenshot shows the workbook already selected on the import page
-  - no confirmed product defect yet
+  - focused rerun passed after narrowing the automation submit locator to the correct import form
+  - the application preview flow is now confirmed working for this case
+
+### BUG-20260406-001
+
+- related testcase: `TC-UI-INV-001`
+- module: `Invoices`
+- classification: `Confirmed Defect`
+- current status: `Open - Confirmed`
+- reason:
+  - UI rerun returned to the Create page with the toast `Failed to create invoice. Please check data and try again.`
+  - server log excerpt proves `InvalidOperationException` caused by using a user-initiated transaction with `MySqlRetryingExecutionStrategy`
+  - the issue is reproducible with valid walk-in invoice data in the current environment
 
 ## Immediate bug-management actions
 
-1. Retest `TC-UI-AUTH-003` manually and capture the exact post-navigation behavior.
-2. Retest `TC-UI-IMP-002` manually and capture whether the preview screen loads with valid and invalid counts.
-3. Open GitHub Issues only if one of the above becomes reproducible as an application bug.
-4. Export issue screenshots into `evidence/defects/` after opening confirmed issues.
-5. Keep `defects/exports/OSMS-Defect-Register.csv` updated after every triage decision.
+1. Create the corresponding GitHub Issue externally for `BUG-20260406-001` because `gh` CLI is unavailable in the current local environment.
+2. Export the GitHub Issue screenshot into `evidence/defects/` after the issue is opened.
+3. Keep `defects/exports/OSMS-Defect-Register.csv` updated after every triage or retest decision.
+4. Retest invoice creation after any fix and capture the post-fix details-page evidence.
