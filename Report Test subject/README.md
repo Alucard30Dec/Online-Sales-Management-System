@@ -42,9 +42,16 @@ This folder is organized for grading, defense, and traceability. Every deliverab
 
 - Exam brief: `UEF - Final.pdf`
 - Working report draft: `Powered by GPT - Software Quality Verification.docx`
-- Phase 0 audit: `docs/phase-0-project-audit.md`
+- Canonical report snapshot: `report/Powered by GPT - Software Quality Verification - Final Report.docx`
+- Report source content: `report/Powered by GPT - Software Quality Verification - Final Report Content.md`
+- Presentation source content: `slides/Powered by GPT - Software Quality Verification - Presentation Content.md`
+- UI test cases workbook: `test-cases/ui/OSMS-UI-Test-Cases.xlsx`
+- API test cases workbook: `test-cases/api/OSMS-API-Test-Cases.xlsx`
+- Final results workbook: `results/OSMS-Final-Test-Results.xlsx`
+- Metrics workbook: `metrics/OSMS-Test-Metrics.xlsx`
+- Defect log workbook: `defects/exports/OSMS-Defect-Log.xlsx`
 
-The current report draft remains at the root of `Report Test subject` for editing stability. The target final submission location is `report/Powered by GPT - Software Quality Verification - Final Report.docx`.
+The working report draft remains at the root of `Report Test subject` for editing stability. The canonical final report path for submission packaging is `report/Powered by GPT - Software Quality Verification - Final Report.docx`.
 
 ## Source To Artifact Scope
 
@@ -85,6 +92,19 @@ Use the GitHub path to this folder as the appendix link source after all require
 
 ## Status
 
-- `Phase 0`: completed in `docs/phase-0-project-audit.md`
-- `Phase 1`: submission structure, naming rules, and mapping are established
-- Later phases will populate the workbooks, scripts, evidence, metrics, and final packaging
+- `Phases 0-15`: source artifacts, metrics, report content, slide content, automation assets, and cleanup checklist are completed
+- Current package strengths:
+  - structured UI and API test cases
+  - reusable test data
+  - Selenium and Newman automation assets
+  - real UI and API execution evidence
+  - final results and metrics workbooks
+  - defect workflow and defect log workbook
+- Current blockers before a strong final submission:
+  - final `PPTX` file is still `PENDING REAL EXECUTION`
+  - final report `PDF` export is still `PENDING REAL EXECUTION`
+  - automation video in `mp4` or `avi` is still `PENDING REAL EXECUTION`
+  - purchase and invoice evidence screenshots are still `PENDING REAL EXECUTION`
+  - manual confirmation for the two current observations is still `PENDING REAL EXECUTION`
+
+See `docs/phase-15-final-github-cleanup.md` for the final readiness verdict and submission checklist.
