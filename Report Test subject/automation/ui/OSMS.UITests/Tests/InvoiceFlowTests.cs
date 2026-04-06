@@ -8,11 +8,11 @@ public sealed class InvoiceFlowTests : UiTestBase
     [Fact]
     [Trait("CaseId", "TC-UI-INV-001")]
     [Trait("AutomationId", "AUTO-UI-004")]
-    public void SalesUserCanCreateWalkInInvoice()
+    public void PrivilegedUserCanCreateWalkInInvoice()
     {
         ExecuteWithFailureCapture("TC-UI-INV-001", () =>
         {
-            var credential = TestData.GetCredential("UI-DATA-ACC-002");
+            var credential = TestData.GetCredential("UI-DATA-ACC-001");
             var invoiceData = TestData.GetKeyValueData("UI-DATA-INV-001");
             var productData = TestData.GetKeyValueData("UI-DATA-PRD-008");
             var loginPage = new LoginPage(Driver, Wait, Settings).Open();

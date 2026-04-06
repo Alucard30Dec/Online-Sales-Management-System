@@ -10,7 +10,7 @@ public sealed class PurchaseCreatePage : PageBase
     private static readonly By ProductSelect = By.CssSelector("#itemsTable tbody tr:first-child select");
     private static readonly By QuantityInput = By.CssSelector("#itemsTable tbody tr:first-child input[name$='.Qty']");
     private static readonly By UnitCostInput = By.CssSelector("#itemsTable tbody tr:first-child input[name$='.UnitCost']");
-    private static readonly By SubmitButton = By.CssSelector("button[type='submit']");
+    private static readonly By SubmitButton = By.CssSelector("form[action='/Admin/Purchases/Create'] button[type='submit']");
 
     public PurchaseCreatePage(IWebDriver driver, WaitHelper wait, AutomationSettings settings)
         : base(driver, wait, settings)

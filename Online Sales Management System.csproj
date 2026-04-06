@@ -24,6 +24,13 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Report Test subject\**\*.cs" />
+    <EmbeddedResource Remove="Report Test subject\**" />
+    <None Remove="Report Test subject\automation\ui\OSMS.UITests\bin\**;Report Test subject\automation\ui\OSMS.UITests\obj\**" />
+    <Content Remove="Report Test subject\automation\ui\OSMS.UITests\bin\**;Report Test subject\automation\ui\OSMS.UITests\obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Views\AuditLogs\" />
     <Folder Include="Areas\Admin\Views\Promotions\" />

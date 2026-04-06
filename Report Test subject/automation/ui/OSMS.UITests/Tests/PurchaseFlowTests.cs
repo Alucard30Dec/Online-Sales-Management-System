@@ -9,11 +9,11 @@ public sealed class PurchaseFlowTests : UiTestBase
     [Trait("CaseId", "TC-UI-PUR-001")]
     [Trait("CaseId", "TC-UI-PUR-007")]
     [Trait("AutomationId", "AUTO-UI-003")]
-    public void WarehouseUserCanCreateDraftPurchase()
+    public void PrivilegedUserCanCreateDraftPurchase()
     {
         ExecuteWithFailureCapture("TC-UI-PUR-001", () =>
         {
-            var credential = TestData.GetCredential("UI-DATA-ACC-003");
+            var credential = TestData.GetCredential("UI-DATA-ACC-001");
             var purchaseData = TestData.GetKeyValueData("UI-DATA-PUR-001");
             var loginPage = new LoginPage(Driver, Wait, Settings).Open();
 

@@ -9,7 +9,7 @@ public sealed class InvoiceCreatePage : PageBase
     private static readonly By CustomerSelect = By.Id("customerSelect");
     private static readonly By ProductSelect = By.CssSelector("#itemsTable tbody tr:first-child select.product-select");
     private static readonly By QuantityInput = By.CssSelector("#itemsTable tbody tr:first-child input.qty-input");
-    private static readonly By SubmitButton = By.CssSelector("button[type='submit']");
+    private static readonly By SubmitButton = By.CssSelector("form[action='/Admin/Invoices/Create'] button[type='submit']");
 
     public InvoiceCreatePage(IWebDriver driver, WaitHelper wait, AutomationSettings settings)
         : base(driver, wait, settings)
