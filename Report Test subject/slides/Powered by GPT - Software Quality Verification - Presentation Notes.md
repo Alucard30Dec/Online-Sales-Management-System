@@ -102,12 +102,13 @@ Use these notes while building the slide deck and during oral defense. The notes
 If the examiner allows a short live demo or asks for concrete proof, use this order:
 
 1. show the GitHub folder structure in `Report Test subject`
-2. show `test-cases/ui/OSMS-UI-Test-Cases.xlsx`
-3. show `automation/ui/OSMS.UITests`
-4. show login success screenshot
-5. show Newman full-collection output
-6. show `results/OSMS-Final-Test-Results.xlsx`
-7. show `metrics/OSMS-Test-Metrics.xlsx`
+2. open the clean package folder `SV00123-ATU-A01`
+3. show `TestCases/UI/OSMS-UI-Test-Cases.xlsx`
+4. show `TestScript-Data/Automation/ui/OSMS.UITests`
+5. show login success screenshot
+6. show Newman full-collection output
+7. show `TestResults/FinalResults/OSMS-Final-Test-Results.xlsx`
+8. show `TestResults/Metrics/OSMS-Test-Metrics.xlsx`
 
 This order starts from structure, then evidence, then summary, which is easier to defend than starting from theory.
 

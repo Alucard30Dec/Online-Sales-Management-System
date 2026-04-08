@@ -1,6 +1,19 @@
 # Powered by GPT - Software Quality Verification
 
-This folder is the testing submission workspace for the `Online Sales Management System` final project in the Software Testing course.
+This folder is the testing workspace for the `Online Sales Management System` final project in the Software Testing course.
+
+## Clean Submission Package
+
+The canonical package that matches the final 5-folder submission structure is:
+
+- `SV00123-ATU-A01/`
+  - `MainReport/`
+  - `TestCases/`
+  - `TestResults/`
+  - `TestScript-Data/`
+  - `Videos/`
+
+Use this package path for GitHub appendix links and for reviewer navigation. The older folders in the root of `Report Test subject` remain as the working workspace that generated the final package.
 
 ## System Under Test
 
@@ -22,7 +35,7 @@ This folder is the testing submission workspace for the `Online Sales Management
 
 This folder is organized for grading, defense, and traceability. Every deliverable required by the exam brief is mapped to a fixed location so the report, slides, test cases, evidence, automation, and metrics can be reviewed without searching across the source repository.
 
-## Folder Layout
+## Workspace Layout
 
 | Folder | Purpose | Final files to place here |
 |---|---|---|
@@ -84,19 +97,13 @@ Detailed mapping is maintained in `docs/source-to-testing-mapping.md`.
 
 Use the GitHub path to this folder as the appendix link source after all required artifacts are populated:
 
-- report
-- slides
-- test cases
-- test data
-- results
-- evidence
-- automation
-- video
-- defects
+- `SV00123-ATU-A01`
 
 ## Status
 
 - `Phases 0-15`: source artifacts, metrics, report content, slide content, automation assets, and cleanup checklist are completed
+- clean submission package now exists at:
+  - `SV00123-ATU-A01/`
 - Current package strengths:
   - structured UI and API test cases
   - reusable test data
@@ -108,4 +115,4 @@ Use the GitHub path to this folder as the appendix link source after all require
 - Current blockers before a strong final submission:
   - additional execution evidence for `Stock`, `Reports`, `Products`, and `Public Catalog` is still `PENDING REAL EXECUTION`
 
-See `docs/phase-15-final-github-cleanup.md` for the final readiness verdict and submission checklist.
+See `docs/phase-15-final-github-cleanup.md` for the final readiness verdict and submission checklist, and open `SV00123-ATU-A01/MainReport/Submission-Index.md` for the package-level grading route.

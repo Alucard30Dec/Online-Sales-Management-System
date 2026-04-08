@@ -17,7 +17,7 @@ Final Report for Software Testing Course
 
 - System Under Test: `Online Sales Management System`
 - Repository: `https://github.com/Alucard30Dec/Online-Sales-Management-System`
-- Appendix Link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject`
+- Appendix Link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
 - Team:
   - Hoang Van Thien - `22D1ITE-SWE03` - `225051915`
   - Nguyen Thanh Dat - `22D1ITE-SWE03` - `225050896`
@@ -453,21 +453,24 @@ Based on the current execution evidence, the `Online Sales Management System` ha
 
 ## Appendix A. GitHub Submission Link
 
-- `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject`
+- `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
 
 ## Appendix B. Key Attached Artifacts
 
-- UI test cases: `test-cases/ui/OSMS-UI-Test-Cases.xlsx`
-- API test cases: `test-cases/api/OSMS-API-Test-Cases.xlsx`
-- UI test data: `test-data/ui/OSMS-UI-Test-Data.xlsx`
-- API test data: `test-data/api/OSMS-API-Test-Data.json`
-- Automation scripts: `automation/`
-- Final results: `results/OSMS-Final-Test-Results.xlsx`
-- Metrics: `metrics/OSMS-Test-Metrics.xlsx`
-- Defect log: `defects/exports/OSMS-Defect-Log.xlsx`
-- UI evidence: `evidence/ui/automation/`
-- API evidence: `results/automation-api/`
-- Video: `video/OSMS-Automation-Demo.mp4`
+- Main report: `MainReport/Powered by GPT - Software Quality Verification - Final Report.docx`
+- Final PDF: `MainReport/Powered by GPT - Software Quality Verification - Final Report.pdf`
+- Presentation: `MainReport/Powered by GPT - Software Quality Verification - Presentation.pptx`
+- UI test cases: `TestCases/UI/OSMS-UI-Test-Cases.xlsx`
+- API test cases: `TestCases/API/OSMS-API-Test-Cases.xlsx`
+- Scenario file: `TestCases/Scenarios/test-scenarios.md`
+- Automation scripts: `TestScript-Data/Automation/`
+- Test data: `TestScript-Data/TestData/`
+- Final results: `TestResults/FinalResults/OSMS-Final-Test-Results.xlsx`
+- Metrics: `TestResults/Metrics/OSMS-Test-Metrics.xlsx`
+- Defect log: `TestResults/Defects/OSMS-Defect-Log.xlsx`
+- UI evidence: `TestResults/Evidence/UI/automation/`
+- API evidence: `TestResults/Evidence/API/newman-full-run.txt`
+- Video: `Videos/OSMS-Automation-Demo.mp4`
 
 ## Appendix C. Mandatory Pending Items Before Strong Final Submission
 

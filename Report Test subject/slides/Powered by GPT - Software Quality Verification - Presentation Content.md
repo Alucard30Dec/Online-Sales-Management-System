@@ -259,7 +259,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 ### Visual to show
 
 - GitHub appendix link:
-  - `github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject`
+  - `github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
 
 ## Slide 11. Q&A Backup
 

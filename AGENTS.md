@@ -8,3 +8,13 @@
   - Main: `Word` report and `PPTX`
   - Link set: test cases in `Excel`, test script plus test data, final results in `Excel` plus images, automation video in `mp4` or `avi`
 - Optimize for complete rubric coverage and maximum score, not only formatting.
+- Canonical clean submission package:
+  - `Report Test subject/SV00123-ATU-A01`
+  - top-level folders must remain:
+    - `MainReport`
+    - `TestCases`
+    - `TestResults`
+    - `TestScript-Data`
+    - `Videos`
+- When updating submission-facing docs, prefer linking to the clean package above rather than the broader working workspace.
+- Repo-local agent guidance must stay in `AGENTS.md`; do not edit global Codex skill files under `.codex/skills` from this repository unless the user explicitly asks to modify those external skill sources.
