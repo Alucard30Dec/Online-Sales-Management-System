@@ -145,7 +145,7 @@ In other words, the current system now has a stronger operational baseline than 
 ### Defect-analysis limitations
 
 - there are now `4` confirmed defects
-- only one of the four defects is mirrored into GitHub Issues today
+- all four confirmed defects are now mirrored into GitHub Issues
 - severity distribution is still shallow because the confirmed defects are concentrated in `High` and `Medium`
 
 ### Documentation limitations

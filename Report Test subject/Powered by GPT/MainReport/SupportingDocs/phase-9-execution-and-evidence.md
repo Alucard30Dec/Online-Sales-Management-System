@@ -6,9 +6,9 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
 
 ## Evidence basis used in this phase
 
-### Real execution completed on 2026-04-06
+### Real execution completed across 2026-04-06, 2026-04-10, and 2026-04-11
 
-- Focused UI reruns executed from `Report Test subject/automation/ui/run-ui-tests.ps1`
+- Focused UI reruns executed from `Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-tests.ps1`
   - result files:
     - `TestResults/RunnerOutput/UI/auth-permission-rerun.trx`
     - `TestResults/RunnerOutput/UI/import-preview-rerun.trx`
@@ -27,6 +27,14 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
   - result files:
     - `TestResults/Evidence/API/newman-full-run.txt`
     - `TestResults/RunnerOutput/API/newman-results.xml`
+- Expanded UI coverage batches executed on `2026-04-10` and `2026-04-11`
+  - scope: remaining authentication, admin, customer, supplier, product, import, purchase, invoice, stock, report, and public-catalog cases
+  - result: UI baseline is now fully executed with `37` pass and `7` fail
+  - representative result files:
+    - `TestResults/RunnerOutput/UI/admin-customer-coverage.trx`
+    - `TestResults/RunnerOutput/UI/purchase-product-import-coverage-rerun.trx`
+    - `TestResults/RunnerOutput/UI/reporting-public-invoice-coverage.trx`
+    - `TestResults/RunnerOutput/UI/extended-coverage-rerun.trx`
 
 ### Real screenshots currently available
 
@@ -41,7 +49,7 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
 - `Pass` is used only when a real execution result exists and the expected behavior is visibly confirmed.
 - `Fail` must be reserved for a confirmed product defect with reproducible expected-versus-actual mismatch.
 - `Automation Script Failure` is used when the runner failed or timed out, but the product defect is not yet confirmed.
-- `Not Run` is used for any test or artifact that has not been executed or captured yet in the current evidence baseline.
+- `Not Run` remains a generic status in the status vocabulary, but it is no longer present in the synchronized final baseline.
 
 ## Current confirmed execution status
 
@@ -59,6 +67,8 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
   - a valid draft purchase was created successfully and the details page assertions passed
 - all API cases `TC-API-HLT-001` to `TC-API-CAT-018`
   - full Newman collection run passed with saved text and JUnit artifacts
+- expanded UI batches for admin users, customers, products, purchases, reports, stock, and public catalog
+  - all corresponding executed rows are synchronized in `TestResults/FinalResults/OSMS-Final-Test-Results.xlsx`
 
 ### Confirmed product defect evidence
 
@@ -66,6 +76,13 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
   - valid walk-in invoice creation failed in the current environment
   - UI stayed on the Create page and showed `Failed to create invoice. Please check data and try again.`
   - focused rerun TRX and extracted server log prove `BUG-20260406-001`
+- `TC-UI-PUR-002` and `TC-UI-PUR-003`
+  - both failed because the purchase create banner rendered without readable validation text
+  - synchronized under `BUG-20260411-002`
+- `TC-UI-IMP-003`
+  - import confirm failed after a valid preview and is synchronized under `BUG-20260411-003`
+- `TC-UI-INV-005`
+  - invoice cancellation failed and is synchronized under `BUG-20260411-004`
 
 ## Execution checklist
 
@@ -110,7 +127,8 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
 
 ### Screenshots still missing
 
-- Additional business-flow evidence is still missing for `Stock`, `Reports`, `Products`, and `Public Catalog`
+- No critical screenshot gap remains for the current executed baseline.
+- The remaining missing evidence is post-fix retest proof for the four confirmed defects and optional cross-browser evidence.
 
 ## Bug evidence checklist
 
@@ -154,12 +172,12 @@ Use these status values consistently:
 
 ## Immediate next evidence priority
 
-1. Fix and retest invoice creation, then capture the post-fix details-page evidence if the defect is resolved.
-2. Execute and capture the remaining high-value UI modules: `Stock`, `Reports`, `Products`, and `Public Catalog`.
-3. Keep the metrics summary screenshot, GitHub issue, and automation video linked consistently across the report, slides, and appendix.
+1. Fix and retest the four confirmed defects, then capture post-fix success or re-failure evidence.
+2. Keep the four live GitHub issue URLs synchronized with the defect register, execution-evidence mapping, and local issue screenshots.
+3. Keep the metrics summary screenshot, GitHub issue evidence, and automation video linked consistently across the report, slides, and appendix.
 
 ## Known limitations after this phase
 
-- UI execution depth is still partial even though the API surface is now fully executed.
-- Full business confidence still depends on retesting invoice creation and running additional UI modules.
+- UI execution depth is no longer partial; all designed UI and API cases are now executed in the synchronized baseline.
+- Full business confidence still depends on retesting the four confirmed defects after fixes.
 - Cross-browser evidence is still not available.

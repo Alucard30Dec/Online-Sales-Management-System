@@ -555,11 +555,11 @@ This submission achieved the following:
 
 ## 5.2 Challenges And Limitations
 
-The main limitation of the current package is no longer execution depth. All `63` designed test cases now have real runtime evidence. The remaining limitation is unresolved defect count: the system still contains four confirmed defects across invoices, purchases, and product import, including one GitHub-tracked invoice-create defect with server-log proof. Because of this, the report still cannot responsibly claim that the full system is stable.
+The main limitation of the current package is no longer execution depth. All `63` designed test cases now have real runtime evidence. The remaining limitation is unresolved defect count: the system still contains four confirmed defects across invoices, purchases, and product import. All four defects are now mirrored into live GitHub Issues, and the invoice-create defect remains the strongest case because it also has server-log proof. Because of this, the report still cannot responsibly claim that the full system is stable.
 
-The package also still lacks two bug-management completions that would improve its final polish:
+The package still lacks two completions that would improve its final polish:
 
-- GitHub issues have not yet been opened for `BUG-20260411-002`, `BUG-20260411-003`, and `BUG-20260411-004`
+- local screenshot copies for GitHub Issues `#2`, `#3`, and `#4` should be stored under `TestResults/Evidence/Defects/` if they are not already copied into the package
 - no post-fix retest evidence exists yet for any of the four confirmed defects
 
 ## 5.3 Future Enhancements
@@ -567,13 +567,13 @@ The package also still lacks two bug-management completions that would improve i
 The highest-priority next actions are:
 
 1. fix and retest the invoice-create defect tracked in GitHub Issue `#1`
-2. open GitHub issues for `BUG-20260411-002`, `BUG-20260411-003`, and `BUG-20260411-004`, then attach the existing screenshots and rerun artifacts
+2. attach the saved package screenshots and rerun artifacts to GitHub Issues `#2`, `#3`, and `#4`, then copy the final issue screenshots into `TestResults/Evidence/Defects/`
 3. retest invoice cancellation, purchase validation rendering, and import confirm after fixes are available
 4. optionally add cross-browser evidence if Edge is available
 
 ## 5.4 Final Conclusion
 
-Based on the current execution evidence, the `Online Sales Management System` now has full case-level execution coverage across the designed UI and API test suite. The package is strong in test design, evidence traceability, and automation support, and it now avoids the earlier weakness of large `Not Run` sections. However, the system still contains four confirmed defects, including a GitHub-tracked invoice-create defect with server-log proof and three additional confirmed UI defects in purchases, invoices, and product import. The most defensible conclusion is that the project is execution-complete and submission-ready, but still short of a maximum-confidence quality claim until those confirmed defects are fixed and retested.
+Based on the current execution evidence, the `Online Sales Management System` now has full case-level execution coverage across the designed UI and API test suite. The package is strong in test design, evidence traceability, and automation support, and it now avoids the earlier weakness of large `Not Run` sections. However, the system still contains four confirmed defects, all now mirrored into live GitHub Issues, and the invoice-create defect remains the strongest defect because it combines UI proof with server-log proof. The most defensible conclusion is that the project is execution-complete and submission-ready, but still short of a maximum-confidence quality claim until those confirmed defects are fixed and retested.
 
 # References
 
@@ -613,5 +613,6 @@ Based on the current execution evidence, the `Online Sales Management System` no
 
 ## Appendix C. Remaining High-Value Execution Gaps
 
-- Additional real execution evidence is still required for `Stock`, `Reports`, `Products`, and `Public Catalog`
+- Post-fix retest evidence is still required for the four confirmed defects.
+- Optional cross-browser evidence is still not included.
 

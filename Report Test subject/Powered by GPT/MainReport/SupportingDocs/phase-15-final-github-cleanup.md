@@ -111,7 +111,7 @@ Perform the final audit for the clean submission package in `Powered by GPT/`, v
 
 ### Why it is not maximum-confidence yet
 
-- three new confirmed defects are still recorded only in the internal defect log and have not been mirrored into GitHub Issues
+- all four confirmed defects now have live GitHub issue URLs
 - the four confirmed defects still need fix-and-retest evidence before the project can support a stronger stability claim
 
 ### What is already strong enough

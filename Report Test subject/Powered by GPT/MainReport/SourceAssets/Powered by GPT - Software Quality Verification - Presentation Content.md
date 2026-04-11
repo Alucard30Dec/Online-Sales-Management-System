@@ -203,9 +203,9 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 - `4` confirmed defects
   - `BUG-20260406-001` invoice-create defect, tracked in GitHub Issue `#1`
-  - `BUG-20260411-002` purchase validation banner defect
-  - `BUG-20260411-003` import-confirm defect
-  - `BUG-20260411-004` invoice-cancel defect
+  - `BUG-20260411-002` purchase validation banner defect, tracked in GitHub Issue `#2`
+  - `BUG-20260411-003` import-confirm defect, tracked in GitHub Issue `#3`
+  - `BUG-20260411-004` invoice-cancel defect, tracked in GitHub Issue `#4`
 
 **Closed Observations**
 
@@ -241,7 +241,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 - current evidence still does not prove full system stability
 - four confirmed defects are currently open
-- post-fix retest and issue-tool expansion are still required for maximum confidence
+- post-fix retest is still required for maximum confidence
 
 ### Visual to show
 
@@ -256,7 +256,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 **Highest-Value Next Steps**
 
 1. fix and retest invoice creation through GitHub Issue `#1`
-2. open GitHub issues for `BUG-20260411-002`, `BUG-20260411-003`, and `BUG-20260411-004`
+2. attach the saved package evidence to GitHub Issues `#2`, `#3`, and `#4`
 3. add post-fix retest evidence for all confirmed defects
 4. add optional cross-browser evidence if Edge is available
 
@@ -283,8 +283,8 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Likely Questions**
 
-- Why do you have `1` confirmed defect?
-- Why is execution progress still low?
+- Why do you have `4` confirmed defects?
+- Why is execution progress now `100%`?
 - Why did you choose Selenium and Newman?
 - How do you distinguish automation failure from product defect?
 - Which module is riskiest right now?

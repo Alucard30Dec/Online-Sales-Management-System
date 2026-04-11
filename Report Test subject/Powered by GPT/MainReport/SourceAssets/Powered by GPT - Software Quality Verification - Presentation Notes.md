@@ -25,7 +25,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 - clearly separate:
   - what was designed
   - what was executed
-  - what is still not executed in the current evidence baseline
+  - what remains unresolved after execution
 
 ## Slide-By-Slide Speaking Points
 
@@ -70,7 +70,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 - This is one of the strongest slides.
 - Show that UI and API both have real pass evidence.
 - Explicitly say that the UI suite no longer has `Not Run`.
-- Explain that one invoice defect is already tracked in GitHub Issue `#1`, while three additional confirmed defects are currently recorded in the internal defect log and still need issue-tool mirroring.
+- Explain that all four confirmed defects are now mirrored into live GitHub Issues, while post-fix retest evidence is still missing.
 
 ### Slide 7. Current Metrics
 
@@ -99,7 +99,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 
 - Explain the immediate next actions:
   - fix and retest invoice creation through GitHub Issue `#1`
-  - open GitHub issues for the three new confirmed defects
+  - attach the saved package evidence to GitHub Issues `#2`, `#3`, and `#4`
   - retest the four confirmed defects after fixes
   - optionally add cross-browser evidence
 - End by pointing to the GitHub appendix link containing the deliverables.

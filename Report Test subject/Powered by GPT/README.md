@@ -18,4 +18,4 @@ This folder is the clean submission package for the `Online Sales Management Sys
 
 ## Current Note
 
-The package is now strong in traceability and execution evidence, with all `63` designed test cases executed in the current synchronized baseline. The remaining gap before a maximum-confidence claim is no longer execution depth; it is the presence of `4` confirmed defects that still need GitHub issue expansion and post-fix retest evidence.
+The package is now strong in traceability and execution evidence, with all `63` designed test cases executed in the current synchronized baseline. All `4` confirmed defects are now mirrored into live GitHub Issues. The remaining gap before a maximum-confidence claim is post-fix retest evidence for those defects and optional cross-browser coverage.
