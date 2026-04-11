@@ -45,7 +45,7 @@ Perform the final audit for the clean submission package in `Powered by GPT/`, v
 
 ### Main remaining quality gap
 
-- all designed cases are now executed, but four confirmed defects still need issue-tool expansion and post-fix retest evidence
+- all designed cases are now executed, all four confirmed defects have live GitHub issues, and the remaining gap is post-fix retest evidence plus broader browser coverage
 
 ## Broken link and path check
 
@@ -140,9 +140,6 @@ Perform the final audit for the clean submission package in `Powered by GPT/`, v
 5. Keep the defect appendix aligned with:
    - `Powered by GPT/TestResults/Defects/OSMS-Defect-Log.xlsx`
    - `Powered by GPT/TestResults/Evidence/Defects/BUG-20260406-001-github-issue.png`
-6. Open issue-tool records for:
-   - `BUG-20260411-002`
-   - `BUG-20260411-003`
-   - `BUG-20260411-004`
-7. Refresh the report and metrics only if new defect or retest evidence is added.
+6. Keep the four live GitHub issues synchronized with any future retest or fix evidence.
+7. Refresh the report and metrics whenever new retest evidence or cross-browser evidence is added.
 

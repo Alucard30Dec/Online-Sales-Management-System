@@ -1,48 +1,37 @@
-# Phase 15 Final GitHub Cleanup
+# Phase 15 Final Package Cleanup
 
 ## Objective
 
-Perform the final repository audit for the `Report Test subject` package, verify naming and packaging consistency, identify remaining submission blockers, and leave the folder in a clearer handoff state for final commit and submission.
+Perform the final audit for the clean submission package in `SV00123-ATU-A01/`, verify naming and packaging consistency, and record the remaining gaps before a maximum-confidence submission.
 
-## What was cleaned or normalized in this phase
+## What was normalized
 
-- copied the working report draft into the canonical report path:
-  - `report/Powered by GPT - Software Quality Verification - Final Report.docx`
-- created a canonical final-results workbook name:
-  - `results/OSMS-Final-Test-Results.xlsx`
-- created a canonical defect-log workbook:
-  - `defects/exports/OSMS-Defect-Log.xlsx`
-- updated `README.md` so the folder status reflects the actual current package instead of an early-phase state
-- built a clean final package folder:
-  - `SV00123-ATU-A01/`
-  - top-level submission folders:
-    - `MainReport/`
-    - `TestCases/`
-    - `TestResults/`
-    - `TestScript-Data/`
-    - `Videos/`
-
-For final grading and submission, the clean package above is the canonical path. The broader workspace folders remain in `Report Test subject/` as the editable source area.
+- final report binaries are kept in:
+  - `SV00123-ATU-A01/MainReport/`
+- test cases are grouped in:
+  - `SV00123-ATU-A01/TestCases/`
+- final results, metrics, evidence, and defect artifacts are grouped in:
+  - `SV00123-ATU-A01/TestResults/`
+- automation source code and reusable test data are grouped in:
+  - `SV00123-ATU-A01/TestScript-Data/`
+- automation video artifacts are grouped in:
+  - `SV00123-ATU-A01/Videos/`
 
 ## Submission structure check
 
 ### Present and usable now
 
-- `docs/`
-- `report/`
-- `slides/`
-- `test-cases/`
-- `test-data/`
-- `automation/`
-- `defects/`
-- `evidence/`
-- `metrics/`
-- `results/`
-- `video/`
-- `SV00123-ATU-A01/`
+- `MainReport/`
+- `TestCases/`
+- `TestResults/`
+- `TestScript-Data/`
+- `Videos/`
 
 ### Mandatory artifact families already present
 
+- final report `docx`
+- final report `pdf`
+- final presentation `pptx`
 - UI test cases in `xlsx`
 - API test cases in `xlsx`
 - test data files
@@ -51,11 +40,12 @@ For final grading and submission, the clean package above is the canonical path.
 - metrics workbook
 - defect log workbook
 - evidence screenshots
-- API runner output
+- runner output from UI and API automation
+- automation video
 
-### Mandatory artifact families still incomplete
+### Main remaining quality gap
 
-- additional execution screenshots for `Stock`, `Reports`, `Products`, and `Public Catalog`
+- all designed cases are now executed, all four confirmed defects have live GitHub issues, and the remaining gap is post-fix retest evidence plus broader browser coverage
 
 ## Broken link and path check
 
@@ -64,9 +54,7 @@ For final grading and submission, the clean package above is the canonical path.
 - repository URL:
   - `https://github.com/Alucard30Dec/Online-Sales-Management-System`
 - appendix folder URL:
-  - `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
-
-These links are already used consistently across the README, report source content, and the clean submission package.
+  - `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/Powered%20by%20GPT`
 
 ### Local artifact references verified
 
@@ -76,81 +64,55 @@ These links are already used consistently across the README, report source conte
 - `SV00123-ATU-A01/TestResults/Metrics/OSMS-Test-Metrics.xlsx`
 - `SV00123-ATU-A01/TestResults/Defects/OSMS-Defect-Log.xlsx`
 - `SV00123-ATU-A01/MainReport/Powered by GPT - Software Quality Verification - Final Report.docx`
+- `SV00123-ATU-A01/MainReport/Powered by GPT - Software Quality Verification - Final Report.pdf`
+- `SV00123-ATU-A01/MainReport/Powered by GPT - Software Quality Verification - Presentation.pptx`
+- `SV00123-ATU-A01/Videos/OSMS-Automation-Demo.mp4`
 
-### Defect evidence now resolved
+### Defect evidence resolved
 
-- `evidence/defects/BUG-20260406-001-github-issue.png`
-
-This issue screenshot now exists and can be referenced directly from the report, slides, and defect register.
+- `SV00123-ATU-A01/TestResults/Evidence/Defects/BUG-20260406-001-github-issue.png`
 
 ## File naming check
 
-### Naming now aligned
+### Canonical filenames in use
 
-- final report docx:
-  - `Powered by GPT - Software Quality Verification - Final Report.docx`
-- final results workbook:
-  - `OSMS-Final-Test-Results.xlsx`
-- metrics workbook:
-  - `OSMS-Test-Metrics.xlsx`
-- defect log workbook:
-  - `OSMS-Defect-Log.xlsx`
-- UI test cases:
-  - `OSMS-UI-Test-Cases.xlsx`
-- API test cases:
-  - `OSMS-API-Test-Cases.xlsx`
-
-### Naming now completed for final binary deliverables
-
-- presentation:
-  - `Powered by GPT - Software Quality Verification - Presentation.pptx`
-- report pdf:
-  - `Powered by GPT - Software Quality Verification - Final Report.pdf`
-- automation video:
-  - `OSMS-Automation-Demo.mp4`
+- `Powered by GPT - Software Quality Verification - Final Report.docx`
+- `Powered by GPT - Software Quality Verification - Final Report.pdf`
+- `Powered by GPT - Software Quality Verification - Presentation.pptx`
+- `OSMS-UI-Test-Cases.xlsx`
+- `OSMS-API-Test-Cases.xlsx`
+- `OSMS-Final-Test-Results.xlsx`
+- `OSMS-Test-Metrics.xlsx`
+- `OSMS-Defect-Log.xlsx`
+- `OSMS-Automation-Demo.mp4`
 
 ## Duplicate and temporary-file check
 
-### Intentional duplicates kept
+### Non-submission items removed from the clean package
 
-- root working draft:
-  - `Powered by GPT - Software Quality Verification.docx`
-- canonical packaging copy:
-  - `report/Powered by GPT - Software Quality Verification - Final Report.docx`
+- package-local `bin/`
+- package-local `obj/`
+- duplicate non-canonical final-results workbook snapshot
+- stale UI evidence screenshots from earlier reruns that were not referenced by the final report or video
 
-This duplication is acceptable for now because the root file acts as the working draft while the `report/` file acts as the submission-path snapshot.
+### Files intentionally retained
 
-### Temporary or non-submission items that must not be staged
+- `OSMS-Final-Results.csv`
+  - raw result source used for traceability and comparison exports
+- `OSMS-Automation-Video-Result-Comparison.csv`
+- `OSMS-Automation-Video-Result-View.csv`
+  - support the current automation demo and expected-versus-actual comparison view
 
-- Office lock files such as `~$*.docx` and `~$*.pptx`
-- local build output under `automation/ui/OSMS.UITests/bin/`
-- local build output under `automation/ui/OSMS.UITests/obj/`
-- local `.trx` files unless you intentionally want to submit them as evidence
-
-The `.gitignore` already excludes these categories.
-
-## README final check
-
-`README.md` now:
-
-- describes the folder as a full submission workspace
-- lists the main real artifacts currently available
-- points to the canonical report path
-- states the current blockers honestly
-- points reviewers to this phase-15 cleanup checklist
-
-## Submission readiness verdict
+## Readiness verdict
 
 ### Current verdict
 
 `READY WITH MINOR FIXES`
 
-### Why it is not ready yet
+### Why it is not maximum-confidence yet
 
-- several remaining UI modules are still not executed
-- final visual review of the generated PDF and PPTX should still be done manually before upload
-
-The `PDF` report, `PPTX` slide deck, automation video, and GitHub issue screenshot now exist in the canonical submission paths. The remaining work is limited to optional additional execution depth and one last manual visual check of the exported binaries.
+- all four confirmed defects now have live GitHub issue URLs
+- the four confirmed defects still need fix-and-retest evidence before the project can support a stronger stability claim
 
 ### What is already strong enough
 
@@ -163,6 +125,7 @@ The `PDF` report, `PPTX` slide deck, automation video, and GitHub issue screensh
 - defect workflow package
 - results and metrics workbooks
 - report and slide source content
+- report, slide, and video binaries
 
 ## Final pre-submission checklist
 
@@ -172,14 +135,11 @@ The `PDF` report, `PPTX` slide deck, automation video, and GitHub issue screensh
    - `SV00123-ATU-A01/MainReport/Powered by GPT - Software Quality Verification - Final Report.pdf`
 3. Review the generated slide deck in:
    - `SV00123-ATU-A01/MainReport/Powered by GPT - Software Quality Verification - Presentation.pptx`
-4. Review the generated automation video in:
+4. Review the automation video in:
    - `SV00123-ATU-A01/Videos/OSMS-Automation-Demo.mp4`
-5. Add remaining real screenshots for:
-   - stock execution
-   - reports execution
-   - products execution
-   - public catalog execution
-6. Verify the GitHub issue screenshot is included in the defect appendix:
+5. Keep the defect appendix aligned with:
+   - `SV00123-ATU-A01/TestResults/Defects/OSMS-Defect-Log.xlsx`
    - `SV00123-ATU-A01/TestResults/Evidence/Defects/BUG-20260406-001-github-issue.png`
-7. Commit all untracked phase artifacts before final push.
-8. Verify that the appendix link in the report still points to the same GitHub folder.
+6. Keep the four live GitHub issues synchronized with any future retest or fix evidence.
+7. Refresh the report and metrics whenever new retest evidence or cross-browser evidence is added.
+

@@ -4,12 +4,14 @@ namespace OSMS.UITests.Support;
 
 public sealed class AutomationSettings
 {
-    public string BaseUrl { get; set; } = "http://localhost:5068";
+    public string BaseUrl { get; set; } = "http://127.0.0.1:5068";
     public string Browser { get; set; } = "chrome";
     public bool Headless { get; set; }
+    public bool Fullscreen { get; set; }
     public int DefaultTimeoutSeconds { get; set; } = 15;
-    public string UiDataCsvPath { get; set; } = "Report Test subject/test-data/ui/OSMS-UI-Test-Data.csv";
-    public string ScreenshotsDirectory { get; set; } = "Report Test subject/evidence/ui/automation";
+    public int DemoPauseSeconds { get; set; }
+    public string UiDataCsvPath { get; set; } = "Report Test subject/SV00123-ATU-A01/TestScript-Data/TestData/ui/OSMS-UI-Test-Data.csv";
+    public string ScreenshotsDirectory { get; set; } = "Report Test subject/SV00123-ATU-A01/TestResults/Evidence/UI/automation";
 
     public static AutomationSettings Load()
     {
@@ -41,10 +43,22 @@ public sealed class AutomationSettings
             settings.Headless = headless;
         }
 
+        var fullscreenOverride = Environment.GetEnvironmentVariable("OSMS_UI_FULLSCREEN");
+        if (bool.TryParse(fullscreenOverride, out var fullscreen))
+        {
+            settings.Fullscreen = fullscreen;
+        }
+
         var timeoutOverride = Environment.GetEnvironmentVariable("OSMS_UI_TIMEOUT_SECONDS");
         if (int.TryParse(timeoutOverride, out var timeoutSeconds) && timeoutSeconds > 0)
         {
             settings.DefaultTimeoutSeconds = timeoutSeconds;
+        }
+
+        var demoPauseOverride = Environment.GetEnvironmentVariable("OSMS_UI_DEMO_PAUSE_SECONDS");
+        if (int.TryParse(demoPauseOverride, out var demoPauseSeconds) && demoPauseSeconds >= 0)
+        {
+            settings.DemoPauseSeconds = demoPauseSeconds;
         }
 
         settings.BaseUrl = settings.BaseUrl.TrimEnd('/');

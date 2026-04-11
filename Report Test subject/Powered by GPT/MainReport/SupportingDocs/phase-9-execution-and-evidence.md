@@ -128,7 +128,7 @@ Prepare a real, traceable execution-and-evidence package for the current OSMS su
 ### Screenshots still missing
 
 - No critical screenshot gap remains for the current executed baseline.
-- The remaining missing evidence is post-fix retest proof for the four confirmed defects and optional cross-browser evidence.
+- The remaining missing evidence is post-fix pass proof for the four confirmed defects. Basic cross-browser smoke evidence now exists through the `Edge` rerun of `TC-UI-AUTH-001`.
 
 ## Bug evidence checklist
 
@@ -172,7 +172,7 @@ Use these status values consistently:
 
 ## Immediate next evidence priority
 
-1. Fix and retest the four confirmed defects, then capture post-fix success or re-failure evidence.
+1. Fix and retest the four confirmed defects, then capture post-fix success evidence. The latest focused reruns already captured re-failure evidence on `2026-04-11`.
 2. Keep the four live GitHub issue URLs synchronized with the defect register, execution-evidence mapping, and local issue screenshots.
 3. Keep the metrics summary screenshot, GitHub issue evidence, and automation video linked consistently across the report, slides, and appendix.
 

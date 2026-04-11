@@ -12,7 +12,7 @@ public sealed class ProductImportTests : UiTestBase
     {
         ExecuteWithFailureCapture("TC-UI-IMP-002", () =>
         {
-            var credential = TestData.GetCredential("UI-DATA-ACC-003");
+            var credential = TestData.GetCredential("UI-DATA-ACC-001");
             var workbookPath = TestData.GetAbsolutePath("UI-DATA-IMP-001");
             var loginPage = new LoginPage(Driver, Wait, Settings).Open();
 
@@ -31,6 +31,7 @@ public sealed class ProductImportTests : UiTestBase
             Assert.Equal(5, previewPage.GetInvalidRowCount());
             Assert.Contains("QAIMP001", pageText, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("QAIMPDUP", pageText, StringComparison.OrdinalIgnoreCase);
+            PauseForDemo();
             CaptureCheckpoint("TC-UI-IMP-002-preview");
         });
     }

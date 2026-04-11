@@ -48,13 +48,13 @@ Use these paths in the clean submission package `SV00123-ATU-A01/`:
 
 Use this pattern for screenshots:
 
-`<TestCaseID>__<Module>__<StepOrOutcome>__<YYYYMMDD>.png`
+`<YYYYMMDD>_<HHMMSS>_<TestCaseID>-<outcome>.png`
 
 Examples:
 
-- `TC-UI-AUTH-001__Auth__InvalidLogin__20260405.png`
-- `TC-API-CAT-004__CatalogApi__PriceValidation__20260405.png`
-- `BUG-INV-001__Invoices__DraftCancelStockIssue__20260405.png`
+- `20260406_053930_TC-UI-AUTH-001-success.png`
+- `20260406_054115_TC-UI-IMP-002-preview.png`
+- `20260406_053902_TC-UI-INV-001-failure.png`
 
 ## Automation File Naming
 

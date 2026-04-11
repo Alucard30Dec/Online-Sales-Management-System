@@ -25,7 +25,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 - clearly separate:
   - what was designed
   - what was executed
-  - what is still pending
+  - what remains unresolved after execution
 
 ## Slide-By-Slide Speaking Points
 
@@ -69,19 +69,20 @@ Use these notes while building the slide deck and during oral defense. The notes
 
 - This is one of the strongest slides.
 - Show that UI and API both have real pass evidence.
-- Explicitly say that only the invoice failure was promoted into a confirmed defect because the server log proved the root cause.
-- This makes the submission more credible.
+- Explicitly say that the UI suite no longer has `Not Run`.
+- Explain that all four confirmed defects are now mirrored into live GitHub Issues, and a focused retest on `2026-04-11` still reproduced all four defects. True post-fix retest evidence is still missing because no code fix has been verified yet.
 
 ### Slide 7. Current Metrics
 
-- Explain that `63` cases exist and `25` now have real execution evidence.
-- Say clearly that the package is materially stronger than a smoke-only baseline, but it is still not full regression stability.
-- This answer is stronger than pretending the whole project is already fully verified.
+- Explain that `63` cases exist and all `63` now have real execution evidence.
+- Say clearly that the package is now execution-complete at the test-case level, but it is still not defect-free.
+- This answer is stronger than pretending that high execution coverage means the system is already stable.
 
 ### Slide 8. Defect And Risk Analysis
 
-- Explain that `1` confirmed defect now exists because the invoice failure has both UI proof and server-log proof.
-- Mention that the biggest unresolved execution gaps are now stock, reports, products, and public-catalog UI.
+- Explain that `4` confirmed defects now exist.
+- Highlight that `BUG-20260406-001` remains the strongest defect because it has both UI proof and server-log proof plus a real GitHub issue.
+- Mention that the execution gap is now closed, and even the retest status is clearer because the four live defects were re-run on `2026-04-11`. The remaining gap is specifically post-fix evidence, not missing execution.
 - Also mention that the earlier authorization and import observations were closed by focused reruns, so they should not be presented as product bugs.
 
 ### Slide 9. Key Insights
@@ -90,15 +91,17 @@ Use these notes while building the slide deck and during oral defense. The notes
   - strong planning
   - strong traceability
   - real automation evidence exists
-  - but execution depth is still limited
+  - execution depth is now complete
+  - but defect resolution is still incomplete
 - This is the slide that shows analytical maturity.
 
 ### Slide 10. Next Steps And Submission Package
 
 - Explain the immediate next actions:
   - fix and retest invoice creation through GitHub Issue `#1`
-  - execute the remaining highest-value UI modules
-  - optionally add cross-browser evidence
+  - fix and retest purchase validation, import confirm, and invoice cancellation after fixes are available
+  - convert the current re-failure retests into post-fix pass evidence once code changes are available
+  - expand cross-browser proof beyond the current `Edge` smoke run
 - End by pointing to the GitHub appendix link containing the deliverables.
 
 ### Slide 11. Q&A Backup
@@ -124,33 +127,33 @@ This order starts from structure, then evidence, then summary, which is easier t
 
 ### Strongest evidence already available
 
-- `evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png`
-- `evidence/ui/automation/20260406_054245_TC-UI-AUTH-003-access-denied.png`
-- `evidence/ui/automation/20260406_054115_TC-UI-IMP-002-preview.png`
-- `evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
-- `results/automation-api/newman-full-run.txt`
-- `results/automation-ui/auth-permission-rerun.trx`
-- `results/automation-ui/import-preview-rerun.trx`
-- `results/automation-ui/purchase-rerun.trx`
-- `results/OSMS-Final-Test-Results.xlsx`
-- `metrics/OSMS-Test-Metrics.xlsx`
+- `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_053930_TC-UI-AUTH-001-success.png`
+- `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_054245_TC-UI-AUTH-003-access-denied.png`
+- `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_054115_TC-UI-IMP-002-preview.png`
+- `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
+- `SV00123-ATU-A01/TestResults/Evidence/API/newman-full-run.txt`
+- `SV00123-ATU-A01/TestResults/RunnerOutput/UI/auth-permission-rerun.trx`
+- `SV00123-ATU-A01/TestResults/RunnerOutput/UI/import-preview-rerun.trx`
+- `SV00123-ATU-A01/TestResults/RunnerOutput/UI/purchase-rerun.trx`
+- `SV00123-ATU-A01/TestResults/FinalResults/OSMS-Final-Test-Results.xlsx`
+- `SV00123-ATU-A01/TestResults/Metrics/OSMS-Test-Metrics.xlsx`
 
 ### Strongest defect proof
 
-- `evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png`
-- `evidence/defects/BUG-20260406-001-invoice-create-log.txt`
+- `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_053902_TC-UI-INV-001-failure.png`
+- `SV00123-ATU-A01/TestResults/Evidence/Defects/BUG-20260406-001-invoice-create-log.txt`
 
 These two files should be presented together because the screenshot shows the user-facing failure and the log proves the root cause.
 
 ## Likely Q&A And Recommended Answers
 
-### Why do you have 1 confirmed defect?
+### Why do you now have 4 confirmed defects?
 
-Because invoice creation now has both a reproducible UI failure and a matching server-side exception trace. That is strong enough to justify a real defect log.
+Because the expanded reruns converted the previously unexecuted UI cases into real evidence. Seven failing cases were observed, but they map to four distinct confirmed defects after consolidating the three invoice-create variations under the same root-cause defect.
 
-### Why is execution progress 39.68% instead of 100%?
+### Why is execution progress now 100%?
 
-Because the package still avoids fake completion. We expanded execution where evidence could be collected credibly, especially the full API surface and several high-value UI flows, but we did not mark the remaining UI areas as executed without proof.
+Because every designed UI and API test case now has runtime evidence. We did not remove `Not Run` by editing cells manually; we removed it by running the remaining UI coverage batches and synchronizing the evidence files, results workbook, and metrics pack.
 
 ### Why did you choose Selenium and Newman?
 
@@ -158,11 +161,11 @@ The project stack is `.NET 8`, so Selenium with `.NET + xUnit` is practical and 
 
 ### Which module is riskiest right now?
 
-The highest current business risk is invoice creation because it has one confirmed defect, followed by still-unexecuted areas such as stock, reports, and public-catalog UI.
+The highest current business risk is still invoices, because invoice creation and invoice cancellation both have confirmed failures, and the create defect also blocks the insufficient-stock and tampered-price scenarios.
 
 ### How do you distinguish automation failure from product defect?
 
-A product defect must have a reproducible expected-versus-actual mismatch. If the runner times out or the script expectation is unstable, we keep it as an observation. Only the invoice failure crossed that threshold because the server log confirmed the backend root cause.
+A product defect must have a reproducible expected-versus-actual mismatch. If the runner times out or the script expectation is unstable, we keep it as an observation. The current package has four confirmed defects because the reruns now show stable mismatches with screenshot and runner-output evidence, and the invoice-create defect is additionally backed by a server-side exception trace.
 
 ### What is the strongest part of your submission?
 
@@ -177,5 +180,6 @@ Because focused reruns showed that the authorization case was a valid redirect-b
 - use short titles, not paragraphs
 - keep each slide to `3-5` bullets
 - prioritize screenshots and numbers over text walls
-- use one color for `Pass`, one for `Blocked`, one for `Pending`
+- use one color for `Pass`, one for `Fail`, one for `Open Defects`
 - if time is short, Slides `3`, `6`, `7`, `9`, and `10` are the highest-value core
+

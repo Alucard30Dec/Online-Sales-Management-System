@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="1efe2948-25ba-4292-8d31-67c40923c8d7" name="Alucard30Dec@ALUCARD 2026-04-06 12:41:15" runUser="ALUCARD\Alucard30Dec" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-06T12:41:15.9354412+07:00" queuing="2026-04-06T12:41:15.9354416+07:00" start="2026-04-06T12:41:04.8296637+07:00" finish="2026-04-06T12:41:15.9405251+07:00" />
+  <TestSettings name="default" id="ee310222-3ec5-447b-b9f7-fbf21aa189f1">
+    <Deployment runDeploymentRoot="Alucard30Dec_ALUCARD_2026-04-06_12_41_15" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="343ec408-9aa6-49cd-9a91-22b97b672dce" testId="0dadd6a6-7976-33bb-c30e-075cf40852a5" testName="OSMS.UITests.Tests.ProductImportTests.ProductImportPreviewShowsExpectedValidAndInvalidCounts" computerName="ALUCARD" duration="00:00:10.2700544" startTime="2026-04-06T12:41:15.8461391+07:00" endTime="2026-04-06T12:41:15.8461638+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="343ec408-9aa6-49cd-9a91-22b97b672dce" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="OSMS.UITests.Tests.ProductImportTests.ProductImportPreviewShowsExpectedValidAndInvalidCounts" storage="e:\project\online-sales-management-system\report test subject\automation\ui\osms.uitests\bin\debug\net8.0\osms.uitests.dll" id="0dadd6a6-7976-33bb-c30e-075cf40852a5">
+      <Execution id="343ec408-9aa6-49cd-9a91-22b97b672dce" />
+      <TestMethod codeBase="E:\Project\Online-Sales-Management-System\Report Test subject\automation\ui\OSMS.UITests\bin\Debug\net8.0\OSMS.UITests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="OSMS.UITests.Tests.ProductImportTests" name="ProductImportPreviewShowsExpectedValidAndInvalidCounts" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="0dadd6a6-7976-33bb-c30e-075cf40852a5" executionId="343ec408-9aa6-49cd-9a91-22b97b672dce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.11]   Discovering: OSMS.UITests&#xD;
+[xUnit.net 00:00:00.16]   Discovered:  OSMS.UITests&#xD;
+[xUnit.net 00:00:00.17]   Starting:    OSMS.UITests&#xD;
+[xUnit.net 00:00:10.49]   Finished:    OSMS.UITests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

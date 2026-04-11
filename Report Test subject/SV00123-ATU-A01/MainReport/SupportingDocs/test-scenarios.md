@@ -118,4 +118,4 @@ This scenario set is intentionally broader than the minimum required case count 
 - prioritize critical paths first
 - keep enough negative and edge coverage for strong rubric scoring
 
-`PENDING REAL EXECUTION`: scenario coverage is designed and source-backed, but execution status and evidence will only be finalized in later phases.
+Scenario coverage is designed and source-backed, while execution status and evidence are finalized separately in the final-results and metrics artifacts.

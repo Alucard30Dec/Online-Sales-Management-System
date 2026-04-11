@@ -21,6 +21,7 @@ public sealed class AuthenticationTests : UiTestBase
             dashboardPage.WaitUntilLoaded();
 
             Assert.Contains("/Admin", Driver.Url, StringComparison.OrdinalIgnoreCase);
+            PauseForDemo();
             CaptureCheckpoint("TC-UI-AUTH-001-success");
         });
     }
@@ -48,6 +49,7 @@ public sealed class AuthenticationTests : UiTestBase
             Assert.Contains("/Admin", Driver.Url, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("/Admin/Purchases", Driver.Url, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Dashboard", Driver.FindElement(OpenQA.Selenium.By.TagName("body")).Text, StringComparison.OrdinalIgnoreCase);
+            PauseForDemo();
             CaptureCheckpoint("TC-UI-AUTH-003-access-denied");
         });
     }

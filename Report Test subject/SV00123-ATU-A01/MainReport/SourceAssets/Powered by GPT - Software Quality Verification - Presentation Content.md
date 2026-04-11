@@ -144,50 +144,56 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 - `TC-UI-AUTH-003` passed
 - `TC-UI-IMP-002` passed
 - `TC-UI-PUR-001` and `TC-UI-PUR-007` passed
+- extended reruns now also pass admin-user, customer, report, stock, and public-catalog flows
 - full API collection passed (`19 / 19`)
 
 **Confirmed Fail Evidence**
 
-- `TC-UI-INV-001` failed with UI and server-log proof
+- `TC-UI-INV-001`, `TC-UI-INV-003`, and `TC-UI-INV-006` fail from the same invoice-create defect
+- `TC-UI-INV-005` fails in invoice cancellation
+- `TC-UI-IMP-003` fails in import confirm
+- `TC-UI-PUR-002` and `TC-UI-PUR-003` fail on blank validation banners
 
 **Important Rule**
 
 - no unexecuted test was marked as pass
-- only one issue was promoted into a confirmed defect because the root cause was proven by server log evidence
+- UI suite no longer contains `Not Run`
+- `4` confirmed defects are recorded, and `1` of them is already tracked in GitHub Issue `#1`
 
 ### Visual to show
 
 - login success screenshot:
-  - `evidence/ui/automation/20260406_053930_TC-UI-AUTH-001-success.png`
+  - `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_053930_TC-UI-AUTH-001-success.png`
 - purchase success screenshot:
-  - `evidence/ui/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
+  - `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
 - invoice defect screenshot:
-  - `evidence/ui/automation/20260406_053902_TC-UI-INV-001-failure.png`
+  - `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_053902_TC-UI-INV-001-failure.png`
 - Newman output snippet for full collection:
-  - `results/automation-api/newman-full-run.txt`
+  - `SV00123-ATU-A01/TestResults/Evidence/Report/OSMS-Newman-Full-Run-Snippet.png`
 
 ## Slide 7. Current Metrics
 
 ### Slide content
 
-**Execution Summary As Of 2026-04-06**
+**Execution Summary As Of 2026-04-11**
 
 - total cases: `63`
-- executed: `25`
-- pass: `24`
-- fail: `1`
+- executed: `63`
+- pass: `56`
+- fail: `7`
 - blocked: `0`
-- not run: `38`
-- execution progress: `39.68%`
+- not run: `0`
+- execution progress: `100%`
 
 **Interface View**
 
-- Admin UI: `6` executed, `5` pass, `1` fail
+- Admin UI: `41` executed, `34` pass, `7` fail
 - API: `19` executed, `19` pass
+- Public UI: `3` executed, `3` pass
 
 ### Visual to show
 
-- `evidence/report/OSMS-Test-Metrics-Summary.png`
+- `SV00123-ATU-A01/TestResults/Evidence/Report/OSMS-Test-Metrics-Summary.png`
 
 ## Slide 8. Defect And Risk Analysis
 
@@ -195,21 +201,23 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Confirmed Defects**
 
-- `1` confirmed defect
-  - `BUG-20260406-001` in invoice creation
-  - tracked in GitHub Issue `#1`
+- `4` confirmed defects
+  - `BUG-20260406-001` invoice-create defect, tracked in GitHub Issue `#1`
+  - `BUG-20260411-002` purchase validation banner defect, tracked in GitHub Issue `#2`
+  - `BUG-20260411-003` import-confirm defect, tracked in GitHub Issue `#3`
+  - `BUG-20260411-004` invoice-cancel defect, tracked in GitHub Issue `#4`
 
 **Closed Observations**
 
 - authorization redirect behavior
 - product import preview locator issue
 
-**Highest Business Risks Still Unverified**
+**Highest Remaining Risks**
 
-- Stock
-- Products
-- Reports
-- Public Catalog UI
+- unresolved invoice create and cancel flows
+- purchase validation rendering defect
+- import-confirm defect after valid preview
+- focused retests on `2026-04-11` still reproduced all four confirmed defects
 
 ### Visual to show
 
@@ -217,7 +225,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
   - `Verified`
   - `Confirmed Defect`
   - `Unverified`
-- `evidence/defects/BUG-20260406-001-github-issue.png`
+- `SV00123-ATU-A01/TestResults/Evidence/Defects/BUG-20260406-001-github-issue.png`
 
 ## Slide 9. Key Insights
 
@@ -232,14 +240,14 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 **What We Do Not Overclaim**
 
 - current evidence still does not prove full system stability
-- one core business defect is currently confirmed
-- more UI execution is still required for high-confidence quality claims
+- four confirmed defects are currently open
+- post-fix retest after actual fixes is still required for maximum confidence
 
 ### Visual to show
 
 - two-column slide:
   - `Proven Today`
-  - `Still Pending`
+  - `Open Defects`
 
 ## Slide 10. Next Steps And Submission Package
 
@@ -248,9 +256,9 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 **Highest-Value Next Steps**
 
 1. fix and retest invoice creation through GitHub Issue `#1`
-2. execute stock, reports, products, and public-catalog UI flows
-3. add optional cross-browser evidence if Edge is available
-4. refresh the report, slides, and metrics only if new execution evidence is added
+2. fix and retest purchase validation, import confirm, and invoice cancellation after fixes are available
+3. add post-fix pass evidence for all confirmed defects
+4. expand cross-browser proof beyond the current `Edge` smoke evidence if time permits
 
 **Submission Package**
 
@@ -267,7 +275,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 ### Visual to show
 
 - GitHub appendix link:
-  - `github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
+  - `github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/Powered%20by%20GPT`
 
 ## Slide 11. Q&A Backup
 
@@ -275,8 +283,8 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Likely Questions**
 
-- Why do you have `0` confirmed defects?
-- Why is execution progress still low?
+- Why do you have `4` confirmed defects?
+- Why is execution progress now `100%`?
 - Why did you choose Selenium and Newman?
 - How do you distinguish automation failure from product defect?
 - Which module is riskiest right now?
@@ -284,3 +292,4 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 ### Visual to show
 
 - plain clean backup slide only
+

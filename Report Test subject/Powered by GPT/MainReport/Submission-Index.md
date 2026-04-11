@@ -77,5 +77,5 @@ Some supporting documents were originally authored against the working workspace
 
 - all designed UI and API cases are now executed in the synchronized baseline
 - all four confirmed defects are now mirrored into live GitHub Issues
-- optional cross-browser evidence is still not included
+- basic cross-browser evidence now exists through an `Edge` smoke rerun of `TC-UI-AUTH-001`
 

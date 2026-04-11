@@ -1,0 +1,21 @@
+# SV00123-ATU-A01 Submission Package
+
+This folder is the clean submission package for the `Online Sales Management System` Software Testing final project.
+
+## Start Here
+
+1. Open `MainReport/Submission-Index.md`
+2. Review `MainReport/Powered by GPT - Software Quality Verification - Final Report.pdf`
+3. Review `MainReport/Powered by GPT - Software Quality Verification - Presentation.pptx`
+
+## Package Structure
+
+- `MainReport/`
+- `TestCases/`
+- `TestResults/`
+- `TestScript-Data/`
+- `Videos/`
+
+## Current Note
+
+The package is now strong in traceability and execution evidence, with all `63` designed test cases executed in the current synchronized baseline. All `4` confirmed defects are now mirrored into live GitHub Issues. The remaining gap before a maximum-confidence claim is post-fix retest evidence for those defects and optional cross-browser coverage.

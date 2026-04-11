@@ -1,4 +1,4 @@
-# Phase 10 Defect Log And Bug Management
+﻿# Phase 10 Defect Log And Bug Management
 
 ## Objective
 
@@ -107,7 +107,7 @@ Use this exact environment structure in every defect report:
 4. If the issue is reproducible manually or through stable API evidence, open a GitHub Issue.
 5. Apply label groups for severity, priority, status, module, and interface.
 6. Attach screenshots, runner output, and testcase linkage.
-7. Update `results/execution-evidence-mapping.csv` with the GitHub issue link.
+7. Update `TestResults/FinalResults/execution-evidence-mapping.csv` with the GitHub issue link.
 8. When fixed, re-run the original testcase and add retest evidence before closing the issue.
 
 ## GitHub status workflow
@@ -184,10 +184,11 @@ Recommended movement:
   - server log excerpt proves `InvalidOperationException` caused by using a user-initiated transaction with `MySqlRetryingExecutionStrategy`
   - the issue is reproducible with valid walk-in invoice data in the current environment
 - issue evidence:
-  - `evidence/defects/BUG-20260406-001-github-issue.png`
+  - `TestResults/Evidence/Defects/BUG-20260406-001-github-issue.png`
 
 ## Immediate bug-management actions
 
-1. Keep `defects/exports/OSMS-Defect-Register.csv` and `results/execution-evidence-mapping.csv` aligned with GitHub Issue `#1`.
+1. Keep `TestResults/Defects/OSMS-Defect-Register.csv` and `TestResults/FinalResults/execution-evidence-mapping.csv` aligned with GitHub Issue `#1`.
 2. Retest invoice creation after any fix and capture the post-fix details-page evidence.
 3. Update the issue status labels when development work begins or a retest becomes available.
+

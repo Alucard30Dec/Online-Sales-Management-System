@@ -70,7 +70,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 - This is one of the strongest slides.
 - Show that UI and API both have real pass evidence.
 - Explicitly say that the UI suite no longer has `Not Run`.
-- Explain that all four confirmed defects are now mirrored into live GitHub Issues, while post-fix retest evidence is still missing.
+- Explain that all four confirmed defects are now mirrored into live GitHub Issues, and a focused retest on `2026-04-11` still reproduced all four defects. True post-fix retest evidence is still missing because no code fix has been verified yet.
 
 ### Slide 7. Current Metrics
 
@@ -82,7 +82,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 
 - Explain that `4` confirmed defects now exist.
 - Highlight that `BUG-20260406-001` remains the strongest defect because it has both UI proof and server-log proof plus a real GitHub issue.
-- Mention that the execution gap is now closed, but the retest gap is still open because none of the four confirmed defects has post-fix evidence yet.
+- Mention that the execution gap is now closed, and even the retest status is clearer because the four live defects were re-run on `2026-04-11`. The remaining gap is specifically post-fix evidence, not missing execution.
 - Also mention that the earlier authorization and import observations were closed by focused reruns, so they should not be presented as product bugs.
 
 ### Slide 9. Key Insights
@@ -99,9 +99,9 @@ Use these notes while building the slide deck and during oral defense. The notes
 
 - Explain the immediate next actions:
   - fix and retest invoice creation through GitHub Issue `#1`
-  - retest purchase validation, import confirm, and invoice cancellation after fixes are available
-  - retest the four confirmed defects after fixes
-  - optionally add cross-browser evidence
+  - fix and retest purchase validation, import confirm, and invoice cancellation after fixes are available
+  - convert the current re-failure retests into post-fix pass evidence once code changes are available
+  - expand cross-browser proof beyond the current `Edge` smoke run
 - End by pointing to the GitHub appendix link containing the deliverables.
 
 ### Slide 11. Q&A Backup

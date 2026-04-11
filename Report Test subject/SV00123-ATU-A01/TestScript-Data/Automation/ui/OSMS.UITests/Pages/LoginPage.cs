@@ -26,7 +26,32 @@ public sealed class LoginPage : PageBase
     {
         SetInputValue(EmailInput, credential.Username);
         SetInputValue(PasswordInput, credential.Password);
-        Wait.Clickable(SubmitButton).Click();
+        Wait.Condition(
+            driver => driver.FindElements(SubmitButton).Count > 0,
+            "Timed out waiting for the login submit button to appear in the DOM.");
+
+        var submitButton = Driver.FindElement(SubmitButton);
+
+        if (Driver is IJavaScriptExecutor js)
+        {
+            js.ExecuteScript("arguments[0].scrollIntoView({block: 'center'});", submitButton);
+        }
+
+        try
+        {
+            submitButton.Click();
+        }
+        catch (ElementClickInterceptedException)
+        {
+            if (Driver is IJavaScriptExecutor clickJs)
+            {
+                clickJs.ExecuteScript("arguments[0].click();", submitButton);
+            }
+            else
+            {
+                throw;
+            }
+        }
     }
 
     public string GetPageText() => ReadBodyText();

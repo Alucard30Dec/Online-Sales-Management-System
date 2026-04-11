@@ -1,4 +1,4 @@
-# Submission Index
+﻿# Submission Index
 
 ## Package Root
 
@@ -55,7 +55,7 @@ This folder is the clean final submission package aligned to the requested 5-fol
 ### Videos
 
 - automation demonstration video
-- capture checklist
+- video description and recording script
 
 ## Path Normalization Note
 
@@ -75,5 +75,7 @@ Some supporting documents were originally authored against the working workspace
 
 ## Known Remaining Gaps
 
-- `PENDING REAL EXECUTION`: additional UI execution evidence for `Stock`, `Reports`, `Products`, and `Public Catalog`
-- optional cross-browser evidence is still not included
+- all designed UI and API cases are now executed in the synchronized baseline
+- all four confirmed defects are now mirrored into live GitHub Issues
+- basic cross-browser evidence now exists through an `Edge` smoke rerun of `TC-UI-AUTH-001`
+

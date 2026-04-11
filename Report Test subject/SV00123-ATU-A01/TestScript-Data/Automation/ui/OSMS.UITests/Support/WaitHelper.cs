@@ -18,8 +18,19 @@ public sealed class WaitHelper
     {
         return _wait.Until(driver =>
         {
-            var element = driver.FindElement(locator);
-            return element.Displayed ? element : null;
+            try
+            {
+                var element = driver.FindElement(locator);
+                return element.Displayed ? element : null;
+            }
+            catch (NoSuchElementException)
+            {
+                return null;
+            }
+            catch (StaleElementReferenceException)
+            {
+                return null;
+            }
         }) ?? throw new WebDriverTimeoutException($"Timed out waiting for element '{locator}' to become visible.");
     }
 
@@ -27,8 +38,19 @@ public sealed class WaitHelper
     {
         return _wait.Until(driver =>
         {
-            var element = driver.FindElement(locator);
-            return element.Displayed && element.Enabled ? element : null;
+            try
+            {
+                var element = driver.FindElement(locator);
+                return element.Displayed && element.Enabled ? element : null;
+            }
+            catch (NoSuchElementException)
+            {
+                return null;
+            }
+            catch (StaleElementReferenceException)
+            {
+                return null;
+            }
         }) ?? throw new WebDriverTimeoutException($"Timed out waiting for element '{locator}' to become clickable.");
     }
 
@@ -36,8 +58,15 @@ public sealed class WaitHelper
     {
         return _wait.Until(driver =>
         {
-            var elements = driver.FindElements(locator);
-            return elements.Count > 0 && elements.All(x => x.Displayed) ? elements : null;
+            try
+            {
+                var elements = driver.FindElements(locator);
+                return elements.Count > 0 && elements.All(x => x.Displayed) ? elements : null;
+            }
+            catch (StaleElementReferenceException)
+            {
+                return null;
+            }
         }) ?? throw new WebDriverTimeoutException($"Timed out waiting for elements '{locator}' to become visible.");
     }
 
@@ -50,8 +79,19 @@ public sealed class WaitHelper
     {
         _wait.Until(driver =>
         {
-            var bodyText = driver.FindElement(By.TagName("body")).Text;
-            return bodyText.Contains(text, StringComparison.OrdinalIgnoreCase);
+            try
+            {
+                var bodyText = driver.FindElement(By.TagName("body")).Text;
+                return bodyText.Contains(text, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (NoSuchElementException)
+            {
+                return false;
+            }
+            catch (StaleElementReferenceException)
+            {
+                return false;
+            }
         });
     }
 

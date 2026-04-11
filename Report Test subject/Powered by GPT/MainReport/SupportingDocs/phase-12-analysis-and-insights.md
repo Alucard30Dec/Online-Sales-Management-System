@@ -139,7 +139,7 @@ In other words, the current system now has a stronger operational baseline than 
 
 - `100%` of total test cases have been executed
 - `100%` of documented scenarios have execution evidence
-- no cross-browser evidence has been collected yet
+- a basic cross-browser smoke rerun now exists because `TC-UI-AUTH-001` passed on `Edge` on `2026-04-11`
 - the automation video now exists and demonstrates two stable UI flows, the API batch run, and an explicit expected-versus-actual result comparison, but it is still not a full UI regression pack
 
 ### Defect-analysis limitations
@@ -157,7 +157,7 @@ In other words, the current system now has a stronger operational baseline than 
 
 ### Recommendation 1
 
-Keep GitHub Issue `#1` updated for `BUG-20260406-001` and attach any retest or fix evidence there. Then open issue-tool records for `BUG-20260411-002`, `BUG-20260411-003`, and `BUG-20260411-004`.
+Keep all four live GitHub Issues updated and attach any future post-fix evidence there. The current focused reruns already prove that the defects still reproduce on the latest verified baseline.
 
 ### Recommendation 2
 

@@ -36,4 +36,4 @@ Prepare reusable, traceable, and evidence-ready test data for UI and API testing
 
 - `OSMS-Product-Import-Mixed-Validation.xlsx` is designed to produce both valid and invalid preview rows in the product import screen.
 - `OSMS-Product-Import-NonXlsx-Sample.csv` exists only for the extension validation case and should be rejected before parsing.
-- Actual preview counts, imported row counts, and screenshots remain `PENDING REAL EXECUTION`.
+- Actual preview counts, imported row counts, and screenshots are not yet available in the current evidence baseline.

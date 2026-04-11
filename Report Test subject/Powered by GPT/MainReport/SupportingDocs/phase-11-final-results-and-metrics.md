@@ -57,15 +57,15 @@ This rule was applied so the summary can satisfy the required `pass / fail / blo
 - `TC-UI-PUR-002`, `TC-UI-PUR-003`
   - status: `Fail`
   - evidence: UI failure screenshots + rerun TRX
-  - defect link: `BUG-20260411-002`
+  - defect link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/issues/2`
 - `TC-UI-IMP-003`
   - status: `Fail`
   - evidence: UI failure screenshot + rerun TRX
-  - defect link: `BUG-20260411-003`
+  - defect link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/issues/3`
 - `TC-UI-INV-005`
   - status: `Fail`
   - evidence: UI failure screenshot + rerun TRX
-  - defect link: `BUG-20260411-004`
+  - defect link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/issues/4`
 
 ## Interface-wise metrics
 
@@ -100,8 +100,8 @@ This rule was applied so the summary can satisfy the required `pass / fail / blo
   - execution progress: `100%`
   - all three cases now pass
 - `Permissions`
-  - execution progress: `33.33%`
-  - one pass and two not-run cases
+  - execution progress: `100%`
+  - all three permission-focused cases now pass
 - `Purchases`
   - execution progress: `100%`
   - five pass results and two confirmed fail results now exist
@@ -162,4 +162,4 @@ The repository does not contain a separate formal requirement specification or s
 
 ## Submission caution
 
-These files are materially stronger after the 2026-04-06, 2026-04-10, and 2026-04-11 reruns, and the final PDF, PPTX, automation video, and GitHub issue screenshot now exist. The remaining weakness is no longer `Not Run` coverage. It is the number of confirmed defects that still need post-fix retest evidence and broader GitHub issue mirroring.
+These files are materially stronger after the 2026-04-06, 2026-04-10, and 2026-04-11 reruns, and the final PDF, PPTX, automation video, and GitHub issue screenshots now exist for all four confirmed defects. The remaining weakness is no longer `Not Run` coverage or issue-tool mirroring. It is the number of confirmed defects that still need post-fix retest evidence.

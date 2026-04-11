@@ -217,7 +217,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 - unresolved invoice create and cancel flows
 - purchase validation rendering defect
 - import-confirm defect after valid preview
-- no post-fix retest evidence yet for the confirmed defects
+- focused retests on `2026-04-11` still reproduced all four confirmed defects
 
 ### Visual to show
 
@@ -241,7 +241,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 - current evidence still does not prove full system stability
 - four confirmed defects are currently open
-- post-fix retest is still required for maximum confidence
+- post-fix retest after actual fixes is still required for maximum confidence
 
 ### Visual to show
 
@@ -256,9 +256,9 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 **Highest-Value Next Steps**
 
 1. fix and retest invoice creation through GitHub Issue `#1`
-2. retest purchase validation, import confirm, and invoice cancellation after fixes are available
-3. add post-fix retest evidence for all confirmed defects
-4. add optional cross-browser evidence if Edge is available
+2. fix and retest purchase validation, import confirm, and invoice cancellation after fixes are available
+3. add post-fix pass evidence for all confirmed defects
+4. expand cross-browser proof beyond the current `Edge` smoke evidence if time permits
 
 **Submission Package**
 

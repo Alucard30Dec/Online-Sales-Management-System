@@ -4,8 +4,6 @@
 
 This file is the package copy of the report-assembly guide. The canonical grading deliverables are the generated binaries in `../`.
 
-If any referenced artifact still uses the original workspace naming, resolve it through `../Submission-Index.md`.
-
 ## Objective
 
 Use this file while converting the Markdown report source into the final Word and PDF deliverables.
@@ -83,7 +81,7 @@ Use this file while converting the Markdown report source into the final Word an
   - `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_054115_TC-UI-IMP-002-preview.png`
   - `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
   - `SV00123-ATU-A01/TestResults/Evidence/UI/automation/20260406_053902_TC-UI-INV-001-failure.png`
-  - screenshot or clipped output from `SV00123-ATU-A01/TestResults/Evidence/API/newman-full-run.txt`
+  - `SV00123-ATU-A01/TestResults/Evidence/Report/OSMS-Newman-Full-Run-Snippet.png`
 
 ### IV. Defect Report And Metrics
 
@@ -119,7 +117,7 @@ Use this file while converting the Markdown report source into the final Word an
 ### Appendix
 
 - GitHub appendix link:
-  - `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
+  - `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/Powered%20by%20GPT`
 - list the exact artifacts already committed in:
   - `SV00123-ATU-A01/TestCases/`
   - `SV00123-ATU-A01/TestScript-Data/TestData/`
@@ -132,7 +130,8 @@ Use this file while converting the Markdown report source into the final Word an
 
 ## High-Risk Missing Items Before Final Export
 
-- `PENDING REAL EXECUTION`: additional execution screenshots for `Stock`, `Reports`, `Products`, and `Public Catalog`
+- mirror `BUG-20260411-002`, `BUG-20260411-003`, and `BUG-20260411-004` into GitHub Issues if you want stronger bug-management evidence
+- add post-fix retest evidence after any confirmed defect is resolved
 
 ## Final Export Checklist
 
@@ -140,5 +139,6 @@ Use this file while converting the Markdown report source into the final Word an
 - apply `Times New Roman`, `12 pt`, and `1.5` line spacing
 - generate the automatic table of contents
 - insert all tables and figures referenced in the report content
-- keep every missing artifact labeled as `PENDING REAL EXECUTION` if it still does not exist
+- keep every missing artifact labeled as not yet executed in the current evidence baseline if it still does not exist
 - export the final Word file to PDF
+

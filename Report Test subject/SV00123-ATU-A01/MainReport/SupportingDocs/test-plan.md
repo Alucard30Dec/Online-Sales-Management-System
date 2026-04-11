@@ -6,7 +6,7 @@
 - Course: `Software Testing`
 - System under test: `Online Sales Management System`
 - Repository URL: `https://github.com/Alucard30Dec/Online-Sales-Management-System`
-- Appendix folder URL: `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
+- Appendix folder URL: `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/Powered%20by%20GPT`
 - Application architecture: `ASP.NET Core MVC (.NET 8) + EF Core + ASP.NET Identity + TiDB/MySQL`
 - Main test surfaces:
   - `Admin Portal`
@@ -136,7 +136,7 @@ The team will use a `black-box execution approach` during test execution while u
 - defect confirmation and evidence capture
 - visual rendering and user-facing messages
 
-#### Automation testing is planned for
+#### Automation testing is implemented for
 
 - admin login and role-based smoke flow
 - invoice creation with status validation
@@ -144,7 +144,7 @@ The team will use a `black-box execution approach` during test execution while u
 - product Excel import preview and confirm
 - catalog API request validation and smoke coverage
 
-`PENDING REAL EXECUTION`: automation framework implementation and evidence belong to later phases and are not yet present in the repository.
+Automation framework implementation and evidence are now present in the submission package under `SV00123-ATU-A01/TestScript-Data/Automation/` and `SV00123-ATU-A01/TestResults/Evidence/`.
 
 ### 5.3 Black-Box And White-Box Usage
 
@@ -255,8 +255,8 @@ The current environment uses seeded demo data from `Data/DbSeeder.cs`, including
 ### 8.4 Browser Matrix
 
 - Primary browser for execution: `Google Chrome`
-- Secondary browser for bonus cross-browser scope: `NEEDS USER CONFIRMATION`
-- Tertiary browser for bonus cross-browser scope: `NEEDS USER CONFIRMATION`
+- Secondary browser for bonus cross-browser scope: `Executed on 2026-04-11 for TC-UI-AUTH-001 (Edge smoke pass)`
+- Tertiary browser for bonus cross-browser scope: `Not included in the current evidence baseline`
 
 ## 9. Test Tools
 
@@ -268,14 +268,15 @@ The current environment uses seeded demo data from `Data/DbSeeder.cs`, including
 - `PowerShell` for local execution support
 - `Google Chrome` for browser-based UI execution
 
-### 9.2 Planned Tools For Later Phases
+### 9.2 Automation And Defect-Management Tools In Use
 
-- `GitHub Issues` for defect logging with severity and priority screenshots
-- `Selenium` for UI automation
-- `Postman` or `Newman` for API testing and repeatable execution
+- `GitHub Issues` for defect-tool evidence, currently live for `BUG-20260406-001`
+- internal defect register and workbook for synchronized defect tracking across all confirmed bugs
+- `Selenium WebDriver` with `.NET 8 + xUnit` for UI automation
+- `Postman + Newman` for API testing and repeatable execution
 - `Excel` workbooks for test cases, test data, results, and metrics
 
-`NEEDS USER CONFIRMATION`: exact automation toolchain selection between raw Selenium WebDriver, Selenium IDE, or another browser automation runner in later phases.
+The current package has already standardized on `.NET 8 + xUnit + Selenium WebDriver` for UI automation and `Postman + Newman` for API automation.
 
 ## 10. Test Data Strategy
 
@@ -311,10 +312,10 @@ The planned cycle will be considered complete when:
    - Nguyen Thanh Dat: `10`
    - Le Quang Duy: `10`
 3. UI and API test results are recorded in the final results workbook.
-4. Defects confirmed during execution are logged in `GitHub Issues` with severity, priority, steps, and screenshots.
+4. Defects confirmed during execution are logged in the synchronized defect workbook, with live `GitHub Issues` used where issue-tool evidence is already available.
 5. Required screenshots and execution evidence are captured and stored in `SV00123-ATU-A01/TestResults/Evidence/`.
 6. Final metrics and summary tables are ready for the report and slides.
-7. Automation evidence is either provided or clearly marked `PENDING REAL EXECUTION`.
+7. Automation evidence is provided in the current package through video, runner output, and supporting screenshots.
 
 ## 13. Defect Management Plan
 
@@ -398,10 +399,9 @@ This test plan feeds the following final artifacts:
 
 ## 17. Items Requiring Confirmation
 
-- `NEEDS USER CONFIRMATION`: which second browser, if any, will be used for cross-browser execution
-- `NEEDS USER CONFIRMATION`: exact automation stack to be implemented in Phase 8
-- `PENDING REAL EXECUTION`: final screenshots, final execution statuses, and final defect counts
+- Optional decision only: whether a second browser will be added for bonus cross-browser evidence
+- Post-fix retest evidence still depends on future bug fixes in the application
 
 ## 18. Current Readiness Statement
 
-The project is ready to move from planning into scenario design. The real system has enough business scope, seeded data, and verified local operability to support a strong final testing submission, provided that later phases keep execution evidence honest and traceable.
+The plan has now been executed into a real submission package. The current package is strong in scope definition, traceability, and evidence integrity, and all designed UI and API cases now have synchronized execution results. A basic Edge smoke rerun is also now included for bonus cross-browser support. The remaining gap before a maximum-confidence quality claim is unresolved defect count and missing post-fix pass evidence for the four confirmed defects.

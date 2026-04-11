@@ -145,7 +145,7 @@ Report Test subject/
 | Browser | Target role | Current status | Design decision |
 |---|---|---|---|
 | `Chrome` | Primary execution and video evidence | Verified installed locally | Implement in Phase 8 |
-| `Edge` | Secondary cross-browser run for bonus | Not yet executed because the browser binary was not confirmed on this machine during the captured evidence cycle | Keep framework browser-agnostic so it can be enabled later without code redesign |
+| `Edge` | Secondary cross-browser run for bonus | Executed on `2026-04-11` for `TC-UI-AUTH-001`; the smoke case passed and produced Edge-based runner output plus a fresh success screenshot | Keep framework browser-agnostic so more Edge cases can be added later without code redesign |
 | `Firefox` | Not targeted | Not installed or required for score optimization | Out of scope |
 
 ## Manual vs automated split
@@ -175,7 +175,7 @@ Report Test subject/
 - Product import preview cache expires after `20` minutes.
   - Control: preview and validation assertions must stay inside one test session.
 - Cross-browser bonus is limited by current local browser availability.
-  - Control: keep browser selection configurable so Chrome evidence can be delivered first and Edge can be added later if available.
+  - Control: keep browser selection configurable so Chrome remains the primary baseline and Edge can be enabled quickly for bonus compatibility evidence.
 
 ## Phase 8 implementation target
 

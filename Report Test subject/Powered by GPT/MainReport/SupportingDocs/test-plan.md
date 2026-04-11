@@ -255,7 +255,7 @@ The current environment uses seeded demo data from `Data/DbSeeder.cs`, including
 ### 8.4 Browser Matrix
 
 - Primary browser for execution: `Google Chrome`
-- Secondary browser for bonus cross-browser scope: `Not executed in the current evidence baseline`
+- Secondary browser for bonus cross-browser scope: `Executed on 2026-04-11 for TC-UI-AUTH-001 (Edge smoke pass)`
 - Tertiary browser for bonus cross-browser scope: `Not included in the current evidence baseline`
 
 ## 9. Test Tools
@@ -400,9 +400,8 @@ This test plan feeds the following final artifacts:
 ## 17. Items Requiring Confirmation
 
 - Optional decision only: whether a second browser will be added for bonus cross-browser evidence
-- Additional GitHub issue mirroring still depends on manually opening issues for the three newer confirmed defects
 - Post-fix retest evidence still depends on future bug fixes in the application
 
 ## 18. Current Readiness Statement
 
-The plan has now been executed into a real submission package. The current package is strong in scope definition, traceability, and evidence integrity, and all designed UI and API cases now have synchronized execution results. The remaining gap before a maximum-confidence quality claim is unresolved defect count, GitHub issue mirroring for the newer defects, and missing post-fix retest evidence.
+The plan has now been executed into a real submission package. The current package is strong in scope definition, traceability, and evidence integrity, and all designed UI and API cases now have synchronized execution results. A basic Edge smoke rerun is also now included for bonus cross-browser support. The remaining gap before a maximum-confidence quality claim is unresolved defect count and missing post-fix pass evidence for the four confirmed defects.

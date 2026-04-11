@@ -559,21 +559,21 @@ The main limitation of the current package is no longer execution depth. All `63
 
 The package still lacks two completions that would improve its final polish:
 
-- no post-fix retest evidence exists yet for any of the four confirmed defects
-- optional cross-browser evidence is still not included
+- focused defect retests were executed again on `2026-04-11`, and all four confirmed defects still reproduced without any status downgrade
+- basic cross-browser evidence now exists through an `Edge` smoke rerun of `TC-UI-AUTH-001`
 
 ## 5.3 Future Enhancements
 
 The highest-priority next actions are:
 
 1. fix and retest the invoice-create defect tracked in GitHub Issue `#1`
-2. retest invoice cancellation, purchase validation rendering, and import confirm after fixes are available
-3. refresh the defect log, final results workbook, and metrics pack after those retests
-4. optionally add cross-browser evidence if Edge is available
+2. fix and retest invoice cancellation, purchase validation rendering, and import confirm after fixes are available
+3. refresh the defect log, final results workbook, and metrics pack after those post-fix retests
+4. expand cross-browser evidence beyond the current `Edge` smoke proof if time permits
 
 ## 5.4 Final Conclusion
 
-Based on the current execution evidence, the `Online Sales Management System` now has full case-level execution coverage across the designed UI and API test suite. The package is strong in test design, evidence traceability, and automation support, and it now avoids the earlier weakness of large `Not Run` sections. However, the system still contains four confirmed defects, all now mirrored into live GitHub Issues, and the invoice-create defect remains the strongest defect because it combines UI proof with server-log proof. The most defensible conclusion is that the project is execution-complete and submission-ready, but still short of a maximum-confidence quality claim until those confirmed defects are fixed and retested.
+Based on the current execution evidence, the `Online Sales Management System` now has full case-level execution coverage across the designed UI and API test suite. The package is strong in test design, evidence traceability, and automation support, and it now avoids the earlier weakness of large `Not Run` sections. The automation evidence is also stronger because a basic `Edge` smoke rerun now confirms `TC-UI-AUTH-001` outside the primary Chrome baseline. However, the system still contains four confirmed defects, all mirrored into live GitHub Issues, and the invoice-create defect remains the strongest defect because it combines UI proof with server-log proof. Focused retests on `2026-04-11` showed that those four defects still reproduce, so the most defensible conclusion is that the project is execution-complete and submission-ready, but still short of a maximum-confidence quality claim until those confirmed defects are fixed and pass post-fix retest.
 
 # References
 
@@ -613,6 +613,6 @@ Based on the current execution evidence, the `Online Sales Management System` no
 
 ## Appendix C. Remaining High-Value Execution Gaps
 
-- Post-fix retest evidence is still required for the four confirmed defects.
-- Optional cross-browser evidence is still not included.
+- Focused retests on `2026-04-11` confirmed that all four live defects still reproduce; true post-fix retest evidence is still required.
+- Basic cross-browser evidence is now included through an `Edge` smoke rerun for `TC-UI-AUTH-001`.
 
