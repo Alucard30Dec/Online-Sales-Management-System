@@ -1,6 +1,6 @@
 # PHASE 0 - PROJECT AUDIT
 
-> Historical phase note: this document preserves the state of the initial audit pass. Any `PENDING REAL EXECUTION` wording below reflects the phase snapshot only and is superseded by the final report, final results, metrics, and execution-evidence artifacts in this package.
+> Historical phase note: this document preserves the state of the initial audit pass. Any early execution-gap wording below reflects the phase snapshot only and is superseded by the final report, final results, metrics, and execution-evidence artifacts in this package.
 
 ## Submission Context
 
@@ -228,10 +228,10 @@ This is sufficient scope for a strong final testing submission.
 
 ### Current blockers for complete execution evidence
 
-- `PENDING REAL EXECUTION`: full manual execution across all target browsers
-- `PENDING REAL EXECUTION`: screenshot evidence for each final result row
-- `PENDING REAL EXECUTION`: confirmed defects with attachments and GitHub Issue links
-- `PENDING REAL EXECUTION`: automation video capture
+- Historical phase gap: full manual execution across all target browsers
+- Historical phase gap: screenshot evidence for each final result row
+- Historical phase gap: confirmed defects with attachments and GitHub Issue links
+- Historical phase gap: automation video capture
 
 ### Technical blockers or dependencies
 
@@ -422,8 +422,8 @@ The project does have genuine API scope, but it is narrower than the UI scope. T
 
 ## Missing Real Data That Still Blocks Later Phases
 
-- `PENDING REAL EXECUTION`: final screenshots for each executed case
-- `PENDING REAL EXECUTION`: confirmed defect evidence before defect log authoring
-- `PENDING REAL EXECUTION`: final environment matrix for actual execution browsers
-- `PENDING REAL EXECUTION`: automation video recording
-- `PENDING REAL EXECUTION`: final test ownership allocation by exact test case IDs
+- Historical phase gap: final screenshots for each executed case
+- Historical phase gap: confirmed defect evidence before defect log authoring
+- Historical phase gap: final environment matrix for actual execution browsers
+- Historical phase gap: automation video recording
+- Historical phase gap: final test ownership allocation by exact test case IDs

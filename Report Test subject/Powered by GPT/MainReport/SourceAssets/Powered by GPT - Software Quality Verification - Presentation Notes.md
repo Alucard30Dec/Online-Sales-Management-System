@@ -99,7 +99,7 @@ Use these notes while building the slide deck and during oral defense. The notes
 
 - Explain the immediate next actions:
   - fix and retest invoice creation through GitHub Issue `#1`
-  - attach the saved package evidence to GitHub Issues `#2`, `#3`, and `#4`
+  - retest purchase validation, import confirm, and invoice cancellation after fixes are available
   - retest the four confirmed defects after fixes
   - optionally add cross-browser evidence
 - End by pointing to the GitHub appendix link containing the deliverables.

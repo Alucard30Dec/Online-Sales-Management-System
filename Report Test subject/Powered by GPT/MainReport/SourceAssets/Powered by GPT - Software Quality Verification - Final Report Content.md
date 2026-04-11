@@ -559,16 +559,16 @@ The main limitation of the current package is no longer execution depth. All `63
 
 The package still lacks two completions that would improve its final polish:
 
-- local screenshot copies for GitHub Issues `#2`, `#3`, and `#4` should be stored under `TestResults/Evidence/Defects/` if they are not already copied into the package
 - no post-fix retest evidence exists yet for any of the four confirmed defects
+- optional cross-browser evidence is still not included
 
 ## 5.3 Future Enhancements
 
 The highest-priority next actions are:
 
 1. fix and retest the invoice-create defect tracked in GitHub Issue `#1`
-2. attach the saved package screenshots and rerun artifacts to GitHub Issues `#2`, `#3`, and `#4`, then copy the final issue screenshots into `TestResults/Evidence/Defects/`
-3. retest invoice cancellation, purchase validation rendering, and import confirm after fixes are available
+2. retest invoice cancellation, purchase validation rendering, and import confirm after fixes are available
+3. refresh the defect log, final results workbook, and metrics pack after those retests
 4. optionally add cross-browser evidence if Edge is available
 
 ## 5.4 Final Conclusion

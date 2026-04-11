@@ -77,6 +77,5 @@ Some supporting documents were originally authored against the working workspace
 
 - all designed UI and API cases are now executed in the synchronized baseline
 - all four confirmed defects are now mirrored into live GitHub Issues
-- the local evidence folder still needs the saved issue screenshots for `BUG-20260411-002`, `BUG-20260411-003`, and `BUG-20260411-004` if those files have not yet been copied into `TestResults/Evidence/Defects/`
 - optional cross-browser evidence is still not included
 

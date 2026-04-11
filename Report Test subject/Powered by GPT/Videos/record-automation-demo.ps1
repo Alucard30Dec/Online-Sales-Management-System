@@ -27,8 +27,8 @@ $videoComparisonCsv = Join-Path $packageRoot "TestResults\FinalResults\OSMS-Auto
 $videoComparisonViewCsv = Join-Path $packageRoot "TestResults\FinalResults\OSMS-Automation-Video-Result-View.csv"
 $demoLogPath = Join-Path $videosRoot "OSMS-Automation-Demo.log"
 $defectLogWorkbook = Join-Path $packageRoot "TestResults\Defects\OSMS-Defect-Log.xlsx"
-$apiSummaryImage = Join-Path $packageRoot "TestResults\Evidence\Report\report\OSMS-Newman-Full-Run-Snippet.png"
-$defectScreenshot = Join-Path $packageRoot "TestResults\Evidence\Defects\defects\BUG-20260406-001-github-issue.png"
+$apiSummaryImage = Join-Path $packageRoot "TestResults\Evidence\Report\OSMS-Newman-Full-Run-Snippet.png"
+$defectScreenshot = Join-Path $packageRoot "TestResults\Evidence\Defects\BUG-20260406-001-github-issue.png"
 $uiEvidenceRoot = Join-Path $packageRoot "TestResults\Evidence\UI\automation"
 
 if (-not (Test-Path -LiteralPath $FfmpegPath)) {

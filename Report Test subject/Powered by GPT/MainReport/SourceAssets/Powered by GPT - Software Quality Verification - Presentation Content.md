@@ -256,7 +256,7 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 **Highest-Value Next Steps**
 
 1. fix and retest invoice creation through GitHub Issue `#1`
-2. attach the saved package evidence to GitHub Issues `#2`, `#3`, and `#4`
+2. retest purchase validation, import confirm, and invoice cancellation after fixes are available
 3. add post-fix retest evidence for all confirmed defects
 4. add optional cross-browser evidence if Edge is available
 

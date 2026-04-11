@@ -4,29 +4,34 @@ Framework: `.NET 8 + xUnit + Selenium WebDriver`
 
 Primary browser: `Chrome` via Selenium Manager
 
-## Implemented tests
+## Current package scope
+
+The clean submission package now contains executed UI evidence for all `44` UI test cases. Automation coverage is split across focused test classes so that evidence can be rerun and mapped back to specific case IDs.
+
+### Main test classes
 
 - `AuthenticationTests`
-  - `TC-UI-AUTH-001`
-  - `TC-UI-AUTH-003`
 - `PurchaseFlowTests`
-  - `TC-UI-PUR-001`
-  - `TC-UI-PUR-007`
 - `InvoiceFlowTests`
-  - `TC-UI-INV-001`
 - `ProductImportTests`
-  - `TC-UI-IMP-002`
+- `AdminAndCustomerCoverageTests`
+- `PurchaseProductImportCoverageTests`
+- `ReportingPublicInvoiceCoverageTests`
+- `ExtendedCoverageTests`
+- `AdditionalCrudCoverageTests`
 
-## Project structure
+## Canonical structure
 
 ```text
-ui/
-  run-ui-tests.ps1
-  OSMS.UITests/
-    appsettings.json
-    Pages/
-    Support/
-    Tests/
+TestScript-Data/
+  Automation/
+    ui/
+      run-ui-tests.ps1
+      OSMS.UITests/
+        appsettings.json
+        Pages/
+        Support/
+        Tests/
 ```
 
 ## Run
@@ -34,24 +39,35 @@ ui/
 ### Default run
 
 ```powershell
-pwsh "Report Test subject/automation/ui/run-ui-tests.ps1"
+pwsh "Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-tests.ps1"
 ```
 
 ### Headless run
 
 ```powershell
-pwsh "Report Test subject/automation/ui/run-ui-tests.ps1" -Headless
+pwsh "Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-tests.ps1" -Headless
 ```
 
-### Filter one test case
+### Full-screen demo run
 
 ```powershell
-pwsh "Report Test subject/automation/ui/run-ui-tests.ps1" -Filter "CaseId=TC-UI-AUTH-001"
+pwsh "Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-tests.ps1" -Fullscreen
 ```
+
+### Filter one focused test
+
+```powershell
+pwsh "Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-tests.ps1" -Filter "FullyQualifiedName~AdminLoginSmokeSucceeds"
+```
+
+## Canonical evidence outputs
+
+- TRX files: `Powered by GPT/TestResults/RunnerOutput/UI/`
+- screenshots: `Powered by GPT/TestResults/Evidence/UI/automation/`
 
 ## Preconditions
 
-- the OSMS application is running locally at `http://localhost:5068`
+- the OSMS application is running locally at `http://127.0.0.1:5068`
 - seeded demo accounts are available
 - Chrome is installed
-- phase 6 test data files remain in their current repo paths
+- package test data remains under `Powered by GPT/TestScript-Data/TestData/`
