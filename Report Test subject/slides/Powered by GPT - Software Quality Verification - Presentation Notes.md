@@ -33,7 +33,7 @@
 
 ### Slide 3. Strategy And Evidence Model
 
-- Say that the team used source-based planning rather than a template-only approach.
+- Say that the team used project-specific planning rather than a template-only approach.
 - Mention black-box execution with white-box-informed edge cases.
 - Highlight the evidence chain:
   - scenario -> testcase -> result -> evidence -> defect -> issue
@@ -68,6 +68,7 @@
 - Say this sentence almost verbatim:
   - `We do not stop at pass/fail labels. Each result is defended by expected result, actual runtime behavior, and the linked evidence file.`
 - Use the two pass rows and two fail rows to show that the team can justify both kinds of status.
+- If asked why the slide is important, say that it links the workbook status directly to runtime behavior instead of relying on summary numbers.
 
 ### Slide 8. Metrics Snapshot
 
@@ -79,6 +80,7 @@
 
 - Say that `7` failed cases consolidate into `4` confirmed defects because several failures share the same root cause.
 - Mention that all four defects now have live GitHub issues and rerun evidence from `2026-04-11`.
+- State the severity split clearly: `3 High`, `1 Medium`.
 
 ### Slide 10. Final Assessment And Next Steps
 
@@ -98,7 +100,7 @@
 
 ### Why do 7 failed cases become 4 defects?
 
-- Because invoice-create has three failing variants under one root cause, while the other failures map to three additional distinct defects.
+- Because invoice-create has multiple failing variants under one root cause, while the remaining failures map to three additional distinct defects.
 
 ### How do you know a fail is a product defect and not an automation bug?
 

@@ -64,7 +64,7 @@ This deck is the final defense-oriented presentation for the Online Sales Manage
 
 **Approach**
 
-- source-based audit instead of generic template testing
+- project-specific audit instead of template-only testing
 - black-box execution with white-box-informed edge-case design
 - manual UI validation plus API regression plus targeted UI automation
 
@@ -148,7 +148,7 @@ This deck is the final defense-oriented presentation for the Online Sales Manage
 ### Visual to show
 
 - auth success screenshot:
-  - `Powered by GPT/TestResults/Evidence/UI/automation/20260406_053930_TC-UI-AUTH-001-success.png`
+  - `Powered by GPT/TestResults/Evidence/UI/automation/20260411_143741_TC-UI-AUTH-001-success.png`
 - import preview screenshot:
   - `Powered by GPT/TestResults/Evidence/UI/automation/20260406_054115_TC-UI-IMP-002-preview.png`
 - Newman summary image:
@@ -167,7 +167,7 @@ This deck is the final defense-oriented presentation for the Online Sales Manage
 
 **Traceability**
 
-- the video, result workbook, and evidence mapping use the same final baseline
+- the video, final-results workbook, and evidence mapping use the same recorded result set
 
 ### Visual to show
 
@@ -210,6 +210,7 @@ This deck is the final defense-oriented presentation for the Online Sales Manage
 - all four defects were rerun on `2026-04-11`
 - all four defects still reproduced
 - live GitHub issue tracking is already in place
+- severity split remains `3 High` and `1 Medium`
 
 ### Visual to show
 
@@ -222,7 +223,7 @@ This deck is the final defense-oriented presentation for the Online Sales Manage
 
 **What Is Proven Today**
 
-- strong traceability from design to issue tracking
+- clear linkage from design to issue tracking
 - automation supports both pass and fail evidence
 - submission package is complete and reviewable
 
