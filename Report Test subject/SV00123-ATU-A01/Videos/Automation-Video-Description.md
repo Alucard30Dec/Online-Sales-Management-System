@@ -13,32 +13,34 @@ This video demonstrates the execution flow of the project automation artifacts u
 ## Covered flow
 
 1. Introduce the project and automation types.
-2. Open the UI and API test case workbooks and show the exact automated case IDs.
-3. Run the Selenium UI smoke test for `TC-UI-AUTH-001`.
+2. Open the UI and API test case workbooks and show the exact automated case IDs used in the demo.
+3. Run the Selenium UI login smoke for `TC-UI-AUTH-001` on `Edge` to show basic cross-browser coverage.
 4. Open the generated screenshot evidence for `TC-UI-AUTH-001`.
-5. Run the Selenium UI import preview automation for `TC-UI-IMP-002`.
-6. Open the generated screenshot evidence for `TC-UI-IMP-002`.
+5. Run the Selenium UI import preview automation for `TC-UI-IMP-002` on `Chrome`.
+6. Open the generated full-screen preview evidence for `TC-UI-IMP-002`, showing `6` total rows, `1` valid row, and `5` invalid rows.
 7. Run the Newman API automation suite and hold the terminal summary.
 8. Open the saved API summary image after execution.
-9. Open the final result comparison workbook and compare `Expected Result`, `Actual Result`, `Status`, and evidence columns for multiple automated cases.
-10. Open the defect log and GitHub issue evidence for the confirmed failed invoice case.
-11. Show a readable `Expected Result` versus `Actual Result` comparison summary before holding the comparison workbook at the end of the video.
+9. Open the result comparison workbook and compare `Expected Result`, `Actual Result`, `Status`, and evidence columns for both pass and fail cases.
+10. Open the defect log and show the focused rerun status for the four confirmed live defects.
+11. Open the GitHub issue screenshot for the representative invoice defect and end on the result comparison workbook.
 
 ## Expected visible outcome
 
 - The automated test cases are visible in the test case workbooks before execution.
 - The browser launches in full-screen mode for the live UI run.
+- The login smoke is visibly executed on `Edge`.
 - The UI automation command completes successfully and the generated evidence is opened immediately afterward.
+- The import preview evidence clearly shows the expected `6 / 1 / 5` summary and row-level validation details.
 - The API automation command completes successfully and the saved Newman output is shown.
-- The final result comparison is visible with `Expected Result`, `Actual Result`, `Status`, and evidence references.
-- The defect evidence for the failed invoice case is shown from the package.
+- The final result comparison is visible with `Expected Result`, `Actual Result`, `Status`, and evidence references for both pass and fail rows.
+- The defect evidence for the failed purchase and invoice flows is shown from the package through the defect log and the live GitHub issue screenshot.
 - The final seconds of the video keep the comparison workbook on screen for grading review.
 
 ## Technical summary
 
 - Resolution: `1920 x 1080`
 - Frame rate: `12 fps`
-- Duration: approximately `3 minutes 50 seconds`
+- Duration: approximately `4 minutes 35 seconds`
 
 ## Submission note
 

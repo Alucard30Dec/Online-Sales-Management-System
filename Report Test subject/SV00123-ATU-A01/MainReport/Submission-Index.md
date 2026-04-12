@@ -32,7 +32,7 @@ This folder is the clean final submission package aligned to the requested 5-fol
 - final report `docx`
 - final report `pdf`
 - final presentation `pptx`
-- supporting docs and source assets used to produce the final binaries
+- submission index for package navigation
 
 ### TestCases
 
@@ -57,9 +57,13 @@ This folder is the clean final submission package aligned to the requested 5-fol
 - automation demonstration video
 - video description and recording script
 
+## Clean MainReport Note
+
+`MainReport/` in this clean package intentionally contains only the final submission binaries plus this index file. Source markdown, working notes, and rubric support files remain in the broader working workspace and are not part of the final clean package.
+
 ## Path Normalization Note
 
-Some supporting documents were originally authored against the working workspace under `Report Test subject/`. For grading and submission, use these clean-package equivalents:
+For grading and submission, use these clean-package equivalents:
 
 | Workspace path family | Clean package equivalent |
 |---|---|

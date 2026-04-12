@@ -1,6 +1,6 @@
 param(
     [string]$BaseUrl = "http://127.0.0.1:5068",
-    [int]$DurationSeconds = 230,
+    [int]$DurationSeconds = 275,
     [string]$FfmpegPath = "C:\Users\Alucard30Dec\AppData\Local\Microsoft\WinGet\Links\ffmpeg.exe",
     [string]$OutputPath = "",
     [switch]$NoRecording,
@@ -133,6 +133,7 @@ $videoCaseIds = @(
     "TC-UI-AUTH-001",
     "TC-UI-IMP-002",
     "TC-API-HLT-001",
+    "TC-UI-PUR-002",
     "TC-UI-INV-001"
 )
 
@@ -397,8 +398,12 @@ function Show-WorkbookCases {
         'Expected Body'     = 30
         'Reporting Status'  = 16
         'Defect ID'         = 18
+        'Record ID'         = 18
+        'Related Test Case ID' = 22
         'Severity'          = 14
         'Priority'          = 14
+        'Current Status'    = 18
+        'GitHub Issue'      = 22
         'Issue URL'         = 18
     }
 
@@ -575,6 +580,7 @@ function Invoke-UiAutomationDemo {
     param(
         [string]$CaseId,
         [string]$Filter,
+        [string]$Browser = 'chrome',
         [string]$ExpectedText,
         [string]$ActualText,
         [string]$ScreenshotPattern,
@@ -596,6 +602,8 @@ function Invoke-UiAutomationDemo {
         '"{{UI_RUNNER}}"',
         '-BaseUrl',
         '{{BASE_URL}}',
+        '-Browser',
+        $Browser,
         '-Fullscreen',
         '-DemoPauseSeconds',
         '4',
@@ -669,24 +677,24 @@ try {
     Pause-Demo 5
 
     Write-Host ''
-    Write-Host 'STEP 1/8 - Mapping UI automated test cases.'
-    Show-WorkbookCases -WorkbookPath '{{UI_CASES_WORKBOOK}}' -CaseIds @('TC-UI-AUTH-001', 'TC-UI-IMP-002') -HeadersToHighlight @('Test Case ID', 'Title', 'Preconditions', 'Expected Result', 'Status') -Zoom 145 -PauseSeconds 4
+    Write-Host 'STEP 1/8 - Mapping UI automated and defect-linked test cases.'
+    Show-WorkbookCases -WorkbookPath '{{UI_CASES_WORKBOOK}}' -CaseIds @('TC-UI-AUTH-001', 'TC-UI-IMP-002', 'TC-UI-PUR-002', 'TC-UI-INV-001') -HeadersToHighlight @('Test Case ID', 'Title', 'Preconditions', 'Expected Result', 'Status') -Zoom 145 -PauseSeconds 4
 
     Write-Host ''
     Write-Host 'STEP 2/8 - Mapping API automated test case.'
     Show-WorkbookCases -WorkbookPath '{{API_CASES_WORKBOOK}}' -CaseIds @('TC-API-HLT-001') -HeadersToHighlight @('Test Case ID', 'Endpoint', 'Expected Status Code', 'Expected Body', 'Status') -Zoom 145 -PauseSeconds 4
 
     Write-Host ''
-    Write-Host 'STEP 3/8 - Executing UI login smoke automation.'
+    Write-Host 'STEP 3/8 - Executing UI login smoke automation on Edge.'
     Write-Host 'Pre-condition: seeded admin account exists and the local application is running.'
-    Write-Host 'UI runner command: run-ui-tests.ps1 -Fullscreen -Filter AdminLoginSmokeSucceeds'
-    Invoke-UiAutomationDemo -CaseId 'TC-UI-AUTH-001' -Filter 'FullyQualifiedName~AdminLoginSmokeSucceeds' -ExpectedText 'Valid admin credentials should redirect the user to the admin dashboard.' -ActualText 'The automated rerun opened the login page, submitted valid credentials, and reached the admin dashboard successfully.' -ScreenshotPattern '*TC-UI-AUTH-001-success.png' -BrowserViewSeconds 8
+    Write-Host 'UI runner command: run-ui-tests.ps1 -Browser edge -Fullscreen -Filter AdminLoginSmokeSucceeds'
+    Invoke-UiAutomationDemo -CaseId 'TC-UI-AUTH-001' -Browser 'edge' -Filter 'FullyQualifiedName~AdminLoginSmokeSucceeds' -ExpectedText 'Valid admin credentials should redirect the user to the admin dashboard.' -ActualText 'The Edge smoke rerun opened the login page, submitted valid credentials, and reached the admin dashboard successfully.' -ScreenshotPattern '*TC-UI-AUTH-001-success.png' -BrowserViewSeconds 8
 
     Write-Host ''
     Write-Host 'STEP 4/8 - Executing UI product import preview automation.'
     Write-Host 'Pre-condition: the mixed-validation import workbook is available in the prepared test data set.'
-    Write-Host 'UI runner command: run-ui-tests.ps1 -Fullscreen -Filter ProductImportPreviewShowsExpectedValidAndInvalidCounts'
-    Invoke-UiAutomationDemo -CaseId 'TC-UI-IMP-002' -Filter 'FullyQualifiedName~ProductImportPreviewShowsExpectedValidAndInvalidCounts' -ExpectedText 'The preview page should show 6 total rows, 1 valid row, and 5 invalid rows.' -ActualText 'The automated rerun uploaded the workbook and the preview page displayed 6 total rows, 1 valid row, and 5 invalid rows.' -ScreenshotPattern '*TC-UI-IMP-002-preview.png' -BrowserViewSeconds 10
+    Write-Host 'UI runner command: run-ui-tests.ps1 -Browser chrome -Fullscreen -Filter ProductImportPreviewShowsExpectedValidAndInvalidCounts'
+    Invoke-UiAutomationDemo -CaseId 'TC-UI-IMP-002' -Browser 'chrome' -Filter 'FullyQualifiedName~ProductImportPreviewShowsExpectedValidAndInvalidCounts' -ExpectedText 'The preview page should show 6 total rows, 1 valid row, and 5 invalid rows.' -ActualText 'The automated rerun uploaded the workbook and the preview page displayed 6 total rows, 1 valid row, and 5 invalid rows.' -ScreenshotPattern '*TC-UI-IMP-002-preview.png' -BrowserViewSeconds 24
 
     Write-Host ''
     Write-Host 'STEP 5/8 - Executing API automation with Newman.'
@@ -708,19 +716,19 @@ try {
 
     Write-Host ''
     Write-Host 'STEP 6/8 - Comparing Expected Result, Actual Result, and Status.'
-    Show-WorkbookCases -WorkbookPath '{{VIDEO_COMPARISON_VIEW_CSV}}' -CaseIds @('TC-UI-AUTH-001', 'TC-UI-IMP-002', 'TC-API-HLT-001', 'TC-UI-INV-001') -HeadersToHighlight @('Expected Result', 'Actual Result', 'Status', 'Evidence / Files', 'Report Reference') -Zoom 130 -PauseSeconds 5
+    Show-WorkbookCases -WorkbookPath '{{VIDEO_COMPARISON_VIEW_CSV}}' -CaseIds @('TC-UI-AUTH-001', 'TC-UI-IMP-002', 'TC-API-HLT-001', 'TC-UI-PUR-002', 'TC-UI-INV-001') -HeadersToHighlight @('Expected Result', 'Actual Result', 'Status', 'Evidence / Files', 'Report Reference') -Zoom 130 -PauseSeconds 4
 
     Write-Host ''
-    Write-Host 'STEP 7/8 - Showing the confirmed defect entry for the invoice failure.'
-    Write-Host 'Expected Result: walk-in invoice should be created successfully.'
-    Write-Host 'Actual Result: invoice creation failed and the defect was logged for traceability.'
-    Show-WorkbookCases -WorkbookPath '{{DEFECT_LOG_WORKBOOK}}' -CaseIds @('TC-UI-INV-001') -HeadersToHighlight @('Defect ID', 'Test Case ID', 'Severity', 'Priority', 'Status', 'Issue URL') -Zoom 145 -PauseSeconds 4
-    Show-ImageArtifact -Path '{{DEFECT_SCREENSHOT}}' -Caption 'Evidence - Confirmed Invoice Defect' -PauseSeconds 5
+    Write-Host 'STEP 7/8 - Showing focused defect retest evidence and live issue tracking.'
+    Write-Host 'Expected Result: failed cases should map to clear defect records with severity, priority, and issue links.'
+    Write-Host 'Actual Result: the latest 2026-04-11 reruns still reproduced the purchase, import, and invoice defects.'
+    Show-WorkbookCases -WorkbookPath '{{DEFECT_LOG_WORKBOOK}}' -CaseIds @('TC-UI-PUR-002', 'TC-UI-IMP-003', 'TC-UI-INV-001', 'TC-UI-INV-005') -HeadersToHighlight @('Record ID', 'Related Test Case ID', 'Severity', 'Priority', 'Current Status', 'GitHub Issue') -Zoom 145 -PauseSeconds 3
+    Show-ImageArtifact -Path '{{DEFECT_SCREENSHOT}}' -Caption 'Evidence - Live GitHub Issue for Invoice Defect' -PauseSeconds 5
 
     Write-Host ''
     Write-Host 'STEP 8/8 - Final result review.'
     Show-ResultComparisonArtifact -ComparisonCsv '{{VIDEO_COMPARISON_CSV}}' -PauseSeconds 18
-    Show-WorkbookCases -WorkbookPath '{{VIDEO_COMPARISON_VIEW_CSV}}' -CaseIds @('TC-UI-AUTH-001', 'TC-UI-IMP-002', 'TC-API-HLT-001', 'TC-UI-INV-001') -HeadersToHighlight @('Test Case ID', 'Expected Result', 'Actual Result', 'Status', 'Evidence / Files', 'Report Reference') -Zoom 125 -PauseSeconds 6
+    Show-WorkbookCases -WorkbookPath '{{VIDEO_COMPARISON_VIEW_CSV}}' -CaseIds @('TC-UI-AUTH-001', 'TC-UI-IMP-002', 'TC-API-HLT-001', 'TC-UI-PUR-002', 'TC-UI-INV-001') -HeadersToHighlight @('Test Case ID', 'Expected Result', 'Actual Result', 'Status', 'Evidence / Files', 'Report Reference') -Zoom 125 -PauseSeconds 5
     $finalExcel = New-Object -ComObject Excel.Application
     $finalExcel.Visible = $true
     $finalExcel.DisplayAlerts = $false

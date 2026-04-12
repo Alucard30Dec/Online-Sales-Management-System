@@ -39,6 +39,20 @@ The Newman collection covers all `19` API cases in the final package:
 - `TC-API-HLT-001`
 - `TC-API-CAT-001` to `TC-API-CAT-018`
 
+## High-value current evidence
+
+- Basic cross-browser smoke evidence exists for `TC-UI-AUTH-001` on `Edge`:
+  - `TestResults/Evidence/UI/automation/20260411_143741_TC-UI-AUTH-001-success.png`
+  - `TestResults/RunnerOutput/UI/edge-auth-smoke.trx`
+- Focused defect retest evidence from `2026-04-11` exists for the still-open UI defects:
+  - `TC-UI-PUR-002`
+  - `TC-UI-IMP-003`
+  - `TC-UI-INV-001`
+  - `TC-UI-INV-005`
+- The automation demo video is regenerated from the package script:
+  - `Videos/record-automation-demo.ps1`
+  - `Videos/OSMS-Automation-Demo.mp4`
+
 ## Quick commands
 
 ### UI automation

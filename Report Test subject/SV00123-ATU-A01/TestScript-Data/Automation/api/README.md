@@ -17,6 +17,7 @@ The current synchronized baseline records all `19` API cases as executed with th
 
 - `SV00123-ATU-A01/TestResults/Evidence/API/newman-full-run.txt`
 - `SV00123-ATU-A01/TestResults/RunnerOutput/API/newman-results.xml`
+- `SV00123-ATU-A01/TestResults/Evidence/Report/OSMS-Newman-Full-Run-Snippet.png`
 
 ## Run
 
@@ -29,6 +30,10 @@ To override the base URL:
 ```powershell
 pwsh "Report Test subject/SV00123-ATU-A01/TestScript-Data/Automation/api/newman/run-api-tests.ps1" -BaseUrl "http://127.0.0.1:5068"
 ```
+
+## Video alignment note
+
+The submission video maps the visible API automation step to `TC-API-HLT-001`, then shows the Newman summary artifact and the final comparison workbook that links the API run back to the synchronized final results.
 
 ## Preconditions
 

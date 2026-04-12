@@ -1,31 +1,27 @@
-﻿# Powered by GPT - Software Quality Verification
+# Presentation Source Content
 
-## Package Note
-
-This Markdown file is the slide-source copy kept inside the clean submission package. The canonical grading deliverable is:
+## Canonical Binary
 
 - `../Powered by GPT - Software Quality Verification - Presentation.pptx`
 
-If any path below still uses the original workspace naming, resolve it through `../Submission-Index.md`.
+## Deck Goal
 
-## Presentation Goal
+This deck is the final defense-oriented presentation for the Online Sales Management System Software Testing submission. It is intentionally concise, evidence-first, and synchronized with the current execution baseline:
 
-Use this file as the source content for the final `PPTX`. The deck is intentionally short and defense-oriented. It highlights the strongest evidence currently available and avoids overclaiming unexecuted coverage.
-
-## Recommended Deck Size
-
-- main deck: `10` slides
-- optional backup: `1` Q&A slide
-- target speaking time: `8-10 minutes`
+- `63` total test cases
+- `63` executed
+- `56` pass
+- `7` fail
+- `4` confirmed defects
+- `4` live GitHub issues
 
 ## Slide 1. Title
 
 ### Slide content
 
-**Powered by GPT - Software Quality Verification**
+**Online Sales Management System**
 
-- System Under Test: `Online Sales Management System`
-- Course: `Software Testing`
+- Software Testing Final Submission
 - Team:
   - Hoang Van Thien
   - Nguyen Thanh Dat
@@ -35,64 +31,61 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 ### Visual to show
 
-- simple cover layout with team names and repository name
+- cover slide with execution baseline cards:
+  - `63 cases`
+  - `100% executed`
+  - `4 live defects`
 
-## Slide 2. Project And Test Scope
+## Slide 2. Risk-Based Scope
 
 ### Slide content
 
-**What We Tested**
+**System Surfaces**
 
 - Admin UI
-- Public Product Catalog
+- Public Catalog UI
 - Health API
 - Catalog API
 
-**Highest-Risk Business Areas**
+**Highest-Risk Modules**
 
 - Authentication and permissions
-- Products and product import
-- Purchases
-- Invoices
-- Stock and reports
+- Products, import, and stock
+- Purchases and invoices
+- Reports and public catalog
 
 ### Visual to show
 
-- one scope diagram or four-box layout for `Admin UI`, `Public UI`, `Health API`, `Catalog API`
+- four scope cards plus one short risk callout block
 
-## Slide 3. Test Strategy
+## Slide 3. Strategy And Evidence Model
 
 ### Slide content
 
-**Strategy**
+**Approach**
 
-- source-based project audit, not generic template testing
-- black-box execution + white-box-informed test design
-- manual testing for business logic and visible validation
-- targeted automation for high-value regression paths
+- source-based audit instead of generic template testing
+- black-box execution with white-box-informed edge-case design
+- manual UI validation plus API regression plus targeted UI automation
 
-**Automation Stack**
+**Evidence Chain**
 
-- UI: `.NET 8 + xUnit + Selenium`
-- API: `Postman + Newman`
-- structure: `Page Object Model + reusable helpers`
+- scenario -> testcase -> result -> screenshot or runner output -> defect log -> GitHub issue
 
 ### Visual to show
 
-- one small architecture row:
-  - `Source Audit -> Test Design -> Manual + Automation -> Evidence -> Metrics`
+- left-to-right strategy pipeline with `Design`, `Execution`, `Evidence`, `Defects`
 
-## Slide 4. Coverage And Team Allocation
+## Slide 4. Coverage Snapshot
 
 ### Slide content
 
-**Design Coverage**
+**Coverage Baseline**
 
-- `42` documented scenarios
-- `63` total test cases
-  - `44` UI
-  - `19` API
-- `100%` scenario design coverage
+- `42` scenarios
+- `63` test cases
+- `44` UI and `19` API
+- `100%` scenario-to-testcase mapping
 
 **Team Allocation**
 
@@ -102,37 +95,33 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 ### Visual to show
 
-- bar chart or simple table for case ownership
-- small note:
-  - `42 / 42` scenarios are now mapped to test cases
+- coverage cards and owner allocation bars
 
 ## Slide 5. Automation Implementation
 
 ### Slide content
 
-**Implemented Automation Assets**
+**UI Automation**
 
-- Selenium UI project with `Page Objects`
-- shared config, wait helpers, screenshot capture
-- Postman collection with Newman runner
+- `.NET 8`, `xUnit`, `Selenium`
+- `Page Object Model`
+- shared settings, waits, and screenshot helper
 
-**Priority Automated Flows**
+**API Automation**
 
-- admin login smoke
-- sales permission check
-- purchase creation
-- invoice creation
-- product import preview
-- API health and catalog groups
+- Postman collection and Newman runner
+- text and XML artifacts stored in package
+
+**Demonstrated Flows**
+
+- `TC-UI-AUTH-001` on Edge
+- `TC-UI-IMP-002` on Chrome
+- `TC-API-HLT-001`
+- focused fail-case comparison
 
 ### Visual to show
 
-- folder tree screenshot or simplified structure:
-  - `Pages`
-  - `Support`
-  - `Tests`
-  - `postman`
-  - `newman`
+- architecture cards for `UI Suite`, `API Suite`, `Evidence`, `Results`
 
 ## Slide 6. Real Execution Evidence
 
@@ -140,142 +129,118 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Confirmed Pass Evidence**
 
-- `TC-UI-AUTH-001` passed
-- `TC-UI-AUTH-003` passed
-- `TC-UI-IMP-002` passed
-- `TC-UI-PUR-001` and `TC-UI-PUR-007` passed
-- extended reruns now also pass admin-user, customer, report, stock, and public-catalog flows
-- full API collection passed (`19 / 19`)
+- `TC-UI-AUTH-001` login smoke passed
+- `TC-UI-IMP-002` import preview passed
+- API collection passed `19 / 19`
 
 **Confirmed Fail Evidence**
 
-- `TC-UI-INV-001`, `TC-UI-INV-003`, and `TC-UI-INV-006` fail from the same invoice-create defect
-- `TC-UI-INV-005` fails in invoice cancellation
-- `TC-UI-IMP-003` fails in import confirm
-- `TC-UI-PUR-002` and `TC-UI-PUR-003` fail on blank validation banners
+- `TC-UI-PUR-002` purchase validation banner defect
+- `TC-UI-IMP-003` import confirm defect
+- `TC-UI-INV-001` and `TC-UI-INV-005` invoice defects
 
-**Important Rule**
+**Execution Rule**
 
-- no unexecuted test was marked as pass
-- UI suite no longer contains `Not Run`
-- `4` confirmed defects are recorded, and `1` of them is already tracked in GitHub Issue `#1`
+- `63 / 63` cases are executed
+- `0` test case remains `Not Run`
+- no testcase was promoted to `Pass` without runtime evidence
 
 ### Visual to show
 
-- login success screenshot:
+- auth success screenshot:
   - `Powered by GPT/TestResults/Evidence/UI/automation/20260406_053930_TC-UI-AUTH-001-success.png`
-- purchase success screenshot:
-  - `Powered by GPT/TestResults/Evidence/UI/automation/20260406_054004_TC-UI-PUR-001-draft-created.png`
-- invoice defect screenshot:
-  - `Powered by GPT/TestResults/Evidence/UI/automation/20260406_053902_TC-UI-INV-001-failure.png`
-- Newman output snippet for full collection:
+- import preview screenshot:
+  - `Powered by GPT/TestResults/Evidence/UI/automation/20260406_054115_TC-UI-IMP-002-preview.png`
+- Newman summary image:
   - `Powered by GPT/TestResults/Evidence/Report/OSMS-Newman-Full-Run-Snippet.png`
 
-## Slide 7. Current Metrics
+## Slide 7. Result Comparison
+
+### Slide content
+
+**Expected vs Actual vs Status**
+
+- `TC-UI-AUTH-001`: valid admin login reaches dashboard -> `Pass`
+- `TC-UI-IMP-002`: preview shows `6 total`, `1 valid`, `5 invalid` -> `Pass`
+- `TC-UI-PUR-002`: supplier-missing validation should show readable message -> `Fail`
+- `TC-UI-INV-001`: valid walk-in invoice should be created successfully -> `Fail`
+
+**Traceability**
+
+- the video, result workbook, and evidence mapping use the same final baseline
+
+### Visual to show
+
+- card-based comparison layout, not a text wall
+
+## Slide 8. Metrics Snapshot
 
 ### Slide content
 
 **Execution Summary As Of 2026-04-11**
 
-- total cases: `63`
-- executed: `63`
+- total: `63`
 - pass: `56`
 - fail: `7`
-- blocked: `0`
 - not run: `0`
-- execution progress: `100%`
 
 **Interface View**
 
-- Admin UI: `41` executed, `34` pass, `7` fail
-- API: `19` executed, `19` pass
-- Public UI: `3` executed, `3` pass
+- Admin UI: `41 executed`, `34 pass`, `7 fail`
+- API: `19 executed`, `19 pass`
+- Public UI: `3 executed`, `3 pass`
 
 ### Visual to show
 
 - `Powered by GPT/TestResults/Evidence/Report/OSMS-Test-Metrics-Summary.png`
 
-## Slide 8. Defect And Risk Analysis
+## Slide 9. Defect Management
 
 ### Slide content
 
 **Confirmed Defects**
 
-- `4` confirmed defects
-  - `BUG-20260406-001` invoice-create defect, tracked in GitHub Issue `#1`
-  - `BUG-20260411-002` purchase validation banner defect, tracked in GitHub Issue `#2`
-  - `BUG-20260411-003` import-confirm defect, tracked in GitHub Issue `#3`
-  - `BUG-20260411-004` invoice-cancel defect, tracked in GitHub Issue `#4`
+- `BUG-20260406-001` invoice create -> GitHub Issue `#1`
+- `BUG-20260411-002` purchase validation -> GitHub Issue `#2`
+- `BUG-20260411-003` import confirm -> GitHub Issue `#3`
+- `BUG-20260411-004` invoice cancel -> GitHub Issue `#4`
 
-**Closed Observations**
+**Current State**
 
-- authorization redirect behavior
-- product import preview locator issue
-
-**Highest Remaining Risks**
-
-- unresolved invoice create and cancel flows
-- purchase validation rendering defect
-- import-confirm defect after valid preview
-- focused retests on `2026-04-11` still reproduced all four confirmed defects
+- all four defects were rerun on `2026-04-11`
+- all four defects still reproduced
+- live GitHub issue tracking is already in place
 
 ### Visual to show
 
-- one risk heat-style table:
-  - `Verified`
-  - `Confirmed Defect`
-  - `Unverified`
-- `Powered by GPT/TestResults/Evidence/Defects/BUG-20260406-001-github-issue.png`
+- representative issue screenshot:
+  - `Powered by GPT/TestResults/Evidence/Defects/BUG-20260406-001-github-issue.png`
 
-## Slide 9. Key Insights
+## Slide 10. Final Assessment And Next Steps
 
 ### Slide content
 
-**What We Can Defend**
+**What Is Proven Today**
 
-- project is testable and automation-capable
-- source-based test design is strong
-- traceability from scenario -> test case -> result -> evidence -> defect is in place
+- strong traceability from design to issue tracking
+- automation supports both pass and fail evidence
+- submission package is complete and reviewable
 
-**What We Do Not Overclaim**
+**What Remains Open**
 
-- current evidence still does not prove full system stability
-- four confirmed defects are currently open
-- post-fix retest after actual fixes is still required for maximum confidence
+- `4` product defects are still open
+- post-fix retest still depends on future code fixes
+- current cross-browser proof is limited to the `Edge` smoke run
 
-### Visual to show
+**Next Actions**
 
-- two-column slide:
-  - `Proven Today`
-  - `Open Defects`
-
-## Slide 10. Next Steps And Submission Package
-
-### Slide content
-
-**Highest-Value Next Steps**
-
-1. fix and retest invoice creation through GitHub Issue `#1`
-2. fix and retest purchase validation, import confirm, and invoice cancellation after fixes are available
-3. add post-fix pass evidence for all confirmed defects
-4. expand cross-browser proof beyond the current `Edge` smoke evidence if time permits
-
-**Submission Package**
-
-- Final report
-- PPTX
-- test cases
-- test data
-- automation scripts
-- final results
-- metrics
-- evidence
-- video
+1. fix invoice create and invoice cancel
+2. fix purchase validation and import confirm
+3. rerun failed cases and convert them to post-fix evidence
 
 ### Visual to show
 
-- GitHub appendix link:
-  - `github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/Powered%20by%20GPT`
+- two-column `Proven Today` vs `Open After Execution` layout
 
 ## Slide 11. Q&A Backup
 
@@ -283,13 +248,12 @@ Use this file as the source content for the final `PPTX`. The deck is intentiona
 
 **Likely Questions**
 
-- Why do you have `4` confirmed defects?
-- Why is execution progress now `100%`?
-- Why did you choose Selenium and Newman?
+- Why do `7` failing test cases map to `4` defects?
 - How do you distinguish automation failure from product defect?
+- Why does `100%` execution not mean a stable system?
 - Which module is riskiest right now?
+- What is the first post-fix retest priority?
 
 ### Visual to show
 
-- plain clean backup slide only
-
+- clean Q&A backup slide only

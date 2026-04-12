@@ -16,5 +16,6 @@ public sealed class AdminDashboardPage : PageBase
     {
         Wait.Visible(DashboardTitle);
         Wait.BodyContains("Dashboard");
+        PauseForDemo();
     }
 }

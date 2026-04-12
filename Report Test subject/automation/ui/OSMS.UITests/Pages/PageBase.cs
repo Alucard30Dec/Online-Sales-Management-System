@@ -1,6 +1,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using OSMS.UITests.Support;
+using System.Threading;
 
 namespace OSMS.UITests.Pages;
 
@@ -48,5 +49,13 @@ public abstract class PageBase
         }
 
         select.SelectByText(option.Text);
+    }
+
+    protected void PauseForDemo()
+    {
+        if (Settings.DemoPauseSeconds > 0)
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(Settings.DemoPauseSeconds));
+        }
     }
 }

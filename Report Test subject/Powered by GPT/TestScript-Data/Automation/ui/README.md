@@ -4,6 +4,8 @@ Framework: `.NET 8 + xUnit + Selenium WebDriver`
 
 Primary browser: `Chrome` via Selenium Manager
 
+Secondary browser evidence: `Edge` smoke pass for `TC-UI-AUTH-001`
+
 ## Current package scope
 
 The clean submission package now contains executed UI evidence for all `44` UI test cases. Automation coverage is split across focused test classes so that evidence can be rerun and mapped back to specific case IDs.
@@ -60,10 +62,24 @@ pwsh "Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-te
 pwsh "Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-tests.ps1" -Filter "FullyQualifiedName~AdminLoginSmokeSucceeds"
 ```
 
+### Run the Edge smoke proof used in the package
+
+```powershell
+pwsh "Report Test subject/Powered by GPT/TestScript-Data/Automation/ui/run-ui-tests.ps1" -Browser edge -Fullscreen -Filter "FullyQualifiedName~AdminLoginSmokeSucceeds"
+```
+
 ## Canonical evidence outputs
 
 - TRX files: `Powered by GPT/TestResults/RunnerOutput/UI/`
 - screenshots: `Powered by GPT/TestResults/Evidence/UI/automation/`
+
+## High-value UI outputs in the current baseline
+
+- `edge-auth-smoke.trx`
+- `postfix-retest-pur-002.trx`
+- `postfix-retest-imp-003.trx`
+- `postfix-retest-inv-001.trx`
+- `postfix-retest-inv-005.trx`
 
 ## Preconditions
 

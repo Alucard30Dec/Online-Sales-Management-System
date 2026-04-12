@@ -1,79 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="OSMS API Automation" tests="19" time="2.134">
-  <testsuite name="01 Health Smoke / TC-API-HLT-001 Health endpoint returns service availability metadata" id="bd26f0a6-b415-45fb-a957-fd561f09cf59" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.031">
-    <testcase name="Status code is 200" time="0.031" classname="01HealthSmokeTcApiHlt001HealthEndpointReturnsServiceAvailabilityMetadata"/>
-    <testcase name="Health payload contains expected fields" time="0.031" classname="01HealthSmokeTcApiHlt001HealthEndpointReturnsServiceAvailabilityMetadata"/>
+<testsuites name="OSMS API Automation" tests="19" time="2.451">
+  <testsuite name="01 Health Smoke / TC-API-HLT-001 Health endpoint returns service availability metadata" id="fcbdb63c-f30e-49f2-a88d-d56ffa4db147" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.038">
+    <testcase name="Status code is 200" time="0.038" classname="01HealthSmokeTcApiHlt001HealthEndpointReturnsServiceAvailabilityMetadata"/>
+    <testcase name="Health payload contains expected fields" time="0.038" classname="01HealthSmokeTcApiHlt001HealthEndpointReturnsServiceAvailabilityMetadata"/>
   </testsuite>
-  <testsuite name="02 Catalog Happy Path / TC-API-CAT-001 Catalog products endpoint returns paginated active products with default parameters" id="81fe6680-cc38-4bcd-803f-61c2f8d986d1" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.239">
-    <testcase name="Status code is 200" time="0.239" classname="02CatalogHappyPathTcApiCat001CatalogProductsEndpointReturnsPaginatedActiveProductsWithDefaultParameters"/>
-    <testcase name="Paginated payload is returned" time="0.239" classname="02CatalogHappyPathTcApiCat001CatalogProductsEndpointReturnsPaginatedActiveProductsWithDefaultParameters"/>
+  <testsuite name="02 Catalog Happy Path / TC-API-CAT-001 Catalog products endpoint returns paginated active products with default parameters" id="e5f98212-146f-48a2-a234-d415fc4db008" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.274">
+    <testcase name="Status code is 200" time="0.274" classname="02CatalogHappyPathTcApiCat001CatalogProductsEndpointReturnsPaginatedActiveProductsWithDefaultParameters"/>
+    <testcase name="Paginated payload is returned" time="0.274" classname="02CatalogHappyPathTcApiCat001CatalogProductsEndpointReturnsPaginatedActiveProductsWithDefaultParameters"/>
   </testsuite>
-  <testsuite name="02 Catalog Happy Path / TC-API-CAT-002 Catalog products endpoint supports search by SKU or product name" id="789fdb8b-89a4-48eb-b9a4-8c79620e81db" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.247">
-    <testcase name="Status code is 200" time="0.247" classname="02CatalogHappyPathTcApiCat002CatalogProductsEndpointSupportsSearchBySkuOrProductName"/>
-    <testcase name="Search returns matching products only" time="0.247" classname="02CatalogHappyPathTcApiCat002CatalogProductsEndpointSupportsSearchBySkuOrProductName"/>
+  <testsuite name="02 Catalog Happy Path / TC-API-CAT-002 Catalog products endpoint supports search by SKU or product name" id="bf1c1f5c-7da6-4bdd-b9f4-db3b135466ba" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.311">
+    <testcase name="Status code is 200" time="0.311" classname="02CatalogHappyPathTcApiCat002CatalogProductsEndpointSupportsSearchBySkuOrProductName"/>
+    <testcase name="Search returns matching products only" time="0.311" classname="02CatalogHappyPathTcApiCat002CatalogProductsEndpointSupportsSearchBySkuOrProductName"/>
   </testsuite>
-  <testsuite name="02 Catalog Happy Path / TC-API-CAT-003 Catalog products endpoint filters by valid categoryId" id="2707fb01-294b-4ef9-b5a0-5a3ebe1da651" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.252">
-    <testcase name="Status code is 200" time="0.252" classname="02CatalogHappyPathTcApiCat003CatalogProductsEndpointFiltersByValidCategoryId"/>
-    <testcase name="Every returned item matches the requested category when items are present" time="0.252" classname="02CatalogHappyPathTcApiCat003CatalogProductsEndpointFiltersByValidCategoryId"/>
+  <testsuite name="02 Catalog Happy Path / TC-API-CAT-003 Catalog products endpoint filters by valid categoryId" id="bc8dbd06-2851-40c1-a621-4024d86273e5" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.270">
+    <testcase name="Status code is 200" time="0.270" classname="02CatalogHappyPathTcApiCat003CatalogProductsEndpointFiltersByValidCategoryId"/>
+    <testcase name="Every returned item matches the requested category when items are present" time="0.270" classname="02CatalogHappyPathTcApiCat003CatalogProductsEndpointFiltersByValidCategoryId"/>
   </testsuite>
-  <testsuite name="02 Catalog Happy Path / TC-API-CAT-004 Catalog products endpoint filters by valid brandId" id="3880d9ff-ce8c-4898-8c96-3a35479f8418" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.242">
-    <testcase name="Status code is 200" time="0.242" classname="02CatalogHappyPathTcApiCat004CatalogProductsEndpointFiltersByValidBrandId"/>
-    <testcase name="Every returned item matches the requested brand when items are present" time="0.242" classname="02CatalogHappyPathTcApiCat004CatalogProductsEndpointFiltersByValidBrandId"/>
+  <testsuite name="02 Catalog Happy Path / TC-API-CAT-004 Catalog products endpoint filters by valid brandId" id="17023be2-2566-424c-a743-baabd1b4449c" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.439">
+    <testcase name="Status code is 200" time="0.439" classname="02CatalogHappyPathTcApiCat004CatalogProductsEndpointFiltersByValidBrandId"/>
+    <testcase name="Every returned item matches the requested brand when items are present" time="0.439" classname="02CatalogHappyPathTcApiCat004CatalogProductsEndpointFiltersByValidBrandId"/>
   </testsuite>
-  <testsuite name="02 Catalog Happy Path / TC-API-CAT-005 Catalog products endpoint supports valid price range and sort parameters" id="ddd4e9b6-fb8a-4607-90a9-9a1631caab61" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.255">
-    <testcase name="Status code is 200" time="0.255" classname="02CatalogHappyPathTcApiCat005CatalogProductsEndpointSupportsValidPriceRangeAndSortParameters"/>
-    <testcase name="Prices stay inside the requested range and are sorted ascending" time="0.255" classname="02CatalogHappyPathTcApiCat005CatalogProductsEndpointSupportsValidPriceRangeAndSortParameters"/>
+  <testsuite name="02 Catalog Happy Path / TC-API-CAT-005 Catalog products endpoint supports valid price range and sort parameters" id="69864d03-4270-49f1-bf7f-d0ef1336f56f" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.243">
+    <testcase name="Status code is 200" time="0.243" classname="02CatalogHappyPathTcApiCat005CatalogProductsEndpointSupportsValidPriceRangeAndSortParameters"/>
+    <testcase name="Prices stay inside the requested range and are sorted ascending" time="0.243" classname="02CatalogHappyPathTcApiCat005CatalogProductsEndpointSupportsValidPriceRangeAndSortParameters"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-006 Catalog products endpoint rejects page less than 1" id="9a7f7fe5-6f7b-4405-86a2-fef52e1a521c" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.003">
-    <testcase name="Status code is 400" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat006CatalogProductsEndpointRejectsPageLessThan1"/>
-    <testcase name="Validation payload targets page" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat006CatalogProductsEndpointRejectsPageLessThan1"/>
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-006 Catalog products endpoint rejects page less than 1" id="1d2bdb75-e582-42a1-822b-44c8b4982266" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.004">
+    <testcase name="Status code is 400" time="0.004" classname="03CatalogValidationAndNegativeTcApiCat006CatalogProductsEndpointRejectsPageLessThan1"/>
+    <testcase name="Validation payload targets page" time="0.004" classname="03CatalogValidationAndNegativeTcApiCat006CatalogProductsEndpointRejectsPageLessThan1"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-007 Catalog products endpoint rejects pageSize less than 1" id="eb0533b9-fa9e-4e47-99eb-b1b647ce4f85" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.002">
-    <testcase name="Status code is 400" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat007CatalogProductsEndpointRejectsPageSizeLessThan1"/>
-    <testcase name="Validation payload targets pageSize lower bound" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat007CatalogProductsEndpointRejectsPageSizeLessThan1"/>
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-007 Catalog products endpoint rejects pageSize less than 1" id="23f2e795-55ce-49ad-871c-c7ddc2a1e061" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.004">
+    <testcase name="Status code is 400" time="0.004" classname="03CatalogValidationAndNegativeTcApiCat007CatalogProductsEndpointRejectsPageSizeLessThan1"/>
+    <testcase name="Validation payload targets pageSize lower bound" time="0.004" classname="03CatalogValidationAndNegativeTcApiCat007CatalogProductsEndpointRejectsPageSizeLessThan1"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-008 Catalog products endpoint rejects pageSize greater than 100" id="29066ea3-de92-4652-90f3-947a1a7fb2d7" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.004">
-    <testcase name="Status code is 400" time="0.004" classname="03CatalogValidationAndNegativeTcApiCat008CatalogProductsEndpointRejectsPageSizeGreaterThan100"/>
-    <testcase name="Validation payload targets pageSize upper bound" time="0.004" classname="03CatalogValidationAndNegativeTcApiCat008CatalogProductsEndpointRejectsPageSizeGreaterThan100"/>
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-008 Catalog products endpoint rejects pageSize greater than 100" id="a7f50c99-6da3-44a9-85cf-127d68cdc9ef" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.005">
+    <testcase name="Status code is 400" time="0.005" classname="03CatalogValidationAndNegativeTcApiCat008CatalogProductsEndpointRejectsPageSizeGreaterThan100"/>
+    <testcase name="Validation payload targets pageSize upper bound" time="0.005" classname="03CatalogValidationAndNegativeTcApiCat008CatalogProductsEndpointRejectsPageSizeGreaterThan100"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-009 Catalog products endpoint rejects negative minPrice" id="01240e79-9d12-4d28-ae59-f59d240832b5" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.002">
-    <testcase name="Status code is 400" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat009CatalogProductsEndpointRejectsNegativeMinPrice"/>
-    <testcase name="Validation payload targets minPrice" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat009CatalogProductsEndpointRejectsNegativeMinPrice"/>
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-009 Catalog products endpoint rejects negative minPrice" id="62762e2d-0eec-4bed-8991-61a493e11c82" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="Status code is 400" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat009CatalogProductsEndpointRejectsNegativeMinPrice"/>
+    <testcase name="Validation payload targets minPrice" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat009CatalogProductsEndpointRejectsNegativeMinPrice"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-010 Catalog products endpoint rejects negative maxPrice" id="1cba0ee9-a8b8-4b9e-bbe4-23f749cdb847" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.002">
-    <testcase name="Status code is 400" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat010CatalogProductsEndpointRejectsNegativeMaxPrice"/>
-    <testcase name="Validation payload targets maxPrice" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat010CatalogProductsEndpointRejectsNegativeMaxPrice"/>
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-010 Catalog products endpoint rejects negative maxPrice" id="9280456c-c174-4d73-bd0f-71f30849152e" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.003">
+    <testcase name="Status code is 400" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat010CatalogProductsEndpointRejectsNegativeMaxPrice"/>
+    <testcase name="Validation payload targets maxPrice" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat010CatalogProductsEndpointRejectsNegativeMaxPrice"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-011 Catalog products endpoint rejects minPrice greater than maxPrice" id="a8af777e-1e15-4aae-91ef-cd3fe5e19783" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.003">
-    <testcase name="Status code is 400" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat011CatalogProductsEndpointRejectsMinPriceGreaterThanMaxPrice"/>
-    <testcase name="Validation payload targets priceRange" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat011CatalogProductsEndpointRejectsMinPriceGreaterThanMaxPrice"/>
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-011 Catalog products endpoint rejects minPrice greater than maxPrice" id="20b2aa21-e8fa-488c-a15d-f8f5049f1a40" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.002">
+    <testcase name="Status code is 400" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat011CatalogProductsEndpointRejectsMinPriceGreaterThanMaxPrice"/>
+    <testcase name="Validation payload targets priceRange" time="0.002" classname="03CatalogValidationAndNegativeTcApiCat011CatalogProductsEndpointRejectsMinPriceGreaterThanMaxPrice"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-012 Catalog products endpoint rejects unsupported sort option" id="88bd9c5a-cf77-4141-85ea-69eb62902d02" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.003">
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-012 Catalog products endpoint rejects unsupported sort option" id="ed470b12-2b3c-4213-b15b-c255fc31407b" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.003">
     <testcase name="Status code is 400" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat012CatalogProductsEndpointRejectsUnsupportedSortOption"/>
     <testcase name="Validation payload targets sort" time="0.003" classname="03CatalogValidationAndNegativeTcApiCat012CatalogProductsEndpointRejectsUnsupportedSortOption"/>
   </testsuite>
-  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-013 Catalog products endpoint rejects page value that exceeds total pages" id="9d3e5552-e2b7-4bf2-ab35-ba4c0a865d5d" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.116">
-    <testcase name="Status code is 400" time="0.116" classname="03CatalogValidationAndNegativeTcApiCat013CatalogProductsEndpointRejectsPageValueThatExceedsTotalPages"/>
-    <testcase name="Validation payload targets page overflow" time="0.116" classname="03CatalogValidationAndNegativeTcApiCat013CatalogProductsEndpointRejectsPageValueThatExceedsTotalPages"/>
+  <testsuite name="03 Catalog Validation And Negative / TC-API-CAT-013 Catalog products endpoint rejects page value that exceeds total pages" id="b0c96310-6e45-4017-a278-682dd001fa6d" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.117">
+    <testcase name="Status code is 400" time="0.117" classname="03CatalogValidationAndNegativeTcApiCat013CatalogProductsEndpointRejectsPageValueThatExceedsTotalPages"/>
+    <testcase name="Validation payload targets page overflow" time="0.117" classname="03CatalogValidationAndNegativeTcApiCat013CatalogProductsEndpointRejectsPageValueThatExceedsTotalPages"/>
   </testsuite>
-  <testsuite name="04 Product Detail / TC-API-CAT-014 Catalog product detail endpoint returns expected payload for valid active product" id="697366e8-a639-48fb-88cc-861aee8fb57a" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.129">
-    <testcase name="Status code is 200" time="0.129" classname="04ProductDetailTcApiCat014CatalogProductDetailEndpointReturnsExpectedPayloadForValidActiveProduct"/>
-    <testcase name="Detail payload contains the expected schema" time="0.129" classname="04ProductDetailTcApiCat014CatalogProductDetailEndpointReturnsExpectedPayloadForValidActiveProduct"/>
+  <testsuite name="04 Product Detail / TC-API-CAT-014 Catalog product detail endpoint returns expected payload for valid active product" id="cf15d34f-0569-46ad-8b32-d558caf96ccb" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.134">
+    <testcase name="Status code is 200" time="0.134" classname="04ProductDetailTcApiCat014CatalogProductDetailEndpointReturnsExpectedPayloadForValidActiveProduct"/>
+    <testcase name="Detail payload contains the expected schema" time="0.134" classname="04ProductDetailTcApiCat014CatalogProductDetailEndpointReturnsExpectedPayloadForValidActiveProduct"/>
   </testsuite>
-  <testsuite name="04 Product Detail / TC-API-CAT-015 Catalog product detail endpoint rejects id less than or equal to zero" id="8d915312-808c-4f5b-9040-6cbf42c28a25" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.002">
+  <testsuite name="04 Product Detail / TC-API-CAT-015 Catalog product detail endpoint rejects id less than or equal to zero" id="d7b868df-aa48-45da-8963-437aad0dab16" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.002">
     <testcase name="Status code is 400" time="0.002" classname="04ProductDetailTcApiCat015CatalogProductDetailEndpointRejectsIdLessThanOrEqualToZero"/>
     <testcase name="Validation payload targets id lower bound" time="0.002" classname="04ProductDetailTcApiCat015CatalogProductDetailEndpointRejectsIdLessThanOrEqualToZero"/>
   </testsuite>
-  <testsuite name="04 Product Detail / TC-API-CAT-016 Catalog product detail endpoint returns not_found for unknown active product id" id="0bea937f-42ab-49a6-b789-a6199b4b9b68" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.120">
-    <testcase name="Status code is 404" time="0.120" classname="04ProductDetailTcApiCat016CatalogProductDetailEndpointReturnsNotFoundForUnknownActiveProductId"/>
-    <testcase name="Not found payload targets id" time="0.120" classname="04ProductDetailTcApiCat016CatalogProductDetailEndpointReturnsNotFoundForUnknownActiveProductId"/>
+  <testsuite name="04 Product Detail / TC-API-CAT-016 Catalog product detail endpoint returns not_found for unknown active product id" id="2856b9ff-9b68-46bf-8e18-2b582a15cf15" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.124">
+    <testcase name="Status code is 404" time="0.124" classname="04ProductDetailTcApiCat016CatalogProductDetailEndpointReturnsNotFoundForUnknownActiveProductId"/>
+    <testcase name="Not found payload targets id" time="0.124" classname="04ProductDetailTcApiCat016CatalogProductDetailEndpointReturnsNotFoundForUnknownActiveProductId"/>
   </testsuite>
-  <testsuite name="05 Trending And Filters / TC-API-CAT-017 Trending endpoint returns active trending categories and products" id="42525075-a3b8-4fe4-89b1-efc2a5a79155" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.241">
-    <testcase name="Status code is 200" time="0.241" classname="05TrendingAndFiltersTcApiCat017TrendingEndpointReturnsActiveTrendingCategoriesAndProducts"/>
-    <testcase name="Trending payload returns categories and products arrays" time="0.241" classname="05TrendingAndFiltersTcApiCat017TrendingEndpointReturnsActiveTrendingCategoriesAndProducts"/>
+  <testsuite name="05 Trending And Filters / TC-API-CAT-017 Trending endpoint returns active trending categories and products" id="461c9581-20ee-44ab-966c-d4b4b1f549ce" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.238">
+    <testcase name="Status code is 200" time="0.238" classname="05TrendingAndFiltersTcApiCat017TrendingEndpointReturnsActiveTrendingCategoriesAndProducts"/>
+    <testcase name="Trending payload returns categories and products arrays" time="0.238" classname="05TrendingAndFiltersTcApiCat017TrendingEndpointReturnsActiveTrendingCategoriesAndProducts"/>
   </testsuite>
-  <testsuite name="05 Trending And Filters / TC-API-CAT-018 Filters endpoint returns active categories and brands with product counts" id="c2b27770-5dc1-4e2f-baa1-aab439c10a42" timestamp="2026-04-10T03:59:14.134Z" tests="2" failures="0" errors="0" time="0.241">
-    <testcase name="Status code is 200" time="0.241" classname="05TrendingAndFiltersTcApiCat018FiltersEndpointReturnsActiveCategoriesAndBrandsWithProductCounts"/>
-    <testcase name="Filters payload contains category and brand lookups" time="0.241" classname="05TrendingAndFiltersTcApiCat018FiltersEndpointReturnsActiveCategoriesAndBrandsWithProductCounts"/>
+  <testsuite name="05 Trending And Filters / TC-API-CAT-018 Filters endpoint returns active categories and brands with product counts" id="b7e95775-5063-45ab-a8c6-a42d78109e84" timestamp="2026-04-11T15:32:21.503Z" tests="2" failures="0" errors="0" time="0.237">
+    <testcase name="Status code is 200" time="0.237" classname="05TrendingAndFiltersTcApiCat018FiltersEndpointReturnsActiveCategoriesAndBrandsWithProductCounts"/>
+    <testcase name="Filters payload contains category and brand lookups" time="0.237" classname="05TrendingAndFiltersTcApiCat018FiltersEndpointReturnsActiveCategoriesAndBrandsWithProductCounts"/>
   </testsuite>
 </testsuites>

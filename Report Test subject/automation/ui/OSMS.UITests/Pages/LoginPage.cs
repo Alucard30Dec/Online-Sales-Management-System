@@ -19,6 +19,7 @@ public sealed class LoginPage : PageBase
         OpenRelativeUrl("/Admin/Auth/Login");
         Wait.UrlContains("/Admin/Auth/Login");
         Wait.Visible(EmailInput);
+        PauseForDemo();
         return this;
     }
 
@@ -26,6 +27,7 @@ public sealed class LoginPage : PageBase
     {
         SetInputValue(EmailInput, credential.Username);
         SetInputValue(PasswordInput, credential.Password);
+        PauseForDemo();
         Wait.Clickable(SubmitButton).Click();
     }
 

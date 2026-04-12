@@ -26,7 +26,7 @@ Final Report for Software Testing Course
 
 - System Under Test: `Online Sales Management System`
 - Repository: `https://github.com/Alucard30Dec/Online-Sales-Management-System`
-- Appendix Link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/Powered%20by%20GPT`
+- Appendix Link: `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
 - Team:
   - Hoang Van Thien - `22D1ITE-SWE03` - `225051915`
   - Nguyen Thanh Dat - `22D1ITE-SWE03` - `225050896`
@@ -592,7 +592,7 @@ Based on the current execution evidence, the `Online Sales Management System` no
 
 ## Appendix A. GitHub Submission Link
 
-- `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/Powered%20by%20GPT`
+- `https://github.com/Alucard30Dec/Online-Sales-Management-System/tree/main/Report%20Test%20subject/SV00123-ATU-A01`
 
 ## Appendix B. Key Attached Artifacts
 

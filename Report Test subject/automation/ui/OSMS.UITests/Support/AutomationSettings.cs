@@ -7,6 +7,8 @@ public sealed class AutomationSettings
     public string BaseUrl { get; set; } = "http://localhost:5068";
     public string Browser { get; set; } = "chrome";
     public bool Headless { get; set; }
+    public bool FullScreen { get; set; }
+    public int DemoPauseSeconds { get; set; }
     public int DefaultTimeoutSeconds { get; set; } = 15;
     public string UiDataCsvPath { get; set; } = "Report Test subject/test-data/ui/OSMS-UI-Test-Data.csv";
     public string ScreenshotsDirectory { get; set; } = "Report Test subject/evidence/ui/automation";
@@ -41,10 +43,22 @@ public sealed class AutomationSettings
             settings.Headless = headless;
         }
 
+        var fullScreenOverride = Environment.GetEnvironmentVariable("OSMS_UI_FULLSCREEN");
+        if (bool.TryParse(fullScreenOverride, out var fullScreen))
+        {
+            settings.FullScreen = fullScreen;
+        }
+
         var timeoutOverride = Environment.GetEnvironmentVariable("OSMS_UI_TIMEOUT_SECONDS");
         if (int.TryParse(timeoutOverride, out var timeoutSeconds) && timeoutSeconds > 0)
         {
             settings.DefaultTimeoutSeconds = timeoutSeconds;
+        }
+
+        var demoPauseOverride = Environment.GetEnvironmentVariable("OSMS_UI_DEMO_PAUSE_SECONDS");
+        if (int.TryParse(demoPauseOverride, out var demoPauseSeconds) && demoPauseSeconds >= 0)
+        {
+            settings.DemoPauseSeconds = demoPauseSeconds;
         }
 
         settings.BaseUrl = settings.BaseUrl.TrimEnd('/');
